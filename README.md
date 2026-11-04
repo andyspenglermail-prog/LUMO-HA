@@ -13,10 +13,24 @@ Entwicklungsstand, kein fertiger KI-Hausassistent.
 - Über die Seitennavigation das **Gerätebuch** öffnen: leer starten, Geräte und
   Funktionen manuell dokumentieren, suchen, bearbeiten und JSON importieren/exportieren.
 
-**Keine echte KI, Hausdaten, Geräteaktionen oder Sprachfunktion.**
-Der JSON-Entwurf ist keine importierbare HA-Dashboardkonfiguration.
+**Privater Kandidat 0.1.0-dev.5; nicht veröffentlicht oder für HA freigegeben.**
+„LUMO fragen“ ist im Gerätebuch integriert und lokal gegen echtes HTTPS, den
+LUMO-Kern und Chromium geprüft; nur das native SDK und die Ingress-Identität
+werden dabei durch ausdrücklich synthetische Fixtures ersetzt. Kein echter
+Modellaufruf oder Hauszugriff gehört zu dieser Kandidatenprüfung.
 
-## Repository in Home Assistant hinzufügen
+**Reparierter privater Kandidat:** Ein kurzer Root-Bootstrap liest ausschließlich
+die feste eigene Supervisor-Optionsdatei (0600), ohne ihre Rechte zu ändern.
+Vor jedem Listener/Netzzugriff werden alle UIDs/GIDs auf 65532 gesetzt,
+Zusatzgruppen entfernt und wirksame Fähigkeiten abgegeben; die Web-App läuft
+anschließend ausschließlich als Nicht-Root. Jede beobachtete Optionsänderung
+sperrt KI bis zum App-Neustart. Keine zusätzlichen API-Rechte oder Secretkanäle.
+Die echte neue Host-Brücke mit SQLite-Journal wurde lokal gekoppelt geprüft.
+Unabhängiges Review, Image- und native HA-/Modellabnahme stehen weiterhin aus.
+Nicht als bereits abgenommene HA-KI installieren.
+Der JSON-Entwurf bleibt keine importierbare HA-Dashboardkonfiguration.
+
+## Repository in Home Assistant hinzufügen – erst nach separater Freigabe
 
 Voraussetzung: Home Assistant OS mit App-Store und Architektur `aarch64` oder `amd64`.
 
@@ -43,7 +57,7 @@ Der Supervisor baut die App aus diesem Repository. Dabei muss das fest gepinnte
 - Manueller Start; keine automatische Aktivierung durch das Paket.
 - Nur Ingress, keine veröffentlichten Host-Ports oder angeforderten Host-Mounts.
 - Kein angeforderter Home-Assistant-/Supervisor-API-Zugriff, keine Modellschlüssel.
-- Die App läuft als Nicht-Root-Benutzer. Das Raumstudio verwendet synthetische
+- Nach dem begrenzten Root-Bootstrap läuft die App als UID/GID65532. Das Raumstudio verwendet synthetische
   Beispiele; das Gerätebuch wird ohne Geräte oder Belege ausgeliefert.
 - Gerätebuchänderungen bleiben zunächst nur in der geöffneten Seite. „Lokal
   speichern“ ist standardmäßig aus und aktiviert nur eine browserlokale Arbeitskopie,

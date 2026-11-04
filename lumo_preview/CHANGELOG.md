@@ -1,5 +1,30 @@
 # Änderungen
 
+## 0.1.0-dev.5 – privater, nicht ausgelieferter Textpilot-Kandidat
+
+- „LUMO fragen“ innerhalb des Gerätebuchs: Frage und ausdrücklich ausgewählte
+  aktuelle Gerätemetadaten, einzelne Funktionen und zugehörige Belege. Standard:
+  keine Auswahl. Exakter Sendeumfang ist prüfbar, keine Ganzbuchübertragung.
+- Reale relative API-Anbindung über den App-Server an eine fest konfigurierte
+  HTTPS-Brücke, geprüftes Zertifikat und Hostname, kein direkter Browserzugang.
+  Leere Benutzerfreigabe und leere Brückeneinstellungen sperren Modelloperationen.
+- Begrenzter Textvertrag mit Gespräch, idempotenten Anfragekennungen, Status,
+  ausdrücklichem Stopp-/Löschwunsch und wörtlicher Textausgabe. Keine Geräteaktion.
+- Fehler halten den Zustand unbekannt; keine automatische neue KI-Anfrage.
+  8 KiB Text / 16 KiB Anfrage werden abgewiesen statt still gekürzt.
+- Lokale TLS-/Core-/Chromium-Prüfung ist keine native Modell- oder HA-Abnahme.
+- Gezielte Reparatur des belegten 0600-Optionsfehlers: kurzer Root-Bootstrap
+  liest nur die feste eigene Optionsdatei und gibt vor Listener/Netzwerk alle
+  UIDs/GIDs auf 65532 und alle wirksamen Fähigkeiten ab. Keine Rechteänderung
+  an Optionen, kein Ersatztransport und kein Root-Webbetrieb. Docker-Healthcheck
+  deaktiviert, damit kein wiederkehrender Root-Helfer entsteht; `/health` bleibt.
+- Jede beobachtete Optionsänderung sperrt KI bis zum bewussten App-Neustart;
+  Dateimetadaten werden vor Zulassung und Ergebnisfreigabe geprüft.
+- Echte lokale Kopplung an neue Host-Brücke, Journal/Core/Executor und TLS;
+  nur SDK/Ingress sind Fixtures. 64 KiB rohes Antwort-JSON bei weiterhin
+  8 KiB dekodiertem UTF-8-Text, keine Trunkierung oder zusätzlichen Header.
+- Unabhängiges Review, gepinnter Image-Build und native HA-/Modellabnahme offen.
+
 ## 0.1.0-dev.4
 
 - Leeres Offline-Gerätebuch als zweite Seite neben dem unveränderten Raumstudio-Kern.

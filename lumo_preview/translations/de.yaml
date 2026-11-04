@@ -1,0 +1,23 @@
+configuration:
+  bridge_url:
+    name: Adresse der LUMO-Brücke
+    description: >-
+      Feste HTTPS-Adresse der bestehenden Hermes-Brücke, ohne API-Pfad,
+      Anmeldedaten, Abfrage oder Fragment. Leer lassen hält den KI-Zugang gesperrt.
+  bridge_ca:
+    name: Öffentliches Vertrauenszertifikat (CA)
+    description: >-
+      Öffentliche CA der Brücke im PEM-Format. Keinen privaten Schlüssel eintragen.
+      Zertifikatskette und Hostname müssen zur Brückenadresse passen.
+  bridge_token:
+    name: Dediziertes LUMO-Brückentoken
+    description: >-
+      Eigenes Token der bestehenden LUMO-Brücke, kein Modellschlüssel und kein
+      allgemeiner Hermes-API-Schlüssel. Nicht in Chat, Git oder Tickets teilen.
+  allowed_user_ids:
+    name: Erlaubte Home-Assistant-Kennungen
+    description: >-
+      Eigene Ingress-Kennung aus dem LUMO-Gerätebuch unverändert als Listeneintrag
+      übernehmen. Dieselben Kennungen müssen am Host erlaubt sein. Keine
+      automatische Benutzerfreigabe. Nach Optionsänderungen die LUMO-App bewusst
+      neu starten.

@@ -1,5 +1,8 @@
 *
 !Dockerfile
+!bootstrap.py
 !server.py
+!bridge.py
+!validation.py
 !index.html
 !devicebook.html
