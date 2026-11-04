@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.1.0-dev.6 – gezielter Startstatus-Hotfix
+
+- `HEALTHCHECK NONE` entfernt: Dessen nichtleere Docker-Metadaten lassen den
+  gepinnten Supervisor trotz laufendem Container auf ausbleibende Health-Ereignisse
+  warten. Das gepinnte Basisimage hat keinen Healthcheck; kein neuer Root-Helfer.
+- Bootstrap, Rechteabgabe, Server, Brücke und Oberflächen bleiben unverändert.
+- Gezielter Supervisor-Quellvertrag ist keine native HA-Startabnahme.
+
 ## 0.1.0-dev.5 – privater, nicht ausgelieferter Textpilot-Kandidat
 
 - „LUMO fragen“ innerhalb des Gerätebuchs: Frage und ausdrücklich ausgewählte

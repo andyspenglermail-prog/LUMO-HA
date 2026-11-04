@@ -6,7 +6,7 @@ COPY bootstrap.py server.py bridge.py validation.py index.html devicebook.html .
 # Root only reads fixed Supervisor options and drops all identities/caps before serving.
 USER 0:0
 EXPOSE 8099
-# Docker health checks inherit USER 0; disable recurring privileged helpers.
-# Supervisor ingress and the constant /health endpoint remain available post-drop.
-HEALTHCHECK NONE
+# The pinned base has no healthcheck; omit HEALTHCHECK NONE because Supervisor
+# treats its nonempty Docker metadata as a check and waits for absent health events.
+# No recurring privileged helper; ingress and post-drop /health remain unchanged.
 CMD ["python", "bootstrap.py"]

@@ -1,6 +1,6 @@
 {
   "name": "LUMO Raumstudio (Offline-Test)",
-  "version": "0.1.0-dev.5",
+  "version": "0.1.0-dev.6",
   "slug": "lumo_preview",
   "description": "Offline-Gerätebuch und Raumstudio; privater KI-Textpilot nach separater Einrichtung.",
   "url": "https://github.com/andyspenglermail-prog/LUMO-HA",
