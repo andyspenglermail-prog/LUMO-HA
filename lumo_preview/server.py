@@ -7,15 +7,20 @@ from socketserver import TCPServer
 
 
 def create_server(index_path, bind=("127.0.0.1", 0), *, trusted_proxy_ip="172.30.32.2"):
-    """Read one bounded snapshot before binding; trust injection is for tests.
+    """Read both bounded page snapshots before binding; trust injection is for tests.
 
     The peer/identity check establishes authenticated ingress preview access,
     not an independently verified Home Assistant administrator role.
     """
-    with Path(index_path).open("rb") as source:
-        index = source.read(1048577)
-    if len(index) > 1048576:
-        raise ValueError("Preview index exceeds 1 MiB")
+    pages = {}
+    for route, path in (("/index.html", Path(index_path)),
+                        ("/devicebook.html", Path(index_path).with_name("devicebook.html"))):
+        with path.open("rb") as source:
+            page = source.read(1048577)
+        if len(page) > 1048576:
+            raise ValueError("Preview page exceeds 1 MiB")
+        pages[route] = page
+    pages["/"] = pages["/index.html"]
 
     class PreviewHandler(BaseHTTPRequestHandler):
         # One process, no worker pool; stalled accepted sockets cannot wait forever.
@@ -57,7 +62,7 @@ def create_server(index_path, bind=("127.0.0.1", 0), *, trusted_proxy_ip="172.30
             if target == "/health":
                 self._reply(200, b"ok\n", "text/plain; charset=utf-8")
                 return
-            if target not in ("/", "/index.html"):
+            if target not in pages:
                 self._reply(404, b"Not found\n", "text/plain; charset=utf-8")
                 return
             identities = self.headers.get_all("X-Remote-User-Id", [])
@@ -66,7 +71,7 @@ def create_server(index_path, bind=("127.0.0.1", 0), *, trusted_proxy_ip="172.30
                     or re.fullmatch(r"[A-Za-z0-9_-]{1,128}", identities[0]) is None):
                 self._reply(403, b"Forbidden\n", "text/plain; charset=utf-8")
                 return
-            self._reply(200, index)
+            self._reply(200, pages[target])
 
         do_HEAD = do_GET
 
