@@ -1,6 +1,11 @@
 # LUMO – Home Assistant Test-Apps
 
-## Update: LUMO Data · 0.9.0-designer.1
+## Update: LUMO Data · 0.9.0-designer.2
+
+**Gezielter HTTP-Fehlerfix:** Das native Dashboard-Profil öffnet sich auch beim
+Zugriff über eine gewöhnliche lokale HTTP-Adresse. Die interne ID-Erzeugung für
+Dashboards, Ansichten, Gruppen und Bausteine benötigt nicht mehr `randomUUID()`.
+HTTPS funktioniert weiterhin; keine Änderung an TLS, Netzwerk oder Berechtigungen.
 
 **Update der bereits installierten LUMO-Data-App**, keine zusätzliche App.
 Im App-Store-Menü nach Updates suchen und anschließend **LUMO Data** aktualisieren.

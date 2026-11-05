@@ -1,5 +1,17 @@
 # Änderungen
 
+## 0.9.0-designer.2 — nativer Designer über HTTP
+
+- Fehler behoben: Beim Zugriff über eine gewöhnliche HTTP-Adresse blieb nach
+  Auswahl von „Natives HA-Dashboard“ die bisherige Ansicht stehen.
+- Gemeinsame ID-Erzeugung aus kryptografischen Zufallsbytes statt direkter
+  `randomUUID()`-Aufrufe; gilt für Dashboards, Ansichten, Gruppen und Bausteine.
+- Bestehende Dokument-IDs und Speicherformate bleiben unverändert; keine Migration.
+- HTTP- und HTTPS-Browserregressionen in einer synthetischen Iframe-Einbettung:
+  Profilwechsel, Anlegen, Rückgängig/Wiederholen, Speicherung, Neuladen und Export.
+- Keine Änderung an Backend, Berechtigungen, Optionen, Netzwerk oder TLS.
+  Installation und Neustart bleiben beim Benutzer; keine neuen Funktionen.
+
 ## 0.9.0-designer.1 — erste Designer-Zwischenversion
 
 - Update derselben LUMO-Data-App; Slug, Konfigurationsschema und Berechtigungen unverändert.

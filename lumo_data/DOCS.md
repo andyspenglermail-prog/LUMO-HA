@@ -1,4 +1,10 @@
-# LUMO Data · 0.9.0-designer.1 · Designer-Zwischenversion
+# LUMO Data · 0.9.0-designer.2 · Designer-Zwischenversion
+
+Version .2 korrigiert den Profilwechsel beim Zugriff über gewöhnliches HTTP:
+Die interne ID-Erzeugung verwendet kryptografische Zufallsbytes ohne die
+Secure-Context-Voraussetzung von `randomUUID()`. Auch neue Ansichten, Gruppen und
+Bausteine nutzen diese Erzeugung. Bestehende IDs und Speicherformate bleiben erhalten.
+Das ändert weder die Sicherheitseinstellungen noch die Verschlüsselung deiner Verbindung.
 
 **Update für die bestehende LUMO-Data-App; Installation durch den Benutzer.**
 Diese erste v1.5-Zwischenversion ergänzt das native Dashboard-Profil im bestehenden
@@ -8,7 +14,7 @@ Der Designer wird direkt über die bestehende App in Home Assistant geöffnet.
 Es gibt keine automatische native HA-Dashboardanlage und keinen HA-Rollback.
 Die Gestaltungsvorschau und Konfigurationsprüfung sind kein nativer Live-Renderer.
 
-Die Veröffentlichung ersetzt Version 0.7.0-capabilities.1 im bestehenden Repository.
+Die Veröffentlichung ersetzt Version 0.9.0-designer.1 im bestehenden Repository.
 Sie löst selbst keine Installation, keinen Neustart und keine Geräteaktion aus.
 Slug, Optionen, Schema und Berechtigungen wurden für diese Zwischenversion nicht erweitert.
 
