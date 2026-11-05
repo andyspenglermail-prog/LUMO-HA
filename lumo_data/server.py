@@ -12,6 +12,7 @@ from client import ReadError,parse_json
 from control import ControlSessions,execute_control
 from capabilities import MISSING
 from data import discovery,states,selected_ids,history
+from dashboard_reads import dashboard_list,dashboard_config
 
 def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trusted_proxy_ip='172.30.32.2'):
     page=Path(index_path).read_bytes()
@@ -73,10 +74,12 @@ def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trus
             if target=='/health':self.reply(200,b'ok\n','text/plain');return
             static=target in ('/','/index.html')
             catalog=target=='/lumo/data/v1/catalog'
+            dashboards_route=target=='/lumo/data/v1/dashboards'
+            dashboard_route=target.startswith('/lumo/data/v1/dashboard?')
             state_route=target.startswith('/lumo/data/v1/states?')
             history_route=target.startswith('/lumo/data/v1/history?')
             if len(target)>12000:raise ReadError('request_limit',400)
-            if not static and not control and (self.command!='GET' or not (catalog or state_route or history_route or session)):raise ReadError('not_found',404)
+            if not static and not control and (self.command!='GET' or not (catalog or state_route or history_route or session or dashboards_route or dashboard_route)):raise ReadError('not_found',404)
             users=self.headers.get_all('X-Remote-User-Id',[])
             if self.client_address[0]!=trusted_proxy_ip or len(users)!=1 or not SAFE_ID.fullmatch(users[0]):raise ReadError('forbidden',403)
             if static:self.reply(200,page,'text/html; charset=utf-8');return
@@ -114,6 +117,12 @@ def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trus
                 ids=selected_ids(value['entityId'],policy)
                 if len(ids)!=1:raise ReadError('invalid_selection',400)
                 result=execute_control(client,policy,ids[0],value['action'],guard,value.get('value',MISSING))
+            elif dashboards_route:result=dashboard_list(client,guard)
+            elif dashboard_route:
+                # Canonical unescaped slug only; reject duplicate/opaque query fields.
+                match=re.fullmatch(r'/lumo/data/v1/dashboard\?url_path=([a-z0-9][a-z0-9_-]{0,127})',target)
+                if not match:raise ReadError('invalid_dashboard_path',400)
+                result=dashboard_config(client,policy,match[1],guard)
             elif catalog:result=discovery(client,policy)
             else:
                 pairs=parse_qsl(target.split('?',1)[1],keep_blank_values=True,strict_parsing=True,max_num_fields=3)

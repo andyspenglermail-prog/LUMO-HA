@@ -151,7 +151,18 @@ def discovery(client,policy):
         device_class=e.get('device_class') or e.get('original_device_class')
         if device_class is not None:text(device_class,64)
         # No entity state is requested here. Kind is a read-only scalar/status, not inferred temperature.
-        clean.append({'entityId':id,'name':text(e.get('name') or e.get('original_name') or id,256),
+        name=id;name_source='entity-id'
+        for key,source in (('name','registry-name'),('original_name','registry-original')):
+            candidate=e.get(key)
+            if candidate:
+                candidate=text(candidate,256)
+                if candidate.strip()!=id:name=candidate;name_source=source;break
+        icon=e.get('icon') or e.get('original_icon')
+        if icon is not None:
+            icon=text(icon,128)
+            if not re.fullmatch(r'[a-z][a-z0-9_-]*:[a-z0-9]+(?:-[a-z0-9]+)*',icon):raise ReadError('invalid_metadata')
+        clean.append({'entityId':id,'name':name,'nameSource':name_source,
+          **({'icon':icon} if icon is not None else {}),
           'deviceId':ref(e.get('device_id')),'areaId':ref(e.get('area_id')),
           'entityCategory':category,'disabled':disabled is not None,'deviceClass':device_class,
           'kind':'value' if id.split('.')[0] in ('sensor','binary_sensor','light','cover','switch','input_boolean','input_number','input_select','select','number','fan','climate','humidifier','water_heater','lock','button','input_button','vacuum','valve','event','update','sun','weather') else 'unsupported',

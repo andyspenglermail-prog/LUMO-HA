@@ -1,5 +1,24 @@
 # Änderungen
 
+## 0.10.0-studio.1 — geführtes Raumstudio
+
+- Vier Schritte beim Öffnen: Dashboard auswählen/neu, Design & Display,
+  Raum auswählen/neu im Entwurf, großer Raumentwurf mit Speichern/Exportieren darunter.
+- Bestehende Browserentwürfe und Backups bleiben lesbar. Zusätzlicher ausdrücklicher
+  Nur-Lese-Abruf vorhandener HA-Dashboards; unterstützte Sections werden als neue
+  lokale Kopie geöffnet. Unvollständig abbildbare Konfigurationen werden abgelehnt.
+- Suchbare Quellen nach Gerät/Raum mit freundlichen Namen und prüfbaren Entitäts-IDs.
+  13 lokal gebündelte MDI-Symbole mit vollständigen Lizenztexten; unbekannte Symbole
+  erhalten einen neutralen Ersatz. Unterstützte MDI-Kartenicons werden exportiert.
+- Große 12-Spalten-Arbeitsfläche mit echter Maus-/Touch-Verschiebung, Größenänderung,
+  Einrastvorschau, Abbruch, Fixierungen und Rückgängig/Wiederholen.
+- Aktuelle HA-Werte, Quellenqualität, manuelle Entwurfsänderungen und das freie
+  Vorschauprofil bleiben erhalten. Keine zusätzlichen App-Berechtigungen oder Optionen.
+- Speichern bleibt Browserspeicherung, Export bleibt Dateidownload. Keine produktive
+  Dashboard-/Bereichsänderung, keine neue App und keine automatische Installation.
+- Sections sind Reihenfolge und Spans, keine freien Pixelpositionen. Vorschau-Styles
+  sind weiterhin keine nativen HA-Themes. Physischer Touch und Nutzerabnahme offen.
+
 ## 0.9.0-designer.3 — natives Raumstudio mit HA-Daten
 
 - Vertraute Raumstudio-Oberfläche im nativen Profil: zentriertes „Dein Raumentwurf“,

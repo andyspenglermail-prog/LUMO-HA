@@ -1,12 +1,20 @@
 # LUMO – Home Assistant Test-Apps
 
-## Update: LUMO Data · 0.9.0-designer.3
+## Update: LUMO Data · 0.10.0-studio.1
 
-**Das native Profil ist jetzt wieder Raumstudio:** mit zentralem **Dein Raumentwurf**,
-sichtbarem **Design & Display** und einer Raumauswahl aus dem geladenen HA-Bestand.
-Die drei Vorschau-Styles und Displaygrößen wirken auf den Entwurf; die Werkzeuge
-bleiben neutral. Raumwechsel erhalten die jeweiligen Entwürfe. Quellen aus
-anderen Räumen bleiben ausdrücklich auswählbar.
+**Vier Schritte statt einer langen Einstellungsseite:**
+1. **Dashboard:** gespeicherten LUMO-Entwurf auswählen oder neu beginnen.
+   Bestehende HA-Dashboards können ausdrücklich gelesen und, soweit unterstützt,
+   als neue lokale Kopie geöffnet werden. Das HA-Original bleibt unverändert.
+2. **Design & Display:** Stil wählen; Displaymaße sind optional.
+3. **Raum:** vorhandenen Raum auswählen oder eine neue Raumansicht im Entwurf anlegen.
+4. **Dein Raumentwurf:** große Rasterfläche; darunter **Dashboard speichern** und
+   **Dashboard exportieren**. Zurückgehen erhält den aktuellen Entwurf.
+
+Quellen werden nach Gerät und Raum mit verständlichen Funktionsnamen, Suche und
+lokalen MDI-Symbolen angeboten. Exakte Entitätskennungen bleiben in den Details.
+Das 12-Spalten-Raster zeigt beim Ziehen und Vergrößern die einrastende Zielanordnung.
+Es bildet native Sections-Reihenfolge und Kartengrößen ab, keine freie x/y-Position.
 
 **Echte Daten statt Demo:** Räume, Gerätezuordnungen, Entitäten und aktuelle Werte
 kommen zur Laufzeit über die bestehende HA-Anbindung. Ohne Verbindung keine
@@ -35,9 +43,13 @@ Der Anzeigename bleibt **LUMO Data · Geräte & Bedienung**.
 - Gleicher Slug, gleiche Optionen und Berechtigungen; keine zweite App.
   Die Veröffentlichung installiert und startet nichts automatisch.
 
-**Erster Test:** LUMO Data aktualisieren, Weboberfläche neu öffnen, **Bestand laden**
-und **Natives HA-Dashboard** wählen. Unter **Raum aus HA-Bestand** deinen Raum
-auswählen, Funktionen hinzufügen und in **Dein Raumentwurf** gestalten.
+**Erster Test:** LUMO Data aktualisieren und Weboberfläche neu öffnen. Dashboard
+auswählen oder neu beginnen, Design wählen, im Raumschritt **Bestand laden** und
+den Raum öffnen. Über **＋ Quellen** Funktionen hinzufügen und im Raster gestalten.
+Speichern sichert in diesem Browser; Export lädt YAML/JSON herunter. Beides
+verändert kein produktives HA-Dashboard. HA-Import unterstützt bewusst nur vollständig
+abbildbare native Sections; Custom Cards, nicht abbildbare Aktionen und Styles werden
+mit Erklärung abgelehnt, nicht still entfernt. Admin-only-Dashboards werden nicht angeboten.
 Installation, physischer Touch und qualitative Designabnahme bleiben am eigenen
 Zielsystem zu prüfen. Es werden keine produktiven Dashboards automatisch verändert.
 

@@ -56,7 +56,7 @@ class Wire:
         if length>=126:prefix+=struct.pack('!H',length)
         self.sock.sendall(prefix+mask+bytes(b^mask[i%4] for i,b in enumerate(data)))
     def json_send(self,value):self.send(json.dumps(value,separators=(',',':')).encode())
-    def message(self):
+    def message(self,max_bytes=MAX_BYTES):
         parts=[];size=0;fragmented=False
         while True:
             self.frames+=1
@@ -77,7 +77,7 @@ class Wire:
                 raise ReadError('upstream_closed')
             if opcode not in (0,1) or (opcode==0)!=fragmented:raise ReadError('invalid_websocket')
             size+=n
-            if size>MAX_BYTES:raise ReadError('response_limit')
+            if size>max_bytes:raise ReadError('response_limit')
             parts.append(self.exact(n))
             if fin:
                 value=parse_json(b''.join(parts).decode('utf-8'))
@@ -178,7 +178,20 @@ class CoreClient:
         try:acquisition_start=(left-timedelta(milliseconds=1)).isoformat()
         except OverflowError:raise ReadError('invalid_window',400) from None
         return self._get('history/period/'+quote(acquisition_start,safe='')+'?'+urlencode({'filter_entity_id':','.join(ids),'end_time':end,'skip_initial_state':'','significant_changes_only':'0'}),deadline or time.monotonic()+MAX_SECONDS)
+    def dashboards(self):
+        return self._dashboard_read({'type':'lovelace/dashboards/list'},list)
+    def dashboard(self,path):
+        from dashboard_reads import url_path
+        return self._dashboard_read({'type':'lovelace/config','url_path':url_path(path)},dict)
+    def _dashboard_read(self,command,result_type):
+        try:return self._ws_reads((command,),result_type,'dashboard_read_unavailable',1048576+4096)[0]
+        except ReadError as error:
+            if error.code=='dashboard_not_found':raise
+            raise ReadError('dashboard_read_unavailable') from None
     def registries(self):
+        return self._ws_reads(tuple({'type':f'config/{registry}_registry/list'} for registry in ('area','device','entity')),list,'registry_unavailable')
+    def _ws_reads(self,commands,result_type,error_code,max_bytes=MAX_BYTES):
+        # Private fixed-command callers only; never exposed as a browser proxy.
         sock=None
         try:
             deadline=time.monotonic()+MAX_SECONDS
@@ -203,10 +216,12 @@ class CoreClient:
             wire.json_send({'type':'auth','access_token':self._token})
             if wire.message().get('type')!='auth_ok':raise ReadError('upstream_auth')
             results=[]
-            for i,registry in enumerate(('area','device','entity'),1):
-                wire.json_send({'id':i,'type':f'config/{registry}_registry/list'})
-                value=wire.message()
-                if value.get('type')!='result' or type(value.get('id')) is not int or value['id']!=i or value.get('success') is not True or type(value.get('result')) is not list:raise ReadError('registry_unavailable')
+            for i,command in enumerate(commands,1):
+                wire.json_send({'id':i,**command})
+                value=wire.message(max_bytes)
+                if value.get('type')!='result' or type(value.get('id')) is not int or value['id']!=i:raise ReadError(error_code)
+                if command['type']=='lovelace/config' and value.get('success') is False and type(value.get('error')) is dict and value['error'].get('code')=='config_not_found':raise ReadError('dashboard_not_found',404)
+                if value.get('success') is not True or type(value.get('result')) is not result_type:raise ReadError(error_code)
                 results.append(value['result'])
             return results
         except ReadError:raise

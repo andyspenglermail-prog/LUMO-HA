@@ -1,10 +1,9 @@
-# LUMO Data · 0.9.0-designer.3 · Natives Raumstudio
+# LUMO Data · 0.10.0-studio.1 · Geführtes Raumstudio
 
-Version .3 bringt die vertraute Raumstudio-Oberfläche ins native Profil:
-**Design & Display**, **Raum aus HA-Bestand** und zentral **Dein Raumentwurf**.
-Räume und Quellen kommen aus der bestehenden HA-Verbindung; aktuelle Werte werden
-für die gebundenen Funktionen nachgeführt. Keine eingebauten Hausdaten und kein
-Demoersatz bei fehlender Verbindung. Der HTTP-Profilfix aus .2 bleibt erhalten.
+Der verbundene Einstieg führt durch vier Schritte: **Dashboard → Design & Display →
+Raum → Dein Raumentwurf**. Quellen haben suchbare Geräte-/Funktionsnamen und lokale
+MDI-Symbole; ihre exakten Entitätskennungen bleiben prüfbar. Räume und aktuelle Werte
+kommen aus der bestehenden HA-Verbindung, ohne eingebettete Hausdaten oder Demoersatz.
 
 **Update für die bestehende LUMO-Data-App; Installation durch den Benutzer.**
 Diese v1.5-Zwischenversion entwickelt das native Dashboard-Profil im bestehenden
@@ -14,7 +13,7 @@ Der Designer wird direkt über die bestehende App in Home Assistant geöffnet.
 Es gibt keine automatische native HA-Dashboardanlage und keinen HA-Rollback.
 Die Gestaltungsvorschau und Konfigurationsprüfung sind kein nativer Live-Renderer.
 
-Die Veröffentlichung ersetzt Version 0.9.0-designer.2 im bestehenden Repository.
+Die Veröffentlichung ersetzt Version 0.9.0-designer.3 im bestehenden Repository.
 Sie löst selbst keine Installation, keinen Neustart und keine Geräteaktion aus.
 Slug, Optionen, Schema und Berechtigungen wurden für diese Zwischenversion nicht erweitert.
 
@@ -50,9 +49,9 @@ hinzufügen. Ältere HA-Oberflächen nennen Apps noch Add-ons.
    Eine leere Erlaubnisliste lässt alle nicht ausgeschlossenen Entitäten zu.
    `denied_entity_patterns` kann zusätzliche Ausschlüsse enthalten.
 5. Konfiguration speichern, App starten und **Weboberfläche öffnen** wählen.
-6. Im Designer zunächst **Bestand laden**. Für das native Raumstudio unten der
-   Anleitung **Natives Dashboard-Profil ausprobieren** folgen.
-   Im freien Profil einen Raum und ein Gerät auswählen.
+6. Der Designer beginnt mit der Dashboardauswahl. Dem Ablauf unten folgen.
+   Das bisherige freie Vorschauprofil bleibt über die Profilauswahl erreichbar;
+   dort zunächst **Bestand laden**, dann einen Raum und ein Gerät auswählen.
    Unter **Bearbeiten** Funktionen mit ihren Bedienmöglichkeiten prüfen,
    die gewünschten Funktionen markieren und direkt
    **Änderungen übernehmen** wählen. Der zusätzliche Knopf **Gewählte Funktionen
@@ -68,31 +67,42 @@ weitere Datenabrufe und Bedienaktionen bis zum Neustart. Keine HA-Tokens in Brow
 Die App erhält ihren Zugriff intern über den Supervisor und prüft zusätzlich
 Ingress und die freigegebenen Benutzer-IDs. Direkter Portzugriff ist nicht vorgesehen.
 
-## Natives Dashboard-Profil ausprobieren
+## Der geführte Ablauf
 
-1. **Bestand laden** und als Ausgabeprofil **Natives HA-Dashboard** auswählen.
-   Auch die umgekehrte Reihenfolge wird unterstützt.
-2. Unter **Raum aus HA-Bestand** einen Raum wählen. Eine vorhandene zugeordnete
-   Ansicht wird geöffnet; sonst wird eine neue angelegt. Beim Raumwechsel bleiben
-   vorherige Entwürfe erhalten. **Ansicht** wählt auch manuell angelegte Ansichten.
-3. **Funktionen hinzufügen** öffnen und Quellen aus dem geladenen Bestand als
-   direkte Bausteine hinzufügen. Der Quellenbereich kann auf den gewählten Raum
-   begrenzt oder ausdrücklich auf alle Räume einschließlich unzugeordneter Quellen
-   gestellt werden. Gruppen sind optional und dürfen Geräte/Räume kombinieren.
-4. In **Design & Display** einen der drei umgesetzten Styles und unter
-   **Zielgerät & Vorschau** Displayprofil, Orientierung oder eigene CSS-Größen
-   wählen. Das ändert die Vorschau, nicht Entitäten oder Messwerte. Die übrigen
-   Styles bleiben als geplant gekennzeichnet. Die Werkzeuge bleiben neutral.
-5. Zentral in **Dein Raumentwurf** Reihenfolge, Größen und Fixierungen bearbeiten. Maus-/Touchgriffe
-   und Positionsfelder stehen zur Verfügung; Rückgängig/Wiederholen erhält das Modell.
-6. Den Entwurf ausdrücklich im Browser speichern und zusätzlich ein Backup
-   herunterladen. Browserdaten sind kein gemeinsamer HA-Speicher und können verloren gehen.
-   Auch die Vorschau-Präsentation gehört zum gespeicherten Dokument und zu Undo/Redo.
-7. Unter **Quellen & Datenqualität prüfen** Herkunft, Geräte-/Raumzuordnung und
-   Abrufzeiten prüfen. Ohne Verbindung bleiben unbekannte Daten unbekannt;
-   veraltete Beobachtungen werden nicht als frische Messwerte behauptet.
-8. Die Konfiguration prüfen und YAML oder JSON exportieren. Fehler verhindern
-   den Export; Warnungen und nicht unterstützte Darstellungen vor Verwendung prüfen.
+1. **Dashboard auswählen oder neu:** Gespeicherte LUMO-Entwürfe dieses Browsers
+   öffnen oder neu beginnen; der Name ist optional. **HA-Dashboards laden** liest
+   die freigegebene Liste ausdrücklich. **Als lokale Kopie öffnen** übernimmt nur
+   vollständig unterstützte native Sections als neues Dokument, ohne das Original
+   zu ändern. Keine erfundene Standard-Dashboardliste. Admin-only-Dashboards werden
+   nicht angeboten; Custom Cards, unbekannte Aktionen, Styles und nicht abbildbare
+   automatische Größen führen zu einer vollständigen Ablehnung statt Datenverlust.
+2. **Design & Display:** Einen der drei umgesetzten Styles wählen. Displayprofil,
+   Orientierung und CSS-Maße sind optional. Die übrigen Styles bleiben als geplant
+   markiert. Werkzeuge bleiben neutral, Entitäten und Messwerte unverändert.
+3. **Raum:** Für vorhandene HA-Räume **Bestand laden**, dann Raum auswählen und
+   **Raum öffnen**. Alternativ eine neue Raumansicht im Entwurf anlegen. Es wird
+   kein realer HA-Bereich erstellt. Bereits gestaltete Räume bleiben erhalten.
+4. **Dein Raumentwurf:** **＋ Quellen** öffnet die suchbare Geräte-/Funktionsauswahl.
+   Namen und Symbole stehen im Vordergrund; **Details** zeigt exakte IDs/Herkunft.
+   Neue Quellen sind zunächst reine Wertanzeigen und schalten nichts. Über die
+   Bearbeitung eine tatsächlich unterstützte Darstellung wählen. Am Griff ziehen,
+   an der Ecke vergrößern: Die Zielvorschau rastet im 12-Spalten-Raster ein.
+   Darunter **Dashboard speichern** oder **Dashboard exportieren** wählen.
+
+**Speichern** sichert ausschließlich in diesem Browser. Zusätzlich ein Backup
+unter **Weitere Werkzeuge · Funktionen, Gruppen & Sicherungen** herunterladen;
+Browserdaten sind kein gemeinsamer HA-Speicher. **Exportieren** prüft die Konfiguration
+und bietet YAML/JSON als Download, nicht als automatische HA-Veröffentlichung.
+Fehler sperren den Export; Warnungen vor Verwendung prüfen.
+Unter **Quellen & Datenqualität prüfen** bleiben Herkunft, Zuordnung und Abrufzeiten
+einsehbar. Unbekannte oder veraltete Werte werden nicht als gültige frische Werte ausgegeben.
+Zurückgehen zwischen den Schritten erhält den aktuellen Entwurf. Eine andere
+Dashboardauswahl schützt ungespeicherte Änderungen durch eine Rückfrage.
+
+13 MDI-Symbole sind lokal gebündelt, ohne CDN-Abruf. Bekannte Metadaten werden
+bevorzugt; unbekannte/custom Symbole haben einen sichtbaren neutralen Ersatz.
+Native Tile-Karten können gültige MDI-Icons übernehmen. Icons für Gauge/History
+bleiben Vorschauoptionen mit Exportwarnung. Es gibt keine vollständige Icon-Paritätszusage.
 
 Die native Ausgabe verwendet das HA-Sections-Raster, nicht freie Pixelpositionen.
 Die drei freien Ausgabestile werden nicht unverändert in native HA-Themes übersetzt.

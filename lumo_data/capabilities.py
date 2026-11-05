@@ -1,5 +1,6 @@
 """Closed action vocabulary. Metadata is evidence, never a service payload."""
 import math
+import re
 from decimal import Decimal,localcontext
 from client import ReadError
 
@@ -33,6 +34,13 @@ def attributes(raw):
         if options(raw.get(key)):result[key]=raw[key][:]
     if raw.get('temperature_unit') in ('°C','°F'):result['temperature_unit']=raw['temperature_unit']
     if string(raw.get('preset_mode')):result['preset_mode']=raw['preset_mode']
+    # Display metadata only. No arbitrary attributes, images, URLs or service hints.
+    friendly=raw.get('friendly_name')
+    if string(friendly) and len(friendly)<=160 and friendly.strip():result['friendly_name']=friendly
+    icon=raw.get('icon')
+    if type(icon) is str and len(icon)<=128 and re.fullmatch(r'[a-z][a-z0-9_-]*:[a-z0-9]+(?:-[a-z0-9]+)*',icon):result['icon']=icon
+    device_class=raw.get('device_class')
+    if type(device_class) is str and len(device_class)<=64 and re.fullmatch(r'[a-z][a-z0-9_]*',device_class):result['device_class']=device_class
     return result
 
 def numeric(action,label,lo,hi,step,current=None,unit=None):
