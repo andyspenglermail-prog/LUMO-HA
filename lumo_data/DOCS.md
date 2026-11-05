@@ -1,20 +1,20 @@
-# LUMO Data · 0.9.0-designer.2 · Designer-Zwischenversion
+# LUMO Data · 0.9.0-designer.3 · Natives Raumstudio
 
-Version .2 korrigiert den Profilwechsel beim Zugriff über gewöhnliches HTTP:
-Die interne ID-Erzeugung verwendet kryptografische Zufallsbytes ohne die
-Secure-Context-Voraussetzung von `randomUUID()`. Auch neue Ansichten, Gruppen und
-Bausteine nutzen diese Erzeugung. Bestehende IDs und Speicherformate bleiben erhalten.
-Das ändert weder die Sicherheitseinstellungen noch die Verschlüsselung deiner Verbindung.
+Version .3 bringt die vertraute Raumstudio-Oberfläche ins native Profil:
+**Design & Display**, **Raum aus HA-Bestand** und zentral **Dein Raumentwurf**.
+Räume und Quellen kommen aus der bestehenden HA-Verbindung; aktuelle Werte werden
+für die gebundenen Funktionen nachgeführt. Keine eingebauten Hausdaten und kein
+Demoersatz bei fehlender Verbindung. Der HTTP-Profilfix aus .2 bleibt erhalten.
 
 **Update für die bestehende LUMO-Data-App; Installation durch den Benutzer.**
-Diese erste v1.5-Zwischenversion ergänzt das native Dashboard-Profil im bestehenden
+Diese v1.5-Zwischenversion entwickelt das native Dashboard-Profil im bestehenden
 Raumstudio: strukturiertes Modell, direkte Funktionen/optionale Gruppen, Rasterbearbeitung,
 lokale Browserversionen/Backups und validierten YAML/JSON-Export.
 Der Designer wird direkt über die bestehende App in Home Assistant geöffnet.
 Es gibt keine automatische native HA-Dashboardanlage und keinen HA-Rollback.
 Die Gestaltungsvorschau und Konfigurationsprüfung sind kein nativer Live-Renderer.
 
-Die Veröffentlichung ersetzt Version 0.9.0-designer.1 im bestehenden Repository.
+Die Veröffentlichung ersetzt Version 0.9.0-designer.2 im bestehenden Repository.
 Sie löst selbst keine Installation, keinen Neustart und keine Geräteaktion aus.
 Slug, Optionen, Schema und Berechtigungen wurden für diese Zwischenversion nicht erweitert.
 
@@ -50,7 +50,9 @@ hinzufügen. Ältere HA-Oberflächen nennen Apps noch Add-ons.
    Eine leere Erlaubnisliste lässt alle nicht ausgeschlossenen Entitäten zu.
    `denied_entity_patterns` kann zusätzliche Ausschlüsse enthalten.
 5. Konfiguration speichern, App starten und **Weboberfläche öffnen** wählen.
-6. Im Designer zunächst **Bestand laden**, einen Raum und ein Gerät auswählen.
+6. Im Designer zunächst **Bestand laden**. Für das native Raumstudio unten der
+   Anleitung **Natives Dashboard-Profil ausprobieren** folgen.
+   Im freien Profil einen Raum und ein Gerät auswählen.
    Unter **Bearbeiten** Funktionen mit ihren Bedienmöglichkeiten prüfen,
    die gewünschten Funktionen markieren und direkt
    **Änderungen übernehmen** wählen. Der zusätzliche Knopf **Gewählte Funktionen
@@ -70,14 +72,26 @@ Ingress und die freigegebenen Benutzer-IDs. Direkter Portzugriff ist nicht vorge
 
 1. **Bestand laden** und als Ausgabeprofil **Natives HA-Dashboard** auswählen.
    Auch die umgekehrte Reihenfolge wird unterstützt.
-2. Ein Dashboard anlegen, Funktionen aus dem geladenen Bestand auswählen und
-   als direkte Bausteine hinzufügen. Gruppen sind optional und dürfen Funktionen
-   verschiedener Geräte zusammenfassen.
-3. Ansichten, Reihenfolge, Größen und Fixierungen bearbeiten. Maus-/Touchgriffe
+2. Unter **Raum aus HA-Bestand** einen Raum wählen. Eine vorhandene zugeordnete
+   Ansicht wird geöffnet; sonst wird eine neue angelegt. Beim Raumwechsel bleiben
+   vorherige Entwürfe erhalten. **Ansicht** wählt auch manuell angelegte Ansichten.
+3. **Funktionen hinzufügen** öffnen und Quellen aus dem geladenen Bestand als
+   direkte Bausteine hinzufügen. Der Quellenbereich kann auf den gewählten Raum
+   begrenzt oder ausdrücklich auf alle Räume einschließlich unzugeordneter Quellen
+   gestellt werden. Gruppen sind optional und dürfen Geräte/Räume kombinieren.
+4. In **Design & Display** einen der drei umgesetzten Styles und unter
+   **Zielgerät & Vorschau** Displayprofil, Orientierung oder eigene CSS-Größen
+   wählen. Das ändert die Vorschau, nicht Entitäten oder Messwerte. Die übrigen
+   Styles bleiben als geplant gekennzeichnet. Die Werkzeuge bleiben neutral.
+5. Zentral in **Dein Raumentwurf** Reihenfolge, Größen und Fixierungen bearbeiten. Maus-/Touchgriffe
    und Positionsfelder stehen zur Verfügung; Rückgängig/Wiederholen erhält das Modell.
-4. Den Entwurf ausdrücklich im Browser speichern und zusätzlich ein Backup
+6. Den Entwurf ausdrücklich im Browser speichern und zusätzlich ein Backup
    herunterladen. Browserdaten sind kein gemeinsamer HA-Speicher und können verloren gehen.
-5. Die Konfiguration prüfen und YAML oder JSON exportieren. Fehler verhindern
+   Auch die Vorschau-Präsentation gehört zum gespeicherten Dokument und zu Undo/Redo.
+7. Unter **Quellen & Datenqualität prüfen** Herkunft, Geräte-/Raumzuordnung und
+   Abrufzeiten prüfen. Ohne Verbindung bleiben unbekannte Daten unbekannt;
+   veraltete Beobachtungen werden nicht als frische Messwerte behauptet.
+8. Die Konfiguration prüfen und YAML oder JSON exportieren. Fehler verhindern
    den Export; Warnungen und nicht unterstützte Darstellungen vor Verwendung prüfen.
 
 Die native Ausgabe verwendet das HA-Sections-Raster, nicht freie Pixelpositionen.

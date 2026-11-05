@@ -1,5 +1,27 @@
 # Änderungen
 
+## 0.9.0-designer.3 — natives Raumstudio mit HA-Daten
+
+- Vertraute Raumstudio-Oberfläche im nativen Profil: zentriertes „Dein Raumentwurf“,
+  breite Arbeitsfläche, sichtbares Design & Display und Raumauswahl aus dem HA-Bestand.
+- Raumwechsel wählen oder ergänzen die passende Ansicht; bestehende Entwürfe,
+  Bindungen und manuelle Anpassungen bleiben erhalten. Raumübergreifende Quellen
+  einschließlich Quellen ohne Raumzuordnung bleiben ausdrücklich auswählbar.
+- Drei Vorschau-Styles und Display-/Größeneinstellungen wirken auf den nativen
+  Entwurf. Neutrale Editorwerkzeuge; Darstellungseinstellungen im strukturierten
+  Dokument mit Undo/Redo, Speicherung und Backup. Alte Dokumente bleiben lesbar.
+- Reale Räume, Gerätezuordnungen, Entitäten und aktuelle Werte über den bestehenden
+  Laufzeitweg zu HA, keine eingebetteten Hausdaten und kein Demoersatz.
+  Herkunft, Abrufzeit und Datenqualität sind prüfbar; ungültige oder nicht verfügbare
+  Werte werden nicht als gültige Messwerte ausgegeben.
+- Desktop-, Tablet- und Smartphone-Layout, Maus und emulierter Touch sowie HTTP/HTTPS
+  geprüft. Separater Test des vollständigen Browser→App→CoreClient-Datenwegs gegen
+  eine lokale HA-Testgegenstelle. Keine behauptete Abnahme der Hausinstallation.
+- Native HA-Themes/Pixelgeometrie werden nicht gleichgesetzt; Vorschau ist kein
+  nativer HA-Live-Renderer. Kein automatisches Veröffentlichen produktiver Dashboards.
+- Bestehender HTTP-Fix, freies Profil und Bediengrenzen erhalten. Backend,
+  Berechtigungen, Optionen und App-Slug unverändert; Installation durch den Benutzer.
+
 ## 0.9.0-designer.2 — nativer Designer über HTTP
 
 - Fehler behoben: Beim Zugriff über eine gewöhnliche HTTP-Adresse blieb nach

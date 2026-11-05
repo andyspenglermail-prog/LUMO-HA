@@ -1,18 +1,28 @@
 # LUMO – Home Assistant Test-Apps
 
-## Update: LUMO Data · 0.9.0-designer.2
+## Update: LUMO Data · 0.9.0-designer.3
 
-**Gezielter HTTP-Fehlerfix:** Das native Dashboard-Profil öffnet sich auch beim
-Zugriff über eine gewöhnliche lokale HTTP-Adresse. Die interne ID-Erzeugung für
-Dashboards, Ansichten, Gruppen und Bausteine benötigt nicht mehr `randomUUID()`.
-HTTPS funktioniert weiterhin; keine Änderung an TLS, Netzwerk oder Berechtigungen.
+**Das native Profil ist jetzt wieder Raumstudio:** mit zentralem **Dein Raumentwurf**,
+sichtbarem **Design & Display** und einer Raumauswahl aus dem geladenen HA-Bestand.
+Die drei Vorschau-Styles und Displaygrößen wirken auf den Entwurf; die Werkzeuge
+bleiben neutral. Raumwechsel erhalten die jeweiligen Entwürfe. Quellen aus
+anderen Räumen bleiben ausdrücklich auswählbar.
+
+**Echte Daten statt Demo:** Räume, Gerätezuordnungen, Entitäten und aktuelle Werte
+kommen zur Laufzeit über die bestehende HA-Anbindung. Ohne Verbindung keine
+Ersatzdaten; fehlende, unbekannte, nicht verfügbare und veraltete Werte sind sichtbar.
+Die aktuelle Ansicht liest nur ihre gebundenen Quellen. Der HTTP-Fehlerfix bleibt erhalten.
+
+Präsentationseinstellungen werden mit dem nativen Entwurf gespeichert und sind
+rückgängig machbar. Sie sind Designer-Einstellungen, kein automatisch exportiertes
+HA-Theme: Home Assistant bestimmt die endgültige native Darstellung.
 
 **Update der bereits installierten LUMO-Data-App**, keine zusätzliche App.
 Im App-Store-Menü nach Updates suchen und anschließend **LUMO Data** aktualisieren.
 Der Slug `lumo_data` und die vier Konfigurationsfelder bleiben unverändert.
 Der Anzeigename bleibt **LUMO Data · Geräte & Bedienung**.
 
-### Neu: erste Designer-Zwischenversion direkt in der bestehenden HA-App
+### Weiterhin im nativen Designer enthalten
 
 - Ausgabeprofil **Natives HA-Dashboard** im Raumstudio: strukturiertes Modell,
   mehrere Ansichten, direkte Funktionen und optionale geräteübergreifende Gruppen.
@@ -25,9 +35,11 @@ Der Anzeigename bleibt **LUMO Data · Geräte & Bedienung**.
 - Gleicher Slug, gleiche Optionen und Berechtigungen; keine zweite App.
   Die Veröffentlichung installiert und startet nichts automatisch.
 
-**Erster Test:** LUMO Data aktualisieren, Weboberfläche öffnen, Bestand laden und
-das Ausgabeprofil **Natives HA-Dashboard** wählen. Installation, physischer Touch
-und qualitative Designabnahme bleiben am eigenen Zielsystem zu prüfen.
+**Erster Test:** LUMO Data aktualisieren, Weboberfläche neu öffnen, **Bestand laden**
+und **Natives HA-Dashboard** wählen. Unter **Raum aus HA-Bestand** deinen Raum
+auswählen, Funktionen hinzufügen und in **Dein Raumentwurf** gestalten.
+Installation, physischer Touch und qualitative Designabnahme bleiben am eigenen
+Zielsystem zu prüfen. Es werden keine produktiven Dashboards automatisch verändert.
 
 ### Bisherige Funktionen bleiben erhalten
 
