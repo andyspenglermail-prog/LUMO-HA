@@ -1,5 +1,16 @@
 # Änderungen
 
+## 0.6.0-devices.2
+
+- Fehler behoben: markierte Gerätefunktionen werden direkt durch
+  **Änderungen übernehmen** verknüpft. Der zusätzliche Verknüpfen-Klick
+  ist nicht mehr erforderlich, bleibt zum vorherigen Bearbeiten aber möglich.
+- Bestehende Beschriftungen und Unterkacheln bleiben erhalten; Abbrechen
+  verwirft weiterhin die nicht übernommene Auswahl.
+- Bei mehr als acht Funktionen bleibt der Dialog mit verständlichem Hinweis
+  offen; es wird keine Teilauswahl still übernommen oder verworfen.
+- Keine Änderungen an Backend, Schaltberechtigungen oder Konfigurationsschema.
+
 ## 0.6.0-devices.1
 
 - Update der bestehenden App `lumo_data`, kein zusätzlicher App-Eintrag.

@@ -1,4 +1,4 @@
-# LUMO Data · 0.6.0-devices.1
+# LUMO Data · 0.6.0-devices.2
 
 LUMO ist ein Home-Assistant-Dashboard-Designer. Dieser Entwicklungsstand
 verbindet den Designer generisch mit Home Assistant. Neben echten Zustandswerten
@@ -33,7 +33,10 @@ hinzufügen. Ältere HA-Oberflächen nennen Apps noch Add-ons.
    `denied_entity_patterns` kann zusätzliche Ausschlüsse enthalten.
 5. Konfiguration speichern, App starten und **Weboberfläche öffnen** wählen.
 6. Im Designer zunächst **Bestand laden**, einen Raum und ein Gerät auswählen.
-   Unter **Bearbeiten** die gewünschten Funktionen als Unterkacheln hinzufügen.
+   Unter **Bearbeiten** die gewünschten Funktionen markieren und direkt
+   **Änderungen übernehmen** wählen. Der zusätzliche Knopf **Gewählte Funktionen
+   verknüpfen** ist nur nötig, wenn die Unterkacheln schon vor dem Übernehmen
+   weiter bearbeitet werden sollen.
    Aktuelle Werte werden für die ausgewählten Funktionen abgerufen; bei Bedarf
    **Werte aktualisieren** bzw. **Verlauf laden** verwenden.
    Es werden keine Hausdaten mitgeliefert oder automatisch vorbelegt.

@@ -1,6 +1,6 @@
 {
   "name": "LUMO Data · Geräte & Bedienung",
-  "version": "0.6.0-devices.1",
+  "version": "0.6.0-devices.2",
   "slug": "lumo_data",
   "description": "Dashboard-Designer mit Geräteauswahl, Unterkacheln, echten HA-Werten und bewusst ausgelösten An/Aus-Aktionen. Entwicklungsstand; kein vollständiger nativer Dashboardexport.",
   "arch": [

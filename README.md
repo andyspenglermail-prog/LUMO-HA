@@ -1,6 +1,6 @@
 # LUMO – Home Assistant Test-Apps
 
-## Update: LUMO Data · 0.6.0-devices.1
+## Update: LUMO Data · 0.6.0-devices.2
 
 **Update der bereits installierten LUMO-Data-App**, keine zusätzliche App.
 Im App-Store-Menü nach Updates suchen und anschließend **LUMO Data** aktualisieren.
@@ -8,7 +8,8 @@ Der Slug `lumo_data` und die vier Konfigurationsfelder bleiben unverändert.
 Der Anzeigename lautet nun **LUMO Data · Geräte & Bedienung**.
 
 - Horizontale Raum-/Geräteauswahl statt linker Entitätenliste.
-- Geräte hinzufügen; unter **Bearbeiten** Funktionen als Unterkacheln auswählen.
+- Geräte hinzufügen; unter **Bearbeiten** Funktionen markieren und direkt
+  **Änderungen übernehmen** wählen. Der zusätzliche Verknüpfen-Klick ist optional.
 - Echte Zustandswerte für die ausgewählten Funktionen.
 - Explizite Ein/Aus-Aktionen für verfügbare `light`, `switch` und `input_boolean`
   nur im klar gekennzeichneten Bedienmodus. Keine Befehle beim Gestalten.
