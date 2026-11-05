@@ -4,6 +4,7 @@ from datetime import datetime,timezone
 import re
 import math
 import time
+from capabilities import attributes as clean_attributes
 
 def selected_ids(value,policy):
     if type(value) is not str:raise ReadError('invalid_selection',400)
@@ -35,6 +36,7 @@ def clean_state(id,raw):
     if raw is None:return {'entityId':id,'value':None,'quality':'missing','unit':'','lastUpdated':None,'lastChanged':None}
     if type(raw) is not dict or raw.get('entity_id')!=id:raise ReadError('invalid_state')
     value,quality=scalar_state(raw.get('state'))
+    if id.split('.')[0] in ('select','input_select') and quality=='good':value=raw['state']
     attributes=raw.get('attributes')
     if type(attributes) is not dict:raise ReadError('invalid_state')
     unit=attributes.get('unit_of_measurement') or ''
@@ -42,12 +44,13 @@ def clean_state(id,raw):
     updated=raw.get('last_updated');changed=raw.get('last_changed')
     timestamp(updated);timestamp(changed)
     return {'entityId':id,'value':value,'quality':quality,'unit':unit,'lastUpdated':updated,'lastChanged':changed,
-        'stateClass':attributes.get('state_class') if attributes.get('state_class') in ('measurement','total','total_increasing') else None}
+        'stateClass':attributes.get('state_class') if attributes.get('state_class') in ('measurement','total','total_increasing') else None,
+        'attributes':clean_attributes(attributes)}
 
 def add_capabilities(client,result,guard,deadline):
     from control import DOMAINS,service_domains,capability
-    available=set()
-    if any(s['entityId'].split('.')[0] in DOMAINS and s['quality']=='good' and s['value'] in ('on','off') for s in result):
+    available={}
+    if any(s['entityId'].split('.')[0] in DOMAINS and s['quality']=='good' for s in result):
         guard()
         try:available=service_domains(client.services(deadline=deadline))
         except ReadError:pass  # Keep actual state readable; fail closed on controls.
@@ -72,6 +75,7 @@ def history(client,ids,start,end,guard):
     current=[]
     for id in ids:
         guard();current.append({**clean_state(id,client.state(id,deadline=deadline)),'fetchedAt':now()});guard()
+    add_capabilities(client,current,guard,deadline)
     raw=client.history(ids,start,end,deadline=deadline);guard()
     if type(raw) is not list or len(raw)>len(ids):raise ReadError('invalid_history')
     collected={id:[] for id in ids};total=0;excluded=0;seen=set()
@@ -141,9 +145,15 @@ def discovery(client,policy):
         if id in seen:raise ReadError('ambiguous_registry')
         seen.add(id)
         if not policy.permits(id):continue
+        category=e.get('entity_category');disabled=e.get('disabled_by')
+        if category not in (None,'config','diagnostic'):raise ReadError('invalid_metadata')
+        if disabled is not None:text(disabled,64)
+        device_class=e.get('device_class') or e.get('original_device_class')
+        if device_class is not None:text(device_class,64)
         # No entity state is requested here. Kind is a read-only scalar/status, not inferred temperature.
         clean.append({'entityId':id,'name':text(e.get('name') or e.get('original_name') or id,256),
           'deviceId':ref(e.get('device_id')),'areaId':ref(e.get('area_id')),
+          'entityCategory':category,'disabled':disabled is not None,'deviceClass':device_class,
           'kind':'value' if id.split('.')[0] in ('sensor','binary_sensor','light','cover','switch','input_boolean','input_number','input_select','select','number','fan','climate','humidifier','water_heater','lock','button','input_button','vacuum','valve','event','update','sun','weather') else 'unsupported',
           'value':'Nicht gelesen','unit':'','available':False,'capabilities':[]})
     for rows in (rooms,clean_devices):

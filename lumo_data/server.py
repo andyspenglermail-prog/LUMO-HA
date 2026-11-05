@@ -1,4 +1,4 @@
-"""Authenticated reads and explicit on/off ingress; no generic proxy routes."""
+"""Authenticated reads and explicit capability ingress; no generic proxy routes."""
 from http.server import BaseHTTPRequestHandler,HTTPServer
 from socketserver import TCPServer
 from pathlib import Path
@@ -10,6 +10,7 @@ from threading import Timer
 from policy import SAFE_ID
 from client import ReadError,parse_json
 from control import ControlSessions,execute_control
+from capabilities import MISSING
 from data import discovery,states,selected_ids,history
 
 def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trusted_proxy_ip='172.30.32.2'):
@@ -107,12 +108,12 @@ def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trus
                     value=parse_json(body.decode('utf-8'))
                 except (OSError,ValueError,UnicodeError,RecursionError):raise ReadError('invalid_request',400) from None
                 finally:timer.cancel();timer.join()
-                if type(value) is not dict or set(value)!={'entityId','action','token'} or any(type(v) is not str for v in value.values()):raise ReadError('invalid_request',400)
+                if type(value) is not dict or set(value) not in ({'entityId','action','token'},{'entityId','action','token','value'}) or any(type(value[k]) is not str for k in ('entityId','action','token')):raise ReadError('invalid_request',400)
                 if not re.fullmatch(r'[A-Za-z0-9_-]{43}',value['token']):raise ReadError('invalid_control_token',403)
                 guard();sessions.consume(value['token'],users[0],policy)
                 ids=selected_ids(value['entityId'],policy)
                 if len(ids)!=1:raise ReadError('invalid_selection',400)
-                result=execute_control(client,policy,ids[0],value['action'],guard)
+                result=execute_control(client,policy,ids[0],value['action'],guard,value.get('value',MISSING))
             elif catalog:result=discovery(client,policy)
             else:
                 pairs=parse_qsl(target.split('?',1)[1],keep_blank_values=True,strict_parsing=True,max_num_fields=3)

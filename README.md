@@ -1,6 +1,6 @@
 # LUMO – Home Assistant Test-Apps
 
-## Update: LUMO Data · 0.6.0-devices.2
+## Update: LUMO Data · 0.7.0-capabilities.1
 
 **Update der bereits installierten LUMO-Data-App**, keine zusätzliche App.
 Im App-Store-Menü nach Updates suchen und anschließend **LUMO Data** aktualisieren.
@@ -10,13 +10,22 @@ Der Anzeigename lautet nun **LUMO Data · Geräte & Bedienung**.
 - Horizontale Raum-/Geräteauswahl statt linker Entitätenliste.
 - Geräte hinzufügen; unter **Bearbeiten** Funktionen markieren und direkt
   **Änderungen übernehmen** wählen. Der zusätzliche Verknüpfen-Klick ist optional.
-- Echte Zustandswerte für die ausgewählten Funktionen.
-- Explizite Ein/Aus-Aktionen für verfügbare `light`, `switch` und `input_boolean`
-  nur im klar gekennzeichneten Bedienmodus. Keine Befehle beim Gestalten.
+- Verständliche Funktionsrollen: Hauptbedienung, Anzeigen, Einstellungen und
+  Diagnose. Tatsächliche Fähigkeiten werden für das ausgewählte Gerät gelesen.
+- Echte Zustandswerte und passende Bedienelemente: Jalousien/Rollläden mit
+  Position und unterstützter Neigung, Licht mit unterstützter Helligkeit und
+  Farbtemperatur, Klima mit Sollwert/Betriebsart, Ventilatoren, Zahlen und Auswahl.
+- Nur tatsächlich unterstützte Aktionen, Grenzen und Optionen. Einfache Schalter
+  bleiben Ein/Aus; nicht dimmbare Lampen bekommen keinen erfundenen Dimmer.
+- Bekannte Zustände und Klimabetriebsarten auf Deutsch, Lichthelligkeit in Prozent;
+  Übernehmen und Abbrechen bleiben auch im schmalen Geräteeditor erreichbar.
+- Explizite Bedienaktionen nur im Bedienmodus. Keine Befehle beim Gestalten,
+  beim bloßen Verschieben eines Eingabereglers oder beim Auswählen einer Funktion.
 - Verständliche Hinweise für deaktivierte oder fehlende Benutzerfreigaben.
 
-Die bisherige Offline-App `lumo_preview` bleibt unverändert. Andere Steuerdomänen
-werden nicht als bedienbar vorgetäuscht; ihre unterstützten Werte bleiben lesbar.
+Die bisherige Offline-App `lumo_preview` bleibt unverändert. Nicht unterstützte
+Fähigkeiten werden sichtbar erklärt. Schlösser, Alarme, Scripts, Szenen und
+beliebige Serviceaufrufe werden nicht freigegeben.
 
 AMD64 und ARM64 (`aarch64`); Start manuell, Datenzugriff zunächst deaktiviert.
 Einrichtung und Grenzen: [LUMO-Data-Anleitung](lumo_data/DOCS.md).

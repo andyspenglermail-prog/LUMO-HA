@@ -1,5 +1,5 @@
 """Bounded Core adapter. Native bootstrap fixes origin; constructor is a private diagnostic seam.
-Only reads and explicit scoped turn_on/turn_off; no retry, proxy environment,
+Only reads and fixed capability-scoped actions; no retry, proxy environment,
 redirect, TLS bypass, logging or public arbitrary request API.
 """
 import base64
@@ -96,7 +96,7 @@ class CoreClient:
     def _get(self,path,deadline):
         return self._exchange(path,deadline)
     def _exchange(self,path,deadline,body=None):
-        # Private transport: the only writer is the narrowly validated turn().
+        # Private transport: writers are the validated turn()/operate() methods.
         connection=None;watchdog=None;dispatched=False
         writing=body is not None
         try:
@@ -152,6 +152,14 @@ class CoreClient:
         if domain not in ('light','switch','input_boolean') or action not in ('turn_on','turn_off'):raise ReadError('unsupported_control',400)
         result=self._exchange('services/'+domain+'/'+action,deadline or time.monotonic()+MAX_SECONDS,
             json.dumps({'entity_id':entity},separators=(',',':')).encode())
+        if type(result) is not list:raise ReadError('dispatch_unknown')
+    def operate(self,entity,action,value,*,state,available,deadline=None):
+        from capabilities import validate
+        if type(entity) is not str or len(entity)>256 or not ENTITY.fullmatch(entity):raise ReadError('invalid_entity',400)
+        if state.get('entityId')!=entity:raise ReadError('invalid_entity',400)
+        service,payload=validate(entity,action,value,state,available)
+        result=self._exchange('services/'+entity.split('.')[0]+'/'+service,deadline or time.monotonic()+MAX_SECONDS,
+            json.dumps(payload,separators=(',',':'),allow_nan=False).encode())
         if type(result) is not list:raise ReadError('dispatch_unknown')
     def state(self,entity,*,deadline=None):
         if type(entity) is not str or len(entity)>256 or not ENTITY.fullmatch(entity):raise ReadError('invalid_entity',400)

@@ -1,8 +1,8 @@
-# LUMO Data · 0.6.0-devices.2
+# LUMO Data · 0.7.0-capabilities.1
 
 LUMO ist ein Home-Assistant-Dashboard-Designer. Dieser Entwicklungsstand
 verbindet den Designer generisch mit Home Assistant. Neben echten Zustandswerten
-sind bewusst ausgelöste An/Aus-Aktionen für unterstützte Gerätefunktionen möglich.
+sind bewusst ausgelöste Aktionen passend zu den tatsächlichen Gerätefähigkeiten möglich.
 Er ist nicht selbst das fertige native HA-Dashboard.
 
 ## Bestehende LUMO-Data-App aktualisieren
@@ -33,7 +33,8 @@ hinzufügen. Ältere HA-Oberflächen nennen Apps noch Add-ons.
    `denied_entity_patterns` kann zusätzliche Ausschlüsse enthalten.
 5. Konfiguration speichern, App starten und **Weboberfläche öffnen** wählen.
 6. Im Designer zunächst **Bestand laden**, einen Raum und ein Gerät auswählen.
-   Unter **Bearbeiten** die gewünschten Funktionen markieren und direkt
+   Unter **Bearbeiten** Funktionen mit ihren Bedienmöglichkeiten prüfen,
+   die gewünschten Funktionen markieren und direkt
    **Änderungen übernehmen** wählen. Der zusätzliche Knopf **Gewählte Funktionen
    verknüpfen** ist nur nötig, wenn die Unterkacheln schon vor dem Übernehmen
    weiter bearbeitet werden sollen.
@@ -60,14 +61,26 @@ Ingress und die freigegebenen Benutzer-IDs. Direkter Portzugriff ist nicht vorge
 - Historische Einheiten bleiben an ihren Beobachtungen. Gemischte oder unbekannte
   Einheiten werden nicht still als gemeinsame numerische Reihe ausgegeben.
 - Im Modus **Gestalten** werden keine Gerätebefehle ausgelöst. Im Bedienmodus
-  gibt es für unterstützte und verfügbare `light`, `switch` und `input_boolean`
-  explizite An/Aus-Aktionen. Tatsächliche HA-Services und der aktuelle Zustand
-  bestimmen die Bedienbarkeit. Nicht unterstützte Domänen bleiben Werteanzeige.
+  bestimmen tatsächliche HA-Fähigkeiten, Services, Wertebereiche und aktuelle
+  Verfügbarkeit die Bedienbarkeit. Nicht jede Entität eines Typs kann alles:
+  - Jalousien/Rollläden: Öffnen, Schließen, Stoppen, Position und Lamellenneigung,
+    jeweils nur bei gemeldeter Unterstützung.
+  - Licht: Ein/Aus, Helligkeit und Farbtemperatur, sofern unterstützt.
+  - Klima/Heizung: gemeldete Betriebsarten und unterstützte Zieltemperatur.
+  - Ventilatoren: Ein/Aus, Geschwindigkeit und angebotene Voreinstellungen.
+  - Zahlen- und Auswahlfunktionen: tatsächliche Grenzen, Schritte und Optionen.
+  - Schalter/virtuelle Schalter: Ein/Aus. Sensoren bleiben Anzeigen.
+  Fehlende Fähigkeiten werden erläutert statt durch funktionslose Knöpfe ersetzt.
+- Zahlen- und Auswahleingaben senden nicht beim Verschieben oder Auswählen,
+  sondern erst durch die zugehörige ausdrückliche Bedienaktion.
 - Jede Aktion betrifft genau eine freigegebene Entität. Kein generischer
   Serviceproxy, keine automatische Wiederholung. Ein angenommener Befehl ist
   noch keine bestätigte Zustandsänderung; fehlende Bestätigung bleibt sichtbar.
-- Keine Schloss-/Alarm-/Heizungs-/Rollladenaktionen in diesem Schaltumfang.
-  Kein Speichern produktiver Dashboards in HA und keine KI.
+- Schloss-, Alarm-, Script-, Szenen-, Update- und beliebige Serviceaktionen
+  bleiben ausgeschlossen. Kein Speichern produktiver Dashboards in HA und keine KI.
+- Position und Lamellenneigung sind getrennte Zustände. Ein HA-Zustand „offen“
+  bedeutet nicht automatisch 100 Prozent Öffnung. Stoppen ist eine bewusste
+  eigene Aktion; Netzwerkbedienung ersetzt keine physische Notabschaltung.
 - Noch kein vollständiger nativer Dashboardexport. Berechnete Runtime-Kennzahlen
   sind semantisch noch nicht allgemein freigegeben.
 - Kein dauerhaftes Speichern von Entwürfen durch diesen Backendstand zugesagt.

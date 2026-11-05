@@ -1,5 +1,20 @@
 # Änderungen
 
+## 0.7.0-capabilities.1
+
+- Geräteauswahl und Bedienung allgemein überarbeitet, nicht nur ein einzelnes
+  Jalousienmodell: tatsächliche Fähigkeiten bestimmen die erzeugten Bedienelemente.
+- Verständliche Funktionsrollen und getrennte Hauptfunktionen, Anzeigen,
+  Einstellungen und Diagnose. Auswahl bleibt überprüfbar und korrigierbar.
+- Fähigkeitsabhängige Cover-, Licht-, Klima-, Ventilator-, Zahlen- und
+  Auswahlbedienung; vorhandene Schalter bleiben erhalten.
+- Position und Lamellenneigung separat, mit expliziter Stoppbedienung.
+- Parameter werden gegen aktuelle HA-Grenzen/Optionen geprüft; keine Befehle
+  allein durch Sliderbewegung, Funktionsauswahl oder Gestalten.
+- Bestätigt, ausstehend und unklar bleiben getrennt; kein automatischer Retry.
+- Update derselben App mit unverändertem Konfigurationsschema. Kein vollständiger
+  nativer Dashboardexport, keine automatische Installation oder physische Abnahme.
+
 ## 0.6.0-devices.2
 
 - Fehler behoben: markierte Gerätefunktionen werden direkt durch

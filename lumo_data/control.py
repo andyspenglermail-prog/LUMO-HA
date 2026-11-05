@@ -1,9 +1,9 @@
-"""Explicit on/off only. No toggle, generic service proxy or automatic retry."""
+"""Explicit capability operations; no generic service proxy or retries."""
 import secrets
 import time
 from client import ReadError
 
-DOMAINS=('light','switch','input_boolean')
+from capabilities import DOMAINS,capability,validate,validate_shape,confirmation,MISSING
 ACTIONS=('turn_on','turn_off')
 
 class ControlSessions:
@@ -23,7 +23,7 @@ class ControlSessions:
 
 def service_domains(raw):
     if type(raw) is not list or len(raw)>1024:raise ReadError('invalid_services')
-    available=set();seen=set()
+    available={};seen=set()
     for row in raw:
         if type(row) is not dict or type(row.get('domain')) is not str:raise ReadError('invalid_services')
         domain=row['domain'];services=row.get('services')
@@ -36,35 +36,29 @@ def service_domains(raw):
         else:raise ReadError('invalid_services')
         if domain in seen:raise ReadError('invalid_services')
         seen.add(domain)
-        if domain in DOMAINS and all(action in names for action in ACTIONS):available.add(domain)
+        if domain in DOMAINS:available[domain]=names
     return available
 
-def capability(state,available):
-    domain=state['entityId'].split('.')[0]
-    reason=('unsupported' if domain not in DOMAINS else
-            'unavailable' if state['quality']!='good' or state['value'] not in ('on','off') else
-            'service-unavailable' if domain not in available else None)
-    return {'actions':list(ACTIONS) if reason is None else [],'reason':reason}
-
-def execute_control(client,policy,entity,action,guard):
+def execute_control(client,policy,entity,action,guard,value=MISSING):
     from data import clean_state,now
-    if entity.split('.')[0] not in DOMAINS or action not in ACTIONS:raise ReadError('unsupported_control',400)
+    validate_shape(entity,action,value)
     if not policy.permits(entity):raise ReadError('forbidden',403)
     deadline=time.monotonic()+15
     guard();current=clean_state(entity,client.state(entity,deadline=deadline));guard()
-    if current['quality']!='good' or current['value'] not in ('on','off'):raise ReadError('entity_unavailable',409)
+    if current['quality']!='good' or capability(current,{})['reason']=='unavailable':raise ReadError('entity_unavailable',409)
     available=service_domains(client.services(deadline=deadline));guard()
-    if entity.split('.')[0] not in available:raise ReadError('service_unavailable',409)
+    validate(entity,action,value,current,available)
     # Check immediately before AND after dispatch; a changed policy releases no state.
     guard()
-    try:client.turn(entity,action,deadline=deadline)
+    try:client.operate(entity,action,value,state=current,available=available,deadline=deadline)
     finally:guard()
-    confirmation='unknown';result=None
+    outcome='unknown';result=None
     try:
         result=clean_state(entity,client.state(entity,deadline=deadline))
         result['control']=capability(result,available)
-        if result['quality']=='good' and result['value'] in ('on','off'):
-            confirmation='confirmed' if result['value']==('on' if action=='turn_on' else 'off') else 'pending'
+        outcome=confirmation(result,action,value)
+        if action=='set_temperature' and current['attributes'].get('temperature_unit')!=result.get('attributes',{}).get('temperature_unit'):outcome='unknown'
+        if action=='set_value' and current['unit']!=result['unit']:outcome='unknown'
     except ReadError:pass  # Dispatch acknowledged, readback is separately unknown.
     guard()
-    return {'entityId':entity,'action':action,'accepted':True,'state':result,'fetchedAt':now(),'confirmation':confirmation}
+    return {'entityId':entity,'action':action,'accepted':True,'state':result,'fetchedAt':now(),'confirmation':outcome,**({'value':value} if value is not MISSING else {})}
