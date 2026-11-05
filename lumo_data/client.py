@@ -1,5 +1,6 @@
-"""Bounded Core read adapter. Native bootstrap fixes origin; constructor is a private diagnostic seam.
-No proxy environment, redirect, TLS bypass, logging or arbitrary request API.
+"""Bounded Core adapter. Native bootstrap fixes origin; constructor is a private diagnostic seam.
+Only reads and explicit scoped turn_on/turn_off; no retry, proxy environment,
+redirect, TLS bypass, logging or public arbitrary request API.
 """
 import base64
 import hashlib
@@ -93,7 +94,11 @@ class CoreClient:
         self._token=token;self.host=host;self.port=port;self.tls=tls;self.api_prefix=api_prefix;self.ws_path=ws_path
     def __repr__(self):return '<CoreClient private credentials>'
     def _get(self,path,deadline):
-        connection=None;watchdog=None
+        return self._exchange(path,deadline)
+    def _exchange(self,path,deadline,body=None):
+        # Private transport: the only writer is the narrowly validated turn().
+        connection=None;watchdog=None;dispatched=False
+        writing=body is not None
         try:
             remaining=deadline-time.monotonic()
             if remaining<=0:raise ReadError('upstream_timeout')
@@ -108,10 +113,15 @@ class CoreClient:
             remaining=deadline-time.monotonic()
             if remaining<=0:raise ReadError('upstream_timeout')
             watchdog=Timer(remaining,expire);watchdog.daemon=True;watchdog.start()
-            connection.request('GET',self.api_prefix+path,headers={'Authorization':'Bearer '+self._token,'Accept':'application/json','Accept-Encoding':'identity','Connection':'close'})
+            headers={'Authorization':'Bearer '+self._token,'Accept':'application/json','Accept-Encoding':'identity','Connection':'close'}
+            if writing:headers['Content-Type']='application/json'
+            dispatched=writing  # A send exception cannot prove nothing reached HA.
+            connection.request('POST' if writing else 'GET',self.api_prefix+path,body=body,headers=headers)
             response=connection.getresponse()
-            if response.status==404:return None
-            if response.status!=200:raise ReadError('upstream_rejected')
+            if not writing and response.status==404:return None
+            if response.status!=200:
+                if writing:raise ReadError('control_rejected' if 400<=response.status<500 else 'dispatch_unknown')
+                raise ReadError('upstream_rejected')
             lengths=response.headers.get_all('Content-Length',[])
             transfer=response.headers.get_all('Transfer-Encoding',[])
             if (len(lengths)>1 or lengths and (not re.fullmatch(r'[0-9]{1,9}',lengths[0]) or int(lengths[0])>MAX_BYTES) or transfer and (lengths or transfer!=['chunked']) or response.headers.get('Content-Encoding','identity')!='identity' or response.headers.get('Content-Type','').split(';')[0]!='application/json'):raise ReadError('response_limit')
@@ -126,11 +136,23 @@ class CoreClient:
                 if len(body)>MAX_BYTES:raise ReadError('response_limit')
             if lengths and len(body)!=int(lengths[0]):raise ReadError('invalid_response')
             return parse_json(body.decode('utf-8'))
-        except ReadError:raise
-        except (OSError,ValueError,TypeError,RecursionError,UnicodeError,http.client.HTTPException):raise ReadError() from None
+        except ReadError as error:
+            if dispatched and error.code not in ('control_rejected','dispatch_unknown'):raise ReadError('dispatch_unknown') from None
+            raise
+        except (OSError,ValueError,TypeError,RecursionError,UnicodeError,http.client.HTTPException):
+            raise ReadError('dispatch_unknown' if dispatched else 'upstream_unavailable') from None
         finally:
             if watchdog is not None:watchdog.cancel();watchdog.join()
             if connection is not None:connection.close()
+    def services(self,*,deadline=None):
+        return self._get('services',deadline or time.monotonic()+MAX_SECONDS)
+    def turn(self,entity,action,*,deadline=None):
+        if type(entity) is not str or len(entity)>256 or not ENTITY.fullmatch(entity):raise ReadError('invalid_entity',400)
+        domain=entity.split('.')[0]
+        if domain not in ('light','switch','input_boolean') or action not in ('turn_on','turn_off'):raise ReadError('unsupported_control',400)
+        result=self._exchange('services/'+domain+'/'+action,deadline or time.monotonic()+MAX_SECONDS,
+            json.dumps({'entity_id':entity},separators=(',',':')).encode())
+        if type(result) is not list:raise ReadError('dispatch_unknown')
     def state(self,entity,*,deadline=None):
         if type(entity) is not str or len(entity)>256 or not ENTITY.fullmatch(entity):raise ReadError('invalid_entity',400)
         return self._get('states/'+entity,deadline or time.monotonic()+MAX_SECONDS)

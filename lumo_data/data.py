@@ -44,10 +44,21 @@ def clean_state(id,raw):
     return {'entityId':id,'value':value,'quality':quality,'unit':unit,'lastUpdated':updated,'lastChanged':changed,
         'stateClass':attributes.get('state_class') if attributes.get('state_class') in ('measurement','total','total_increasing') else None}
 
+def add_capabilities(client,result,guard,deadline):
+    from control import DOMAINS,service_domains,capability
+    available=set()
+    if any(s['entityId'].split('.')[0] in DOMAINS and s['quality']=='good' and s['value'] in ('on','off') for s in result):
+        guard()
+        try:available=service_domains(client.services(deadline=deadline))
+        except ReadError:pass  # Keep actual state readable; fail closed on controls.
+        guard()
+    for item in result:item['control']=capability(item,available)
+
 def states(client,ids,guard):
     deadline=time.monotonic()+15;result=[]
     for id in ids:
         guard();result.append(clean_state(id,client.state(id,deadline=deadline)));guard()
+    add_capabilities(client,result,guard,deadline)
     return {'states':result,'count':len(result),'fetchedAt':now()}
 
 def history_window(start,end):

@@ -1,4 +1,4 @@
-"""Read-only opt-in policy; immutable snapshot with metadata-change latched denial."""
+"""Opt-in user/entity policy; immutable snapshot with metadata-change latched denial."""
 import os
 import re
 import stat
@@ -28,6 +28,21 @@ def parse_settings(raw):
             if type(values) is not list or len(values)>64 or any(type(p) is not str or len(p)>256 or not PATTERN.fullmatch(p) for p in values) or len(set(values))!=len(values):return None
         return Policy(frozenset(users),tuple(v['allowed_entity_patterns']),tuple(v['denied_entity_patterns']))
     except (ValueError,TypeError,UnicodeError,RecursionError):return None
+
+def settings_error(raw):
+    """Safe diagnostic classification; never expose the options or identities."""
+    import json
+    try:
+        if len(raw)>131072:return 'configuration_invalid'
+        value=parse_json(raw)
+        if type(value) is not dict or type(value.get('enabled')) is not bool:return 'configuration_invalid'
+        probe={**value,'enabled':True}
+        if value.get('allowed_user_ids')==[]:probe['allowed_user_ids']=['validation_only']
+        if parse_settings(json.dumps(probe)) is None:return 'configuration_invalid'
+        if not value['enabled']:return 'integration_disabled'
+        if not value['allowed_user_ids']:return 'user_not_allowed'
+        return None
+    except (ValueError,TypeError,UnicodeError,RecursionError):return 'configuration_invalid'
 
 def _identity(s):
     return (s.st_dev,s.st_ino,s.st_size,s.st_mtime_ns,s.st_ctime_ns,
@@ -64,14 +79,15 @@ class OptionsSnapshot:
     A restart is required even if the previous source bytes are restored. No
     privileged FD/helper or nonroot secret reread is retained.
     """
-    def __init__(self,path,config=None,identity=None):
+    def __init__(self,path,config=None,identity=None,error_code='configuration_invalid'):
         self._path=str(path);self._config=config;self._identity=identity
-        self._disabled=config is None
+        self._disabled=config is None;self.error_code=error_code if config is None else None
     def current(self):
         if not self._disabled:
             try:
-                if _metadata(self._path)!=self._identity: self._disabled=True
-            except (OSError,ValueError): self._disabled=True
+                if _metadata(self._path)!=self._identity:self._disabled=True
+            except (OSError,ValueError):self._disabled=True
+            if self._disabled:self.error_code='options_changed'
         return None if self._disabled else self._config
 
 def load_snapshot(path):
@@ -97,7 +113,7 @@ def load_snapshot(path):
         # Re-resolve the pathname AFTER validation; atomic replace must not bind
         # a freshly parsed old inode to a different current pathname.
         if _metadata(path)!=identity: raise ValueError()
-        return OptionsSnapshot(path,config,identity)
+        return OptionsSnapshot(path,config,identity,settings_error(raw))
     except (OSError,ValueError,TypeError):
         return OptionsSnapshot(path)
 

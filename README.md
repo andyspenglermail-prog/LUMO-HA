@@ -1,13 +1,21 @@
 # LUMO – Home Assistant Test-Apps
 
-## Neu: LUMO Data · 0.5.0-data.1
+## Update: LUMO Data · 0.6.0-devices.1
 
-Der aktuelle Dashboard-Designer mit generischer, ausschließlich lesender
-Home-Assistant-Datenanbindung steht als **separate App** im Ordner `lumo_data`
-bereit. Im App-Store nach **LUMO Data · Entwicklung · Read-only** suchen.
-Bei einem bereits eingebundenen Repository zuerst im Store-Menü nach Updates
-suchen. Die vorhandene App `lumo_preview` bleibt unverändert; dort erscheint
-deshalb kein Updateknopf für diese separate App.
+**Update der bereits installierten LUMO-Data-App**, keine zusätzliche App.
+Im App-Store-Menü nach Updates suchen und anschließend **LUMO Data** aktualisieren.
+Der Slug `lumo_data` und die vier Konfigurationsfelder bleiben unverändert.
+Der Anzeigename lautet nun **LUMO Data · Geräte & Bedienung**.
+
+- Horizontale Raum-/Geräteauswahl statt linker Entitätenliste.
+- Geräte hinzufügen; unter **Bearbeiten** Funktionen als Unterkacheln auswählen.
+- Echte Zustandswerte für die ausgewählten Funktionen.
+- Explizite Ein/Aus-Aktionen für verfügbare `light`, `switch` und `input_boolean`
+  nur im klar gekennzeichneten Bedienmodus. Keine Befehle beim Gestalten.
+- Verständliche Hinweise für deaktivierte oder fehlende Benutzerfreigaben.
+
+Die bisherige Offline-App `lumo_preview` bleibt unverändert. Andere Steuerdomänen
+werden nicht als bedienbar vorgetäuscht; ihre unterstützten Werte bleiben lesbar.
 
 AMD64 und ARM64 (`aarch64`); Start manuell, Datenzugriff zunächst deaktiviert.
 Einrichtung und Grenzen: [LUMO-Data-Anleitung](lumo_data/DOCS.md).
