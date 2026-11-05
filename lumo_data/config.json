@@ -1,0 +1,38 @@
+{
+  "name": "LUMO Data · Entwicklung · Read-only",
+  "version": "0.5.0-data.1",
+  "slug": "lumo_data",
+  "description": "Entwicklungsstand: generisches lesendes Raumstudio. Nicht installiert oder abgenommen. Kein Schreiben, keine KI, keine Speicherung.",
+  "arch": [
+    "amd64",
+    "aarch64"
+  ],
+  "startup": "application",
+  "boot": "manual",
+  "init": false,
+  "ingress": true,
+  "ingress_port": 8099,
+  "panel_admin": true,
+  "panel_title": "LUMO Data",
+  "homeassistant_api": true,
+  "hassio_api": false,
+  "host_network": false,
+  "options": {
+    "enabled": false,
+    "allowed_user_ids": [],
+    "allowed_entity_patterns": [],
+    "denied_entity_patterns": []
+  },
+  "schema": {
+    "enabled": "bool",
+    "allowed_user_ids": [
+      "str"
+    ],
+    "allowed_entity_patterns": [
+      "str"
+    ],
+    "denied_entity_patterns": [
+      "str"
+    ]
+  }
+}

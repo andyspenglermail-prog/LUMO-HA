@@ -1,5 +1,21 @@
 # LUMO – Home Assistant Test-Apps
 
+## Neu: LUMO Data · 0.5.0-data.1
+
+Der aktuelle Dashboard-Designer mit generischer, ausschließlich lesender
+Home-Assistant-Datenanbindung steht als **separate App** im Ordner `lumo_data`
+bereit. Im App-Store nach **LUMO Data · Entwicklung · Read-only** suchen.
+Bei einem bereits eingebundenen Repository zuerst im Store-Menü nach Updates
+suchen. Die vorhandene App `lumo_preview` bleibt unverändert; dort erscheint
+deshalb kein Updateknopf für diese separate App.
+
+AMD64 und ARM64 (`aarch64`); Start manuell, Datenzugriff zunächst deaktiviert.
+Einrichtung und Grenzen: [LUMO-Data-Anleitung](lumo_data/DOCS.md).
+LUMO ist der Designer, nicht das fertige Dashboard. Vollständiger nativer
+Dashboardexport ist in diesem Entwicklungsstand noch nicht implementiert.
+
+## Bisherige Offline-Test-App (unverändert)
+
 **LUMO – dein Zuhause denkt mit.**
 
 Öffentliche Repositoryquelle für die **LUMO Raumstudio (Offline-Test)** App.

@@ -1,0 +1,129 @@
+"""Native authenticated read-only ingress. No inference or generic proxy routes."""
+from http.server import BaseHTTPRequestHandler,HTTPServer
+from socketserver import TCPServer
+from pathlib import Path
+from urllib.parse import urlsplit,parse_qsl
+import json
+import re
+import socket
+from threading import Timer
+from policy import SAFE_ID
+from client import ReadError
+from data import discovery,states,selected_ids,history
+
+def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trusted_proxy_ip='172.30.32.2'):
+    page=Path(index_path).read_bytes()
+    if len(page)>2*1024*1024:raise ValueError('page_limit')
+    class HeaderReader:
+        """Bound all header bytes, not just each individual HTTP line."""
+        def __init__(self,stream):self.stream=stream;self.remaining=32768
+        def readline(self,limit=-1):
+            line=self.stream.readline(min(limit,self.remaining+1) if limit>=0 else self.remaining+1)
+            self.remaining-=len(line)
+            if self.remaining<0:raise OSError('header_limit')
+            return line
+        def close(self):self.stream.close()
+    class Handler(BaseHTTPRequestHandler):
+        timeout=5
+        def setup(self):
+            super().setup();self.rfile=HeaderReader(self.rfile)
+        def finish_headers(self):
+            self.header_timer.cancel();self.header_timer.join()
+        def handle_one_request(self):
+            # One synchronous request + one watchdog: no unbounded worker pool.
+            # Socket idle timeouts alone allow an infinite slow-header drip.
+            def expire():
+                try:self.connection.shutdown(socket.SHUT_RDWR)
+                except OSError:pass
+            self.header_timer=Timer(2,expire);self.header_timer.daemon=True;self.header_timer.start()
+            try:super().handle_one_request()
+            finally:self.finish_headers()
+        def log_message(self,*args):pass
+        def version_string(self):return 'LUMO'
+        def send_error(self,code,message=None,explain=None):self.error(405 if code==501 else code,'invalid_request')
+        def reply(self,status,body,kind='application/json'):
+            self.close_connection=True;self.send_response(status)
+            for k,v in [('Content-Type',kind),('Content-Length',str(len(body))),('Cache-Control','no-store'),('X-Content-Type-Options','nosniff'),('X-Frame-Options','SAMEORIGIN'),('Content-Security-Policy',"frame-ancestors 'self'"),('Connection','close')]:self.send_header(k,v)
+            self.end_headers()
+            if self.command!='HEAD':self.wfile.write(body)
+        def api(self,status,value):self.reply(status,json.dumps(value,ensure_ascii=False,separators=(',',':'),allow_nan=False).encode())
+        def error(self,status,code):self.api(status,{'error':code})
+        def work(self):
+            self.finish_headers()
+            try:self.handle_read()
+            except ReadError as e:self.error(e.status,e.code)
+            except (OSError,ValueError,TypeError,KeyError,RecursionError):self.error(502,'read_unavailable')
+        def handle_read(self):
+            target=self.requestline.split()[1]
+            hosts=self.headers.get_all('Host',[])
+            if len(hosts)!=1 or not re.fullmatch(r'[A-Za-z0-9.\[\]:_-]{1,300}',hosts[0]) or self.headers.get_all('Expect'):raise ReadError('invalid_request',400)
+            lengths=self.headers.get_all('Content-Length',[])
+            if self.headers.get_all('Transfer-Encoding') or len(lengths)>1 or lengths and lengths!=['0']:raise ReadError('invalid_request',400)
+            if self.command not in ('GET','HEAD'):raise ReadError('read_only',405)
+            if target=='/health':self.reply(200,b'ok\n','text/plain');return
+            static=target in ('/','/index.html')
+            catalog=target=='/lumo/data/v1/catalog'
+            state_route=target.startswith('/lumo/data/v1/states?')
+            history_route=target.startswith('/lumo/data/v1/history?')
+            if len(target)>12000:raise ReadError('request_limit',400)
+            if not static and (self.command!='GET' or not (catalog or state_route or history_route)):raise ReadError('not_found',404)
+            users=self.headers.get_all('X-Remote-User-Id',[])
+            if self.client_address[0]!=trusted_proxy_ip or len(users)!=1 or not SAFE_ID.fullmatch(users[0]):raise ReadError('forbidden',403)
+            if static:self.reply(200,page,'text/html; charset=utf-8');return
+            if self.headers.get_all('X-LUMO-Read',[])!=['1']:raise ReadError('forbidden',403)
+            fetch=self.headers.get_all('Sec-Fetch-Site',[]);origins=self.headers.get_all('Origin',[])
+            if len(fetch)>1 or fetch and fetch[0] not in ('same-origin','none'):raise ReadError('forbidden',403)
+            if origins:
+                hosts=self.headers.get_all('Host',[])
+                try:
+                    origin=urlsplit(origins[0]);valid=len(origins)==1 and len(hosts)==1 and origin.scheme in ('http','https') and origin.netloc==hosts[0] and not (origin.path or origin.query or origin.fragment or origin.username)
+                except ValueError:valid=False
+                if not valid:raise ReadError('forbidden',403)
+            policy=options_snapshot.current()
+            if policy is None or users[0] not in policy.users:raise ReadError('forbidden',403)
+            def guard():
+                if options_snapshot.current() is not policy:raise ReadError('forbidden',403)
+            guard()
+            if catalog:result=discovery(client,policy)
+            else:
+                pairs=parse_qsl(target.split('?',1)[1],keep_blank_values=True,strict_parsing=True,max_num_fields=3)
+                query=dict(pairs)
+                if len(query)!=len(pairs) or set(query)!=({'entity_ids','start','end'} if history_route else {'entity_ids'}):raise ReadError('invalid_request',400)
+                ids=selected_ids(query['entity_ids'],policy)
+                result=history(client,ids,query['start'],query['end'],guard) if history_route else states(client,ids,guard)
+            if options_snapshot.current() is not policy:raise ReadError('forbidden',403)
+            self.api(200,result)
+        do_GET=work
+        do_HEAD=work
+        do_POST=work
+        do_PUT=work
+        do_DELETE=work
+        do_PATCH=work
+        do_OPTIONS=work
+    class QuietServer(HTTPServer):
+        request_queue_size=5
+        def verify_request(self,request,client_address):
+            # Before Handler construction or any request-line/header parsing.
+            # Loopback may reach health only; handle_read still gates all other
+            # routes on the exact ingress peer and identity (no forwarded-IP trust).
+            return client_address[0] in (trusted_proxy_ip,'127.0.0.1')
+        def handle_error(self,request,client_address):pass  # Never log private request context.
+    server=QuietServer(bind,Handler,bind_and_activate=False)
+    try:
+        TCPServer.server_bind(server);server.server_name,server.server_port=server.server_address;server.server_activate()
+    except BaseException:server.server_close();raise
+    return server
+
+def main(*,options_snapshot=None):
+    import os
+    from client import CoreClient
+    if os.getresuid()!=(65532,)*3 or os.getresgid()!=(65532,)*3 or os.getgroups() or options_snapshot is None:raise RuntimeError('safe_bootstrap_required')
+    # Official native environment only. Never options, browser headers or CLI argv.
+    client=CoreClient(os.environ.pop('SUPERVISOR_TOKEN',''))
+    with create_server(Path(__file__).with_name('index.html'),bind=('0.0.0.0',8099),options_snapshot=options_snapshot,client=client,trusted_proxy_ip='172.30.32.2') as server:
+        server.serve_forever()
+
+if __name__=='__main__':
+    import sys
+    print('LUMO startup unavailable',file=sys.stderr)
+    sys.exit(3)
