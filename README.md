@@ -1,11 +1,30 @@
 # LUMO – Home Assistant Test-Apps
 
-## Update: LUMO Data · 0.7.0-capabilities.1
+## Update: LUMO Data · 0.9.0-designer.1
 
 **Update der bereits installierten LUMO-Data-App**, keine zusätzliche App.
 Im App-Store-Menü nach Updates suchen und anschließend **LUMO Data** aktualisieren.
 Der Slug `lumo_data` und die vier Konfigurationsfelder bleiben unverändert.
-Der Anzeigename lautet nun **LUMO Data · Geräte & Bedienung**.
+Der Anzeigename bleibt **LUMO Data · Geräte & Bedienung**.
+
+### Neu: erste Designer-Zwischenversion direkt in der bestehenden HA-App
+
+- Ausgabeprofil **Natives HA-Dashboard** im Raumstudio: strukturiertes Modell,
+  mehrere Ansichten, direkte Funktionen und optionale geräteübergreifende Gruppen.
+- Verschieben und Größenänderung, Fixierungen, Rückgängig/Wiederholen sowie
+  ausdrückliche Browserspeicherung, Versionen und herunterladbare Backups.
+- Validierter nativer YAML-/JSON-Export für unterstützte Funktionsbausteine.
+  Keine automatische Veröffentlichung produktiver HA-Dashboards.
+- Freies Vorschauprofil und drei Styles bleiben erhalten; Geräteinnenraster,
+  Mehrfachkacheln und begrenzte Live-Zustandsaktualisierung sind enthalten.
+- Gleicher Slug, gleiche Optionen und Berechtigungen; keine zweite App.
+  Die Veröffentlichung installiert und startet nichts automatisch.
+
+**Erster Test:** LUMO Data aktualisieren, Weboberfläche öffnen, Bestand laden und
+das Ausgabeprofil **Natives HA-Dashboard** wählen. Installation, physischer Touch
+und qualitative Designabnahme bleiben am eigenen Zielsystem zu prüfen.
+
+### Bisherige Funktionen bleiben erhalten
 
 - Horizontale Raum-/Geräteauswahl statt linker Entitätenliste.
 - Geräte hinzufügen; unter **Bearbeiten** Funktionen markieren und direkt
@@ -29,8 +48,9 @@ beliebige Serviceaufrufe werden nicht freigegeben.
 
 AMD64 und ARM64 (`aarch64`); Start manuell, Datenzugriff zunächst deaktiviert.
 Einrichtung und Grenzen: [LUMO-Data-Anleitung](lumo_data/DOCS.md).
-LUMO ist der Designer, nicht das fertige Dashboard. Vollständiger nativer
-Dashboardexport ist in diesem Entwicklungsstand noch nicht implementiert.
+LUMO ist der Designer, nicht das fertige Dashboard. Der native Export deckt den
+unterstützten Funktionsumfang ab, nicht sämtliche freien Styles, Analysebausteine,
+Cockpits oder Formeln. Die Editorvorschau ist kein nativer HA-Live-Renderer.
 
 ## Bisherige Offline-Test-App (unverändert)
 

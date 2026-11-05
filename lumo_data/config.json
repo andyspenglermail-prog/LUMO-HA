@@ -1,8 +1,8 @@
 {
   "name": "LUMO Data · Geräte & Bedienung",
-  "version": "0.7.0-capabilities.1",
+  "version": "0.9.0-designer.1",
   "slug": "lumo_data",
-  "description": "Dashboard-Designer mit verständlicher Funktionsauswahl, echten HA-Werten und Bedienung nach tatsächlichen Gerätefähigkeiten. Entwicklungsstand; kein vollständiger nativer Dashboardexport.",
+  "description": "LUMO-Designer-Zwischenversion: strukturiertes Dashboardmodell, native Sections-Ausgabe und freie Gestaltung. Keine automatische HA-Dashboardveröffentlichung.",
   "arch": [
     "amd64",
     "aarch64"

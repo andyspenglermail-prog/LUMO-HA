@@ -1,5 +1,41 @@
 # Änderungen
 
+## 0.9.0-designer.1 — erste Designer-Zwischenversion
+
+- Update derselben LUMO-Data-App; Slug, Konfigurationsschema und Berechtigungen unverändert.
+- Strukturiertes Dashboardmodell mit Ansichten, direkten Funktionsbausteinen und
+  optionalen geräteübergreifenden Gruppen. Verschieben/Größenänderung, Fixierungen,
+  Rückgängig/Wiederholen und explizite Browserspeicherung mit Versionen/Backups.
+- Validierter nativer HA-Sections-Export als YAML/JSON für unterstützte Bausteine.
+  Warnungen/Grenzen bleiben sichtbar; kein automatisches Anlegen produktiver Dashboards.
+- Freies Vorschauprofil und drei Ausgabestile erhalten. Geräteinnenraster,
+  Mehrfachkacheln und begrenzte Zustandsaktualisierung aus dem unveröffentlichten
+  0.8-Entwicklungsstand enthalten; Analytics-Livepainting zusätzlich korrigiert.
+- Native Ansichten lesen ihre eigenen Bindungen; die Quellenauswahl wird auch
+  beim Bestandsladen nach bereits ausgewähltem nativem Profil aktualisiert.
+- Technische Zwischenprüfung: 207 Haupttests plus drei Unterfälle vor dem letzten
+  Discovery-Fix; danach drei gezielte Regressionen bestanden und unabhängiges
+  statisches Nachreview bestanden. Kein vollständiger Gesamtsuite-Neulauf danach.
+- Echter UI-Export in einem nativen HA-Vollview mit synthetischen Daten geprüft.
+  Installierte HA-Kompatibilität, physischer Touch und qualitative Nutzerabnahme offen.
+- Keine vollständige native Style-/Analytics-/Formelparität, keine KI und keine
+  automatische Installation. Installation und Neustart bleiben beim Benutzer.
+
+## 0.8.0-grid-live.1 — unveröffentlichter Entwicklungsstand
+
+- Geräte als frei bestückbare Kacheln mit dimensioniertem Innenraster;
+  Funktionsbausteine lassen sich positionieren und in ihrer Größe ändern.
+- Kompakte Messwerte und größere Bedienbausteine innerhalb derselben Kachel;
+  optionale Beschriftungen statt verpflichtender technischer Entitätsnamen.
+- Mehrere unabhängige Kacheln für dasselbe Gerät, auch mit denselben Entitäten.
+  Gestaltung bleibt getrennt, gelesene Zustände und Bedienstatus bleiben gemeinsam.
+- Automatische, begrenzte Zustandsabrufe für die verbundenen Entwurfsansichten.
+  Positions- und Messwertänderungen werden ohne manuellen Aktualisierungsklick
+  nachgeführt, soweit Home Assistant neue Werte meldet. Keine erfundene Interpolation.
+- Automatische Leseabrufe lösen keine Gerätebefehle aus; bewusstes Senden bleibt
+  erforderlich. Keine zusätzlichen Berechtigungen und keine automatische Installation.
+- Vollständiger nativer Dashboardexport und physische Touchabnahme bleiben offen.
+
 ## 0.7.0-capabilities.1
 
 - Geräteauswahl und Bedienung allgemein überarbeitet, nicht nur ein einzelnes

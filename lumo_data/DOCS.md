@@ -1,4 +1,16 @@
-# LUMO Data · 0.7.0-capabilities.1
+# LUMO Data · 0.9.0-designer.1 · Designer-Zwischenversion
+
+**Update für die bestehende LUMO-Data-App; Installation durch den Benutzer.**
+Diese erste v1.5-Zwischenversion ergänzt das native Dashboard-Profil im bestehenden
+Raumstudio: strukturiertes Modell, direkte Funktionen/optionale Gruppen, Rasterbearbeitung,
+lokale Browserversionen/Backups und validierten YAML/JSON-Export.
+Der Designer wird direkt über die bestehende App in Home Assistant geöffnet.
+Es gibt keine automatische native HA-Dashboardanlage und keinen HA-Rollback.
+Die Gestaltungsvorschau und Konfigurationsprüfung sind kein nativer Live-Renderer.
+
+Die Veröffentlichung ersetzt Version 0.7.0-capabilities.1 im bestehenden Repository.
+Sie löst selbst keine Installation, keinen Neustart und keine Geräteaktion aus.
+Slug, Optionen, Schema und Berechtigungen wurden für diese Zwischenversion nicht erweitert.
 
 LUMO ist ein Home-Assistant-Dashboard-Designer. Dieser Entwicklungsstand
 verbindet den Designer generisch mit Home Assistant. Neben echten Zustandswerten
@@ -38,14 +50,77 @@ hinzufügen. Ältere HA-Oberflächen nennen Apps noch Add-ons.
    **Änderungen übernehmen** wählen. Der zusätzliche Knopf **Gewählte Funktionen
    verknüpfen** ist nur nötig, wenn die Unterkacheln schon vor dem Übernehmen
    weiter bearbeitet werden sollen.
-   Aktuelle Werte werden für die ausgewählten Funktionen abgerufen; bei Bedarf
-   **Werte aktualisieren** bzw. **Verlauf laden** verwenden.
+   Aktuelle Werte werden für die eingebundenen Funktionen automatisch nachgeführt,
+   solange die verbundene Ansicht sichtbar ist. **Werte aktualisieren** bleibt als
+   manueller Abruf verfügbar; **Verlauf laden** liest Historie ausdrücklich.
    Es werden keine Hausdaten mitgeliefert oder automatisch vorbelegt.
 
 Nach einer Optionsänderung die App neu starten: Eine erkannte Änderung sperrt
 weitere Datenabrufe und Bedienaktionen bis zum Neustart. Keine HA-Tokens in Browserfelder eintragen.
 Die App erhält ihren Zugriff intern über den Supervisor und prüft zusätzlich
 Ingress und die freigegebenen Benutzer-IDs. Direkter Portzugriff ist nicht vorgesehen.
+
+## Natives Dashboard-Profil ausprobieren
+
+1. **Bestand laden** und als Ausgabeprofil **Natives HA-Dashboard** auswählen.
+   Auch die umgekehrte Reihenfolge wird unterstützt.
+2. Ein Dashboard anlegen, Funktionen aus dem geladenen Bestand auswählen und
+   als direkte Bausteine hinzufügen. Gruppen sind optional und dürfen Funktionen
+   verschiedener Geräte zusammenfassen.
+3. Ansichten, Reihenfolge, Größen und Fixierungen bearbeiten. Maus-/Touchgriffe
+   und Positionsfelder stehen zur Verfügung; Rückgängig/Wiederholen erhält das Modell.
+4. Den Entwurf ausdrücklich im Browser speichern und zusätzlich ein Backup
+   herunterladen. Browserdaten sind kein gemeinsamer HA-Speicher und können verloren gehen.
+5. Die Konfiguration prüfen und YAML oder JSON exportieren. Fehler verhindern
+   den Export; Warnungen und nicht unterstützte Darstellungen vor Verwendung prüfen.
+
+Die native Ausgabe verwendet das HA-Sections-Raster, nicht freie Pixelpositionen.
+Die drei freien Ausgabestile werden nicht unverändert in native HA-Themes übersetzt.
+Nicht alle Analyse-, Formel- oder Cockpitdarstellungen sind nativ exportierbar.
+Es gibt keine automatische Übernahme in ein produktives HA-Dashboard.
+Das bisherige freie Vorschauprofil bleibt getrennt erhalten; ein Legacyimport
+übernimmt freie Geometrie nicht stillschweigend als natives Layout.
+
+## Gerätekacheln im Innenraster gestalten (freies Vorschauprofil)
+
+- **Gerät hinzufügen** legt eine neue Kachel an, auch wenn für dieses Gerät schon
+  eine Kachel vorhanden ist. Jede Kachel hat ihren eigenen Namen und ihre eigene
+  Auswahl/Anordnung. Dieselbe Entität darf in mehreren Kacheln vorkommen.
+- Unter **Bearbeiten** die Funktionen auswählen. **Gewählte Funktionen verknüpfen**
+  macht die Bausteine bereits innerhalb des offenen Editors gestaltbar; direktes
+  **Änderungen übernehmen** bleibt ebenfalls möglich.
+- Unter **Funktionen frei platzieren** den Griff eines Bausteins zum Verschieben
+  und den Eckgriff zum Vergrößern/Verkleinern ziehen. Pfeiltasten an den Griffen
+  sowie Zahlenfelder sind die Alternative. Ungültige Platzierungen werden abgewiesen.
+- Gemeinsames Raster: sechs Spalten, Zellen 96 × 80 CSS-Pixel, Abstand 8 Pixel.
+  Die Darstellung bestimmt die Mindestgröße. **Nur Wert** kann ein einzelnes Feld
+  belegen; **Bedienung** benötigt mehr Platz. **Beschriftung anzeigen** ist optional.
+- Bis zu 32 Funktionen pro Gerätekachel; bestehende andere Kompositionen behalten
+  ihre Grenzen. Freie Lücken bleiben erhalten. Auf schmalen Bildschirmen scrollt
+  das Innenraster lokal, statt die gespeicherte Anordnung ungefragt zu verändern.
+- Erst **Änderungen übernehmen** speichert in den aktuellen Tab-Entwurf.
+  **Abbrechen** verwirft die offenen Änderungen. Das ist keine dauerhafte Speicherung.
+- **Quelldetails** zeigt IDs und Herkunft gemeinsam für die Gerätekachel als
+  Momentaufnahme beim Öffnen. Die normale Kachel braucht keine technischen ID-Titel.
+
+## Automatische Zustandsaktualisierung
+
+Nach **Bestand laden** werden die eingebundenen Funktionen der aktuellen sichtbaren
+Raumansicht automatisch gelesen: etwa zwei Sekunden nach Abschluss des vorherigen
+Abrufs, in Paketen von höchstens 32 unterschiedlichen Entitäten. Doppelte Ansichten
+teilen sich die Beobachtungen. Dies ist begrenztes Polling, keine Push-Verbindung.
+Verbindungsfehler markieren alte Werte und verlängern den Leseabstand. Trennen oder
+Verbergen der Seite pausiert die Abrufe. Ein bereits im Backend laufender Abruf
+kann noch auslaufen; eine Bedienaktion kann hinter diesem begrenzten Abruf warten.
+
+Automatische Lesevorgänge verändern weder Rasterpositionen noch ungesendete Eingaben
+und wiederholen keine Befehle. Unklare Ergebnisse bleiben unklar. Die ausdrückliche
+Schaltaktion bzw. **Senden** bleibt erforderlich; **Werte aktualisieren** erlaubt
+weiterhin die bewusste erneute Zustandsprüfung vor einer neuen Bedienaktion.
+Auch größere aktuelle Auswahlen werden dabei in 32er-Paketen gelesen; eine
+unvollständige oder fehlgeschlagene Prüfung hebt keine unklare Bediensperre auf.
+Historie wird nicht automatisch nachgeladen; deren bestehende Grenze bleibt
+32 Entitäten je manuellem Verlaufsabruf.
 
 ## Funktionsumfang und Grenzen
 
@@ -54,8 +129,12 @@ Ingress und die freigegebenen Benutzer-IDs. Direkter Portzugriff ist nicht vorge
 - Neutrales Editor-UI, drei vorhandene Ausgabestile, veränderbare Kachelmaße,
   Mehrfachbindungen und die vorhandenen Designer-/Analysekacheln.
 - Bereiche, Geräte, Entitäten, aktuelle Zustände und begrenzte historische
-  Abfragen aus der laufenden HA-Instanz. Werteabrufe folgen der Funktionsauswahl
-  oder einer ausdrücklichen Aktualisierung; kein ständiges Hintergrundpolling.
+  Abfragen aus der laufenden HA-Instanz. Aktuelle Werte werden in der sichtbaren,
+  verbundenen Ansicht automatisch und begrenzt abgefragt. Verdeckte/getrennte
+  Ansichten werden nicht dauerhaft gepollt; Historie bleibt ein manueller Abruf.
+  Es werden nur tatsächlich von HA gemeldete Werte angezeigt, keine errechneten
+  Bewegungszwischenstände. Die Anzeige kann nicht häufiger neue Messwerte liefern
+  als das Gerät und seine HA-Integration.
 - Fehlende oder nicht verfügbare Zustände und leere Historien werden angezeigt;
   vorhandener Recorder-Verlauf wird weder erzeugt noch garantiert.
 - Historische Einheiten bleiben an ihren Beobachtungen. Gemischte oder unbekannte
@@ -81,9 +160,12 @@ Ingress und die freigegebenen Benutzer-IDs. Direkter Portzugriff ist nicht vorge
 - Position und Lamellenneigung sind getrennte Zustände. Ein HA-Zustand „offen“
   bedeutet nicht automatisch 100 Prozent Öffnung. Stoppen ist eine bewusste
   eigene Aktion; Netzwerkbedienung ersetzt keine physische Notabschaltung.
-- Noch kein vollständiger nativer Dashboardexport. Berechnete Runtime-Kennzahlen
-  sind semantisch noch nicht allgemein freigegeben.
-- Kein dauerhaftes Speichern von Entwürfen durch diesen Backendstand zugesagt.
+- Validierter nativer YAML-/JSON-Export für den unterstützten Funktionsumfang,
+  aber keine vollständige Abdeckung aller freien Darstellungen. Berechnete
+  Runtime-Kennzahlen sind semantisch noch nicht allgemein freigegeben.
+- Das native Modell unterstützt ausdrückliche Browserspeicherung, Versionen und
+  Backups; kein gemeinsamer serverseitiger Entwurfsspeicher. Freie Tab-Entwürfe
+  sind dadurch nicht automatisch dauerhaft gespeichert.
 - Native Installation, echter Ingress, Touch- und qualitative Designabnahme
   müssen am eigenen Zielsystem noch geprüft werden.
 
