@@ -1,4 +1,4 @@
-# LUMO Data · 0.11.0-native.1 · Native HA-Dashboards
+# LUMO Data · 0.11.0-native.2 · Native HA-Dashboards
 
 LUMO ist der Designer, nicht das fertige Dashboard. Dieser Entwicklungsstand hat
 nur noch den nativen HA-Arbeitsablauf. Ausgabeprofil-Auswahl und aktiver freier
@@ -74,10 +74,22 @@ im Raumentwurf werden keine erfundenen historischen Diagramme angezeigt.
 
 Der Modusschalter steht unmittelbar vor dem Status des Raumentwurfs.
 Start, Laden, Navigation, Trennen und Verbergen der Seite kehren sicher in den
-Entwurfsmodus zurück. Dort werden keine Gerätebefehle gesendet. Testmodus sperrt
-die Bearbeitung und bietet für die gebundenen Quellen der aktuellen Ansicht einen
-beschrifteten Bedienbereich unterhalb des Entwurfs. Die lokalen Karten-Abbildungen
-sind nicht die offiziellen interaktiven HA-Karten.
+Entwurfsmodus zurück. Dort werden keine Gerätebefehle gesendet. Ein dezentes Raster
+ist im Designmodus sichtbar, im Testmodus ausgeblendet. Testmodus sperrt die
+Bearbeitung; Kachelpositionen, Größen und gespeicherte Bindungen bleiben unverändert.
+Werte und Bedienung befinden sich in den jeweiligen Kacheln, nicht in einer zweiten
+Bedienliste unter dem Entwurf. Die lokalen Karten-Abbildungen sind weiterhin nicht
+die offiziellen interaktiven HA-Karten.
+
+Gewählte native Bedien-Darstellungen zeigen ihre Hauptfunktionen direkt, zum Beispiel
+Öffnen/Stopp/Schließen oder Helligkeit. Über **⋯**, bei Ein/Aus-Kacheln über den
+Kacheltitel, öffnet sich innerhalb derselben Kachel die Auswahl weiterer unterstützter
+Funktionen und der Quellen-/Befehlsstatus. Kleine manuell dimensionierte Kacheln
+scrollen hierfür innen; ihre gespeicherte Größe wird nicht eigenmächtig geändert.
+**←** oder Escape schließt diese Ansicht. Neue reine Wertanzeigen behalten ihre
+Darstellung; für ständig sichtbare Hauptbedienelemente die passende Darstellung
+im Editor auswählen. Zusätzliche Quellenfunktionen im Test werden nicht automatisch
+in den Export übernommen: Dieser enthält unverändert die gewählte native Darstellung.
 
 Im verbundenen Einstieg können Testaktionen echte Geräte bedienen. Es werden nur
 nachgewiesene aktuelle Fähigkeiten, Services, Wertebereiche und Optionen angeboten.

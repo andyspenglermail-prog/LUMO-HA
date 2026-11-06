@@ -1,6 +1,6 @@
 # LUMO – Home Assistant Dashboard-Designer
 
-## LUMO Data · 0.11.0-native.1
+## LUMO Data · 0.11.0-native.2
 
 **Nur noch native HA-Dashboards.** Der freie Editor und die Ausgabeprofil-Auswahl
 entfallen. Bestehende native Entwürfe/Backups bleiben erhalten. Das Ziel ist:
@@ -21,10 +21,14 @@ gegen das offizielle HA-Frontend geprüft. Das ist Layouttreue im geprüften Pro
 nicht identische Theme-/Schrift-/Icon-Darstellung aller HA-Versionen. Frühere
 Stilpräferenzen installieren oder exportieren weiterhin keine HA-Themes.
 
-**Entwurfsmodus/Testmodus:** Gestalten schaltet nicht. Testmodus bietet ausdrücklich
-ausgelöste, fähigkeitsgeprüfte Bedienung der gebundenen aktuellen Quellen in einem
-separat beschrifteten Bedienbereich. Verbunden sind das echte Geräteaktionen;
-Parameteränderungen allein senden nichts. Unklare Befehle werden nicht wiederholt.
+**Entwurfsmodus/Testmodus:** Im Designmodus ist ein dezentes Raster sichtbar;
+Gestalten schaltet nicht. Im Testmodus bleiben Werte und Bedienung in derselben
+Kachel, ohne Positions- oder Größensprung und ohne separaten Bedienbereich darunter.
+Gewählte Bedien-Darstellungen zeigen ihre Hauptfunktionen direkt. Weitere Funktionen
+und Status sind über ⋯ bzw. den Kacheltitel erreichbar; kleine Kacheln scrollen innen.
+Verbunden sind das echte, fähigkeitsgeprüfte Geräteaktionen. Parameteränderungen
+allein senden nichts: ausdrücklich **Senden / ✓** drücken. Unklare Befehle werden
+nicht wiederholt. Zusätzliche Testfunktionen ändern nicht die exportierte Darstellung.
 
 **Dashboard anlegen** neben Exportieren fragt Titel, originales HA-Seitenleistensymbol,
 URL-Name, Nur Administratoren und In der Seitenleiste anzeigen ab. Erst die ausdrückliche

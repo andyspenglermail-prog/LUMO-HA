@@ -1,5 +1,19 @@
 # Änderungen
 
+## 0.11.0-native.2 — Raster und Bedienung innerhalb der Kacheln
+
+- Dezentes sichtbares Designraster wiederhergestellt, auch für leere Entwürfe;
+  dunklen Restbereich aus alten Stilregeln entfernt. Im Test bleibt das Raster aus.
+- Ausgelagerte Test-Bedienliste entfernt. Werte und echte freigegebene Bedienung
+  stehen in ihrer jeweiligen Kachel; Moduswechsel verändert weder Position noch Größe.
+- Hauptfunktionen gewählter Bedien-Darstellungen direkt erreichbar. Zusätzliche
+  Fähigkeiten und Status über die kacheleigene Funktionsauswahl; kompakte Kacheln
+  scrollen innen, ohne gespeicherte manuelle Maße zu überschreiben.
+- Explizites Senden, 44-Pixel-Ziele, gemeinsame Zustände mehrfacher Bindungen,
+  Lift/Lamellen-Stopp, Quellenqualität und Schutz gegen verspätete Freigaben erhalten.
+- Keine neuen Berechtigungen, Backendänderungen oder automatische Installation.
+  Themeexport und physische/qualitative Abnahme sind damit nicht erledigt.
+
 ## 0.11.0-native.1 — nur native HA-Dashboards
 
 - Ausgabeprofil-Auswahl und aktiven freien Editor entfernt. Native Dokumente,
