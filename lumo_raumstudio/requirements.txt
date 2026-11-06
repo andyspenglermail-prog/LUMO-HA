@@ -1,0 +1,4 @@
+# CPython 3.13 / musllinux 1.2 wheels for declared amd64 and aarch64.
+Pillow==12.3.0 \
+    --hash=sha256:756c768d0c9c2955feb7a56c37ea24aea2e369f8d36a88da270b6a9f19e62b5e \
+    --hash=sha256:571b9fcb07b97ef3a492028fb3d2dc0993ca23a06138b0315286566d29ef718a

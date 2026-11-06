@@ -1,0 +1,21 @@
+{
+  "name": "LUMO Raumstudio",
+  "version": "0.12.0",
+  "slug": "lumo_raumstudio",
+  "description": "Deine Dashboards gestalten: eigene Entwürfe, Hintergründe und sichere lesende HA-Übernahme.",
+  "arch": ["amd64", "aarch64"],
+  "startup": "application",
+  "boot": "manual",
+  "init": false,
+  "ingress": true,
+  "ingress_port": 8099,
+  "panel_admin": false,
+  "panel_title": "LUMO Raumstudio",
+  "panel_icon": "mdi:view-dashboard-edit",
+  "homeassistant_api": true,
+  "hassio_api": false,
+  "host_network": false,
+  "backup": "cold",
+  "options": {"enabled": false, "allowed_user_ids": []},
+  "schema": {"enabled": "bool", "allowed_user_ids": ["str"]}
+}

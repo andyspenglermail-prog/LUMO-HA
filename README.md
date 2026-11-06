@@ -1,5 +1,32 @@
 # LUMO – Home Assistant Dashboard-Designer
 
+## Neu: LUMO Raumstudio · 0.12.0
+
+**Eigenständige neue App, ausschließlich Schritt 1 – Dashboard.** Die vorhandene
+LUMO-Data-App bleibt unverändert. Raumstudio verwaltet eigene Dashboard-Entwürfe
+serverseitig: erstellen, öffnen, umbenennen, duplizieren, Einstellungen bearbeiten
+und bestätigt löschen. Bilder, Hintergründe und Navigationspräferenzen bleiben
+für denselben freigegebenen HA-Benutzer geräteübergreifend erhalten.
+
+Vorhandene HA-Dashboards werden nur gelesen und als unabhängige Kopie übernommen.
+Nicht unterstützte Inhalte werden konkret benannt; es gibt keinen stillen
+Teilimport, keine Geräteaktionen und keine HA-Schreibschnittstelle. Schritte 2–4
+bleiben sichtbar, enthalten in dieser neuen App aber noch keine Raumeditoren.
+
+**Einmalig installieren:** Einstellungen → Apps → App-Store → gegebenenfalls
+Menü ⋮ → Nach Updates suchen → **LUMO Raumstudio** → Installieren → Starten →
+Weboberfläche öffnen. Repository: `https://github.com/andyspenglermail-prog/LUMO-HA`.
+Nicht die bestehende LUMO-Data-App und nicht die ältere Offline-Test-App auswählen.
+Die sichere Erstkonfiguration wird in der Weboberfläche erklärt; danach bleiben
+die regulären Updates in derselben neuen App unter Slug `lumo_raumstudio`.
+
+[Einrichtung, Bedienung, Sicherung und Grenzen](lumo_raumstudio/DOCS.md) ·
+[Prüfmatrix und getrennte Abnahmegrenzen](docs/raumstudio/VERIFICATION.md).
+Die Installation erfolgt ausschließlich durch den Benutzer; private HA-/Geräte-
+und persönliche Abnahme sind nicht durch die technischen Tests ersetzt.
+
+---
+
 ## LUMO Data · 0.11.0-native.3
 
 **Nur noch native HA-Dashboards.** Der freie Editor und die Ausgabeprofil-Auswahl
