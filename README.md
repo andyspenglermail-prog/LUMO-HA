@@ -1,19 +1,26 @@
 # LUMO – Home Assistant Dashboard-Designer
 
-## Neu: LUMO Raumstudio · 0.12.0
+## LUMO Raumstudio · 0.12.1 – verlustfreie HA-Kopie
 
-**Eigenständige neue App, ausschließlich Schritt 1 – Dashboard.** Die vorhandene
+**Update derselben App, ausschließlich Schritt 1 – Dashboard.** Die vorhandene
 LUMO-Data-App bleibt unverändert. Raumstudio verwaltet eigene Dashboard-Entwürfe
 serverseitig: erstellen, öffnen, umbenennen, duplizieren, Einstellungen bearbeiten
 und bestätigt löschen. Bilder, Hintergründe und Navigationspräferenzen bleiben
 für denselben freigegebenen HA-Benutzer geräteübergreifend erhalten.
 
 Vorhandene HA-Dashboards werden nur gelesen und als unabhängige Kopie übernommen.
-Nicht unterstützte Inhalte werden konkret benannt; es gibt keinen stillen
-Teilimport, keine Geräteaktionen und keine HA-Schreibschnittstelle. Schritte 2–4
-bleiben sichtbar, enthalten in dieser neuen App aber noch keine Raumeditoren.
+Auch unbekannte Karten, Templates, Styles und Strategy-Konfigurationen bleiben
+als geschützte JSON-Daten erhalten. Ein Importbericht trennt Datenübernahme,
+gezielte Bearbeitbarkeit und ungeprüfte Ressourcen. Herunterladbarer JSON-Export
+bleibt ohne ausdrückliche Feldänderung strukturell und inhaltlich identisch.
+Keine Geräteaktionen und keine HA-Schreibschnittstelle. Schritte 2–4 bleiben
+sichtbar, enthalten aber weiterhin keine Raumeditoren.
 
-**Einmalig installieren:** Einstellungen → Apps → App-Store → gegebenenfalls
+**Bestehendes Raumstudio:** reguläres Update unter demselben Slug
+`lumo_raumstudio`; kein neues Parallelprojekt. Veröffentlichung, Installation
+und persönliche Abnahme sind separate Schritte.
+
+**Nur bei erstmaliger Nutzung:** Einstellungen → Apps → App-Store → gegebenenfalls
 Menü ⋮ → Nach Updates suchen → **LUMO Raumstudio** → Installieren → Starten →
 Weboberfläche öffnen. Repository: `https://github.com/andyspenglermail-prog/LUMO-HA`.
 Nicht die bestehende LUMO-Data-App und nicht die ältere Offline-Test-App auswählen.

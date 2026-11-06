@@ -2,14 +2,14 @@ import sys,pathlib,unittest,os,json
 sys.path.insert(0,str(pathlib.Path(__file__).parent))
 from test_http import Fixture
 from playwright.sync_api import sync_playwright,expect
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag01-evidence/implementation/browser'));OUT.mkdir(parents=True,exist_ok=True)
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'));OUT.mkdir(parents=True,exist_ok=True)
 class BrowserTests(unittest.TestCase):
     def test_create_settings_reload_second_device(self):
         f=Fixture()
         try:
             with sync_playwright() as p:
                 b=p.chromium.launch(headless=True,args=['--no-sandbox']);ctx=b.new_context(viewport={'width':1440,'height':900},extra_http_headers={'X-Remote-User-Id':'alice'});page=ctx.new_page()
-                page.goto(f.origin);expect(page.locator('#version')).to_have_text('Version 0.12.0');page.locator('#new-name').fill('Mein Zuhause');page.locator('#new-icon').fill('mdi:home');page.locator('#create').click()
+                page.goto(f.origin);expect(page.locator('#version')).to_have_text('Version 0.12.1');page.locator('#new-name').fill('Mein Zuhause');page.locator('#new-icon').fill('mdi:home');page.locator('#create').click()
                 expect(page.locator('#handoff-step')).to_be_visible(timeout=3000)
                 self.assertEqual(f.store.list('alice')[0]['name'],'Mein Zuhause')
                 page.locator('#back-dashboard').click();page.locator('[data-tab="background"]').click();page.locator('#bg-color').fill('#345678');page.locator('#bg-color').dispatch_event('input');page.locator('#bg-opacity').fill('0');page.locator('#save').click()

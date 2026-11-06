@@ -14,7 +14,9 @@ class ReviewBackendTests(unittest.TestCase):
         d=self.f.store.create('alice','Good','mdi:home')
         self.assertEqual(self.f.request('POST','/api/dashboards/'+d['id']+'/save',{'revision':1,'patch':{'icon':'mdi:not-a-real-lumo-icon'}},extra=self.csrf)[0],400)
         cfg=copy.deepcopy(self.f.peer.configs['fixture-dashboard']);cfg['views'][0]['icon']='mdi:not-a-real-lumo-icon';self.f.peer.configs['fixture-dashboard']=cfg
-        status,response=self.f.request('POST','/api/ha/import',{'path':'fixture-dashboard','name':'Bad'},extra=self.csrf);self.assertEqual(status,422);self.assertIn('views[0].icon',[i['path'] for i in response['details']]);self.assertEqual(len(self.f.store.list('alice')),1)
+        status,response=self.f.request('POST','/api/ha/import',{'path':'fixture-dashboard','name':'Bad'},extra=self.csrf);self.assertEqual(status,201);self.assertEqual(response['native'],cfg);self.assertEqual(len(self.f.store.list('alice')),2)
+        report=self.f.request('GET','/api/dashboards/'+response['id']+'/report')[1]
+        self.assertFalse(any(f['path']==['views',0,'icon'] for e in report['editableElements'] for f in e['fields']))
     def test_R3_catalog_assets_pins_package_and_ingress(self):
         provenance=json.loads((APP/'mdi-provenance.json').read_text())
         self.assertEqual(provenance['commit'],'9e04201d4557e729822fb57f62a316c3dea1d4a8');self.assertEqual(provenance['version'],'7.4.47');self.assertEqual(provenance['files']['mdi.json'],'3f719999c5f613801f790283b86056e723c6fa1667dcf033371499727decd858')
@@ -37,12 +39,12 @@ class ReviewBackendTests(unittest.TestCase):
                 elif field=='badges':cfg['views'][0][field]=bad
                 else:cfg['views'][0]['cards'][0]['entities'][0][field]=bad
                 self.f.peer.configs['fixture-dashboard']=cfg
-                status,catalog=self.f.request('GET','/api/ha/dashboards');self.assertEqual(status,200);entry=next(x for x in catalog['dashboards'] if x['path']=='fixture-dashboard');self.assertFalse(entry['supported']);self.assertIn(path,[x['path'] for x in entry['issues']])
-                status,result=self.f.request('POST','/api/ha/import',{'path':'fixture-dashboard','name':'Bad'},extra=self.csrf);self.assertEqual(status,422);self.assertIn(path,[x['path'] for x in result['details']]);self.assertEqual(self.f.store.list('alice'),[]);self.assertEqual(self.f.peer.configs['fixture-dashboard'],cfg)
+                status,catalog=self.f.request('GET','/api/ha/dashboards');self.assertEqual(status,200);entry=next(x for x in catalog['dashboards'] if x['path']=='fixture-dashboard');self.assertTrue(entry['supported']);self.assertEqual(entry['issues'],[])
+                status,result=self.f.request('POST','/api/ha/import',{'path':'fixture-dashboard','name':'Bad'},extra=self.csrf);self.assertEqual(status,201);self.assertEqual(result['native'],cfg);self.assertEqual(self.f.request('GET','/api/dashboards/'+result['id']+'/export')[1],cfg);self.assertEqual(self.f.peer.configs['fixture-dashboard'],cfg)
         self.f.peer.configs=original
-        self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list') for c in self.f.peer.commands))
+        self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list','lovelace/resources/list') for c in self.f.peer.commands))
     def test_R7_every_allowed_field_type_and_nested_container(self):
-        from dashboard_reads import validate_configuration
+        from dashboard_reads import validate_supported_configuration as validate_configuration
         from store import StudioError
         cards=[
           {'type':'entity','entity':'sensor.fixture','name':'Name','icon':'mdi:home','unit':'W','attribute':'power','state_color':True},
@@ -78,10 +80,10 @@ class ReviewBackendTests(unittest.TestCase):
                 with self.assertRaises(StudioError) as caught:validate_configuration(altered)
                 self.assertEqual(caught.exception.status,422);self.assertTrue(caught.exception.details)
         import os
-        out=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag01-evidence/fix-1/browser'));out.mkdir(parents=True,exist_ok=True)
+        out=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'));out.mkdir(parents=True,exist_ok=True)
         (out/'R7-type-matrix.json').write_text(json.dumps({'mutationCount':len(cases),'paths':[keys for keys,_ in cases],'passed':True},indent=2))
         # Fully supported actions are data only, never dispatched on import.
         self.f.peer.configs['fixture-dashboard']=cfg
         status,d=self.f.request('POST','/api/ha/import',{'path':'fixture-dashboard','name':'Typed'},extra=self.csrf);self.assertEqual(status,201);self.assertEqual(d['native'],cfg)
-        self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list') for c in self.f.peer.commands))
+        self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list','lovelace/resources/list') for c in self.f.peer.commands))
 if __name__=='__main__':unittest.main()

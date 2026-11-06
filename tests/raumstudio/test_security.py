@@ -38,7 +38,7 @@ class SecurityTests(unittest.TestCase):
         before=copy.deepcopy(self.f.peer.configs)
         self.assertEqual(self.f.request('GET','/api/ha/dashboards',user='bob')[0],403)
         status,rows=self.f.request('GET','/api/ha/dashboards');self.assertEqual(status,200);self.assertEqual([r['viewCount'] for r in rows['dashboards']],[1,1,1])
-        status,value=self.post('/api/ha/import',{'path':'bad-dashboard','name':'Bad'});self.assertEqual(status,422);self.assertIn('views[0].cards[0].type',value['error']);self.assertEqual(self.f.store.list('alice'),[])
+        status,value=self.post('/api/ha/import',{'path':'bad-dashboard','name':'Bad'});self.assertEqual(status,201);self.assertEqual(value['native'],before['bad-dashboard']);self.assertEqual(len(self.f.store.list('alice')),1)
         status,d=self.post('/api/ha/import',{'path':'fixture-dashboard','name':'Kopie'});self.assertEqual(status,201);self.assertEqual(d['native'],before['fixture-dashboard'])
         self.f.peer.users[0]['is_active']=False;self.assertEqual(self.f.request('GET','/api/ha/dashboards')[0],403);self.assertEqual(self.f.peer.configs,before)
     def test_default_disabled_is_honest_and_serves_app(self):

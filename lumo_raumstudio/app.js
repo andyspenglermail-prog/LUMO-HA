@@ -6,7 +6,7 @@ const escDate=v=>new Date(v).toLocaleString('de-DE',{dateStyle:'medium',timeStyl
 function notice(message,error=false){const n=$('#notice');n.textContent=message;n.classList.toggle('error',error);n.hidden=!message;if(error&&message)n.scrollIntoView({block:'start',behavior:'instant'});}
 function text(tag,value,className=''){const e=document.createElement(tag);e.textContent=value;e.className=className;return e;}
 function button(label,fn,className=''){const b=text('button',label,className);b.type='button';b.disabled=!initialized;b.addEventListener('click',()=>run(fn));return b;}
-let icons={},uncertainTarget='';
+let icons={},uncertainTarget='',importReport=null,importReportId=null,nativeDirty=false;
 function icon(name){
   if(!name)return text('span','','no-icon');
   if(!Object.hasOwn(icons,name)){const missing=text('span','Symbol nicht verfügbar','icon-missing');missing.title=name;return missing;}
@@ -58,14 +58,14 @@ function currentForm(){
   draft.name=$('#edit-name').value;draft.description=$('#edit-description').value;draft.icon=$('#edit-icon').value;
   const bg=draft.settings.background;Object.assign(bg,{color:$('#bg-color').value,imageId:$('#image-choice').value||null,position:$('#bg-position').value,mode:$('#bg-mode').value,scale:Number($('#bg-scale').value),opacity:Number($('#bg-opacity').value),attachment:$('#bg-attachment').value});
   Object.assign(draft.settings.navigation,{showIconAndTitle:$('#nav-labels').checked,startView:$('#start-view').value||null,showInSidebar:$('#nav-sidebar').checked,requireAdmin:$('#nav-admin').checked});
-  dirty=JSON.stringify(draft)!==JSON.stringify(selected);dirtyState();preview();
+  dirty=nativeDirty||JSON.stringify(draft)!==JSON.stringify(selected);dirtyState();preview();
 }
 function imageChoices(){
   const choice=$('#image-choice'),old=draft?.settings.background.imageId||'';choice.replaceChildren(new Option('Kein Bild',''));
   images.forEach(m=>choice.add(new Option(m.name+' · '+m.width+' × '+m.height,m.id)));choice.value=old;
 }
 function fill(){
-  if(!selected)return;draft=clone(selected);dirty=false;previewView=draft.settings.navigation.startView;
+  if(!selected)return;draft=clone(selected);dirty=false;nativeDirty=false;previewView=draft.settings.navigation.startView;
   $('#workspace').hidden=false;$('#selected-title').textContent=selected.name;
   $('#edit-name').value=draft.name;$('#edit-description').value=draft.description;$('#edit-icon').value=draft.icon;$('#edit-icon').setCustomValidity('');
   const bg=draft.settings.background;$('#bg-color').value=bg.color;$('#bg-position').value=bg.position;$('#bg-mode').value=bg.mode;$('#bg-scale').value=bg.scale;$('#bg-opacity').value=bg.opacity;$('#bg-attachment').value=bg.attachment;
@@ -74,11 +74,11 @@ function fill(){
   draft.views.forEach(v=>$('#start-view').add(new Option(v.title,v.id)));$('#start-view').value=n.startView||'';$('#start-view').disabled=busy||!draft.views.length;
   $('#start-hint').textContent=draft.views.length?'Die Startansicht wird in der Vorschau zuerst gezeigt. Die native Zuordnung wird für eine spätere Ausgabe vorbereitet.':'Sobald echte Ansichten vorhanden sind, kannst Du hier die Startansicht wählen.';
   const meta=$('#metadata');meta.replaceChildren();for(const [k,v] of [['Interne ID',draft.id],['Erstellt',escDate(draft.createdAt)],['Geändert',escDate(draft.updatedAt)],['Status',draft.status],['Revision',draft.revision],['Datenformat',draft.schemaVersion]])meta.append(text('dt',k),text('dd',String(v)));
-  imageChoices();dirtyState();preview();
+  imageChoices();renderImport();dirtyState();preview();
 }
 function preview(){
   if(!draft)return;const bg=draft.settings.background,n=draft.settings.navigation;let view=draft.views.find(v=>v.id===previewView)||draft.views.find(v=>v.id===n.startView)||draft.views[0];
-  const native=view?draft.native?.views[view.nativeIndex]:null,override=native?.background;
+  const native=view&&!draft.nativeImport?draft.native?.views[view.nativeIndex]:null,override=native?.background;
   $('#preview').style.backgroundColor=override||bg.color;
   const layer=$('#preview-image');layer.style.backgroundImage=bg.imageId&&!override?`url("api/images/${bg.imageId}")`:'none';layer.style.backgroundPosition=bg.position;layer.style.backgroundSize=bg.mode==='scale'?bg.scale+'% auto':bg.mode;layer.style.opacity=bg.opacity/100;
   // Fixed output is documented; this bounded preview is not the page scroll surface.
@@ -87,7 +87,9 @@ function preview(){
   $('#preview-empty').textContent=draft.views.length?'Ansicht „'+view.title+'“ · '+draft.views.length+' vorhandene Ansicht'+(draft.views.length===1?'':'en')+'. Karten bleiben als Daten erhalten und werden hier nicht aktiv ausgeführt.':'Deine leere Leinwand. Noch keine Ansichten – und Platz für Deine Ideen.';
   $('#preview-note').textContent=(override?'Diese Ansicht verwendet ihren vorhandenen eigenen Hintergrund. ':'Globale Gestaltung für Ansichten ohne eigenen Hintergrund. ')+(bg.attachment==='fixed'?'In der späteren nativen Ausgabe am Bildschirm fixiert. ':'')+'Keine Live-Werte oder aktiven HA-Karten.';
   $('#output-preferences').textContent='Nur gespeicherte Ausgabeabsicht: '+(n.showInSidebar?'in der HA-Seitenleiste':'nicht in der HA-Seitenleiste')+' · '+(n.requireAdmin?'nur Administratoren':'alle in HA berechtigten Benutzer')+'. Keine Änderung an HA.';
-  $('#bg-scale').disabled=busy||bg.mode!=='scale';
+  if(draft.nativeImport){if(!draft.views.length)$('#preview-empty').textContent='Keine konkreten Ansichten in der importierten Konfiguration. Strategy- und sonstige Daten bleiben geschützt erhalten; LUMO erzeugt daraus keine Ansichten.';$('#preview-note').textContent='Nur lokale LUMO-Vorschau – keine Wiedergabe des HA-Originals. Importierte Hintergründe, Karten und Templates werden nicht geladen. Gestaltung und Navigation ändern den JSON-Export nicht.';$('#start-hint').textContent='Nur lokale Vorschau. Die Reihenfolge der importierten Ansichten bleibt im JSON-Export erhalten.';}
+  importLocks();
+  $('#bg-scale').disabled=busy||nativeDirty||bg.mode!=='scale';
 }
 async function listing(){
   const rows=await api('dashboards'),list=$('#saved-list');list.replaceChildren();
@@ -95,7 +97,7 @@ async function listing(){
   rows.forEach(d=>{const row=text('article','','draft-row'),head=text('div','','draft-title');head.append(icon(d.icon),text('strong',d.name),text('span','Entwurf','badge'));row.append(head,text('p',d.views.length+' Ansichten · geändert '+escDate(d.updatedAt),'draft-meta'));const acts=text('div','','actions');
     acts.append(button('Öffnen',()=>guard(()=>openDraft(d.id))),button('Umbenennen',()=>guardAction(d,rename)),button('Duplizieren',()=>guardAction(d,duplicate)),button('Einstellungen',()=>guard(()=>openDraft(d.id,true))),button('Löschen',()=>guardAction(d,remove),'danger'));row.append(acts);list.append(row);});
 }
-async function openDraft(id,scroll=true){return writing(async()=>{selected=await api('dashboards/'+id);sessionStorage.setItem('lumo-selected',id);fill();setStep(1);if(scroll)$('#workspace').scrollIntoView({behavior:'instant',block:'start'});});}
+async function openDraft(id,scroll=true){return writing(async()=>{selected=await api('dashboards/'+id);sessionStorage.setItem('lumo-selected',id);fill();await loadImportReport();setStep(1);if(scroll)$('#workspace').scrollIntoView({behavior:'instant',block:'start'});});}
 function validateSettings(){
   const invalid=[...$('#settings-form').elements].find(e=>e.willValidate&&!e.validity.valid);
   if(!invalid)return true;
@@ -104,12 +106,13 @@ function validateSettings(){
   invalid.focus();invalid.reportValidity();return false;
 }
 async function save(){
+  if(nativeDirty)return saveNative();
   if(!selected||!dirty)return true;if(!validateSettings())return false;
-  return writing(async()=>{currentForm();const value=await api('dashboards/'+selected.id+'/save',{revision:selected.revision,patch:{name:draft.name,icon:draft.icon,description:draft.description,settings:draft.settings}});selected=await readback(value);fill();await listing();notice('Dein Entwurf wurde gespeichert und zurückgelesen.');return true;});
+  return writing(async()=>{currentForm();const value=await api('dashboards/'+selected.id+'/save',{revision:selected.revision,patch:{name:draft.name,icon:draft.icon,description:draft.description,settings:draft.settings}});selected=await readback(value);fill();await loadImportReport();await listing();notice('Dein Entwurf wurde gespeichert und zurückgelesen.');return true;});
 }
 async function create(){
   if(!$('#create-form').reportValidity())return false;
-  return writing(async()=>{const value=await api('dashboards',{name:$('#new-name').value,icon:$('#new-icon').value});selected=await readback(value);sessionStorage.setItem('lumo-selected',selected.id);$('#create-form').reset();newDirty=false;fill();await listing();setStep(2);notice('Dein Dashboard wurde gespeichert. Es hat noch keine Ansichten.');return true;});
+  return writing(async()=>{const value=await api('dashboards',{name:$('#new-name').value,icon:$('#new-icon').value});selected=await readback(value);sessionStorage.setItem('lumo-selected',selected.id);$('#create-form').reset();newDirty=false;fill();await loadImportReport();await listing();setStep(2);notice('Dein Dashboard wurde gespeichert. Es hat noch keine Ansichten.');return true;});
 }
 let dialogResolve=null;
 function modal({title,message,input=null,confirm='Bestätigen',discard=false}){
@@ -135,11 +138,11 @@ async function rename(d){
   while(true){
     const pending=modal({title:'Dashboard umbenennen',message:'Die interne ID, Ansichten und Erstellzeit bleiben unverändert.',input:value,confirm:'Name speichern'});$('#dialog-error').textContent=error;
     const answer=await pending;if(answer.action!=='confirm')return;value=answer.value;
-    try{await writing(async()=>{const changed=await readback(await api('dashboards/'+d.id+'/save',{revision:d.revision,patch:{name:value}}));if(selected?.id===d.id){selected=changed;fill();}await listing();notice('Name gespeichert.');});return;}
+    try{await writing(async()=>{const changed=await readback(await api('dashboards/'+d.id+'/save',{revision:d.revision,patch:{name:value}}));if(selected?.id===d.id){selected=changed;fill();await loadImportReport();}await listing();notice('Name gespeichert.');});return;}
     catch(e){error=e.message;}
   }
 }
-async function duplicate(d){await writing(async()=>{const value=await readback(await api('dashboards/'+d.id+'/duplicate',{revision:d.revision}));selected=value;sessionStorage.setItem('lumo-selected',value.id);fill();await listing();notice('Unabhängige lokale Kopie gespeichert.');});}
+async function duplicate(d){await writing(async()=>{const value=await readback(await api('dashboards/'+d.id+'/duplicate',{revision:d.revision}));selected=value;sessionStorage.setItem('lumo-selected',value.id);fill();await loadImportReport();await listing();notice('Unabhängige lokale Kopie gespeichert.');});}
 async function remove(d){const answer=await modal({title:'Lokalen Entwurf löschen?',message:'„'+d.name+'“ wird aus Deinem LUMO-Speicher entfernt. Das HA-Original und Deine Bildbibliothek bleiben unverändert. Dieser Schritt kann nicht rückgängig gemacht werden.',confirm:'Entwurf löschen'});if(answer.action!=='confirm')return;
   await writing(async()=>{await api('dashboards/'+d.id+'/delete',{revision:d.revision,confirm:true});await confirmCollection('dashboards',rows=>!rows.some(r=>r.id===d.id),'Löschung von „'+d.name+'“ (ID '+d.id+').');if(selected?.id===d.id){selected=draft=null;dirty=false;$('#workspace').hidden=true;sessionStorage.removeItem('lumo-selected');}await listing();notice('Nur der lokale Entwurf wurde gelöscht.');});
 }
@@ -161,8 +164,67 @@ $('#duplicate-selected').onclick=()=>run(()=>guardAction(selected,duplicate));$(
 $('#image-file').addEventListener('change',()=>run(async()=>{const file=$('#image-file').files[0];if(!file)return;if(file.size>8*1024*1024)throw Error('Bitte ein Bild bis 8 MiB wählen.');
   await writing(async()=>{const data=await new Promise((res,rej)=>{const reader=new FileReader();reader.onload=()=>res(reader.result.split(',')[1]);reader.onerror=()=>rej(Error('Die Bilddatei konnte nicht gelesen werden.'));reader.readAsDataURL(file);});const uploaded=await api('images',{name:file.name,data});images=await confirmCollection('images',rows=>rows.some(i=>JSON.stringify(i)===JSON.stringify(uploaded)),'Bildupload „'+uploaded.name+'“ (ID '+uploaded.id+').');imageChoices();$('#image-choice').value=uploaded.id;currentForm();$('#image-file').value='';notice('Bild in Deiner Bibliothek gespeichert. Bitte die Hintergrundänderung noch speichern.');});
 }));
-$('#load-ha').onclick=()=>run(async()=>{await writing(async()=>{let result;try{result=await api('ha/dashboards');}catch(e){$('#connection').textContent='HA · nicht verbunden / Rechte nicht bestätigt';throw e;}$('#connection').textContent=result.status;const list=$('#ha-list');list.replaceChildren();if(!result.dashboards.length)list.append(text('p','Keine lesbaren gespeicherten HA-Dashboards gefunden. Automatische Strategy-Dashboards können nicht übernommen werden.','empty'));
- result.dashboards.forEach(d=>{const row=text('article','','ha-item'),info=text('div');info.append(text('strong',d.title),text('p',(d.viewCount===null?'Ansichten nicht bestimmbar':d.viewCount+' Ansichten')+' · '+d.mode+' · '+(d.supported?'unterstützte Kopie':'nicht vollständig unterstützt')));if(d.issues.length){const ul=text('ul');d.issues.forEach(i=>ul.append(text('li',i.path+': '+i.message)));info.append(ul);}const b=button('Als LUMO-Kopie übernehmen',()=>guard(async()=>{await writing(async()=>{const value=await api('ha/import',{path:d.path,name:d.title.slice(0,80)});selected=await readback(value);sessionStorage.setItem('lumo-selected',selected.id);fill();await listing();setStep(1);$('#workspace').scrollIntoView();notice('Vollständige unterstützte Konfiguration unabhängig kopiert. Das HA-Original ist unverändert.');});}));b.disabled=!d.supported;row.append(info,b);list.append(row);});notice('Home Assistant wurde nur gelesen. Nicht unterstützte Inhalte sind gekennzeichnet; kein stiller Teilimport.');});});
+$('#load-ha').onclick=()=>run(async()=>{await writing(async()=>{let result;try{result=await api('ha/dashboards');}catch(e){$('#connection').textContent='HA · nicht verbunden / Rechte nicht bestätigt';throw e;}$('#connection').textContent=result.status;const list=$('#ha-list');list.replaceChildren();if(!result.dashboards.length)list.append(text('p','Keine lesbaren HA-Konfigurationen gefunden. Auch Strategy-Konfigurationen können als geschützte Daten übernommen werden.','empty'));
+ result.dashboards.forEach(d=>{const row=text('article','','ha-item'),info=text('div');info.append(text('strong',d.title),text('p',(d.viewCount===null?'Ansichten nicht bestimmbar':d.viewCount+' Ansichten')+' · '+d.mode+' · '+(d.supported?'vollständig übernehmbar · Bearbeitbarkeit getrennt':'nicht lesbar oder Datengrenze überschritten')));if(d.issues.length){const ul=text('ul');d.issues.forEach(i=>ul.append(text('li',i.path+': '+i.message)));info.append(ul);}const b=button('Als LUMO-Kopie übernehmen',()=>guard(async()=>{await writing(async()=>{const value=await api('ha/import',{path:d.path,name:d.title.slice(0,80)});selected=await readback(value);sessionStorage.setItem('lumo-selected',selected.id);fill();await loadImportReport();await listing();setStep(1);$('#workspace').scrollIntoView();notice('Vollständige HA-Konfiguration unabhängig kopiert. Geschützte Daten bleiben erhalten; das HA-Original ist unverändert.');});}));b.disabled=!d.supported;row.append(info,b);list.append(row);});notice('Home Assistant wurde nur gelesen. Auch unbekannte Inhalte bleiben vollständig erhalten. Details und Bearbeitbarkeit stehen nach der Übernahme im Importbericht.');});});
+// Imported JSON is only read as data. Never merge it into JS objects or DOM/CSS.
+function importReady(){return Boolean(selected?.nativeImport&&importReportId===selected.id&&importReport?.revision===selected.revision);}
+function nativeElement(){return importReady()?importReport.editableElements.find(e=>JSON.stringify(e.path)===$('#native-element').value):null;}
+function nativeField(){return nativeElement()?.fields.find(f=>f.kind===$('#native-field').value);}
+function importLocks(){
+  if(!draft)return;
+  $$('#settings-form input,#settings-form select,#settings-form textarea,#edit-icon-options button').forEach(e=>e.disabled=busy||nativeDirty);
+  $('#start-view').disabled=busy||nativeDirty||!draft.views.length;
+  for(const id of ['image-file','remove-image'])$('#'+id).disabled=busy||nativeDirty;
+  const ready=importReady(),blocked=busy||!ready||(dirty&&!nativeDirty);
+  for(const id of ['native-element','native-field'])$('#'+id).disabled=blocked||nativeDirty;
+  $('#native-value').disabled=blocked;$('#native-save').disabled=blocked||!nativeDirty;
+  $('#native-cancel').disabled=busy||!nativeDirty;$('#native-export').disabled=busy||!selected.nativeImport;
+}
+function nativeFields(){
+  $('#native-field').replaceChildren();for(const f of nativeElement()?.fields||[])$('#native-field').add(new Option(f.label,f.kind));nativeValue();
+}
+function nativeValue(){
+  const f=nativeField();$('#native-value').value=f?.value||'';$('#native-path').textContent=f?'Nur dieses Feld: '+JSON.stringify(f.path):'';
+}
+function renderImport(){
+  $('#import-detail').hidden=!selected?.nativeImport;
+  if(!selected?.nativeImport)return;
+  const ready=importReady();$('#native-form').hidden=!ready||!importReport.editableElements.length;$('#native-empty').hidden=!ready||Boolean(importReport.editableElements.length);
+  $('#import-summary').textContent=ready?importReport.summary:'Importbericht wird geladen … Die serverseitige Kopie bleibt unverändert.';
+  $('#import-counts').textContent=ready?importReport.editableCount+' Elemente mit gezielt bearbeitbaren Feldern · '+importReport.protected.count+' geschützte Datenfelder · '+importReport.editCount+' ausdrücklich gespeicherte Feldänderungen.':'';
+  $('#import-resources').textContent=ready?importReport.resources.message:'';
+  $('#import-technical-text').textContent=ready?JSON.stringify({sourceHash:importReport.sourceHash,exportHash:importReport.exportHash,resources:importReport.resources,dependencies:importReport.dependencies,protected:importReport.protected,editableTruncated:importReport.editableTruncated},null,2):'';
+  const picker=$('#native-element'),old=picker.value;picker.replaceChildren();
+  if(ready){for(const e of importReport.editableElements)picker.add(new Option(e.label+' · '+e.type+' · '+JSON.stringify(e.path),JSON.stringify(e.path)));if([...picker.options].some(o=>o.value===old))picker.value=old;}
+  nativeFields();importLocks();
+}
+async function loadImportReport(){
+  if(!selected?.nativeImport){importReport=null;importReportId=null;return;}
+  const id=selected.id,revision=selected.revision;
+  try{const value=await api('dashboards/'+id+'/report');if(value.revision!==revision)throw Error('Der Importbericht gehört zu einem neueren Stand. Bitte bewusst neu öffnen; Deine Kopie wurde nicht überschrieben.');importReport=value;importReportId=id;renderImport();}
+  catch(e){importReport=null;importReportId=null;renderImport();$('#import-summary').textContent='Bericht nicht verfügbar: '+e.message+' Der gespeicherte Stand bleibt als JSON herunterladbar.';}
+}
+async function saveNative(){
+  const field=nativeField();if(!nativeDirty)return true;
+  if(!field||!importReady())throw Error('Bitte den gespeicherten Importbericht neu öffnen.');
+  if(!$('#native-form').checkValidity()){$('#native-editor').open=true;$('#native-value').focus();$('#native-form').reportValidity();return false;}
+  const id=selected.id,revision=selected.revision,edit={path:clone(field.path),value:$('#native-value').value};
+  return writing(async()=>{const value=await api('dashboards/'+id+'/native-edit',{revision,edits:[edit]});selected=await readback(value);fill();await loadImportReport();await listing();notice('Gezielte Änderung gespeichert und zurückgelesen. Nur das gewählte native Feld wurde geändert.');return true;});
+}
+$('#native-element').onchange=nativeFields;$('#native-field').onchange=nativeValue;
+$('#native-value').oninput=()=>{nativeDirty=$('#native-value').value!==nativeField()?.value;dirty=nativeDirty||JSON.stringify(draft)!==JSON.stringify(selected);dirtyState();preview();};
+$('#native-form').onsubmit=e=>{e.preventDefault();run(saveNative);};
+$('#native-cancel').onclick=()=>{nativeDirty=false;dirty=false;nativeValue();dirtyState();preview();};
+$('#native-export').onclick=()=>run(()=>writing(async()=>{
+  // Download raw server bytes: JSON.parse/stringify would round large integers.
+  const c=new AbortController(),timer=setTimeout(()=>c.abort(),60000);
+  try{const response=await fetch('api/dashboards/'+selected.id+'/export',{headers:{'X-LUMO-Read':'1'},cache:'no-store',signal:c.signal});
+    if(!response.ok){const error=await response.json();throw Error(error.error||'Export nicht verfügbar.');}
+    const blob=await response.blob(),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=response.headers.get('Content-Disposition')?.match(/filename="([a-z0-9.-]+)"/)?.[1]||'lumo-kopie.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    notice('Gespeicherte HA-Kopie als JSON heruntergeladen. Ungespeicherte Eingaben sind nicht enthalten. Externe Dateien und Themes sind nicht mitkopiert.');
+  }finally{clearTimeout(timer);}
+}));
 window.addEventListener('beforeunload',e=>{if(dirty||newDirty||busy||uncertain){e.preventDefault();e.returnValue='';}});
 async function start(){
   $$('button,input,select,textarea').forEach(e=>e.disabled=true);

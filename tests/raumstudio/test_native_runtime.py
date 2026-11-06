@@ -8,13 +8,14 @@ from store import Store,defaults
 from native import compile_native
 from test_images import png
 CACHE=pathlib.Path(os.environ.get('HA_NATIVE_CACHE','/workspace/lumo-core-usability-evidence/native-feasibility'))
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag01-evidence/implementation/browser'))/'native'
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'))/'native'
 class NativeRuntimeTests(unittest.TestCase):
     def test_original_background_runtime_and_root_inheritance(self):
         OUT.mkdir(parents=True,exist_ok=True);pins=json.loads((CACHE/'asset-pins.json').read_text());network=[];errors=[];matrix=[]
         with tempfile.TemporaryDirectory() as t:
             s=Store(pathlib.Path(t)/'s.sqlite');image=s.put_image('alice','Native probe',png(size=(100,100)))
             d=s.import_native('alice','Native Mappingprobe',{'views':[{'title':'Global','path':'global','cards':[]},{'title':'Eigener Hintergrund','path':'own','background':'#00ff00','cards':[]}]})
+            d.pop('nativeImport')  # Exercise the preserved legacy mapping, not new lossless exports.
             bg=d['settings']['background'];bg.update(imageId=image['id'],color='#0000ff')
             with sync_playwright() as pw:
                 browser=pw.chromium.launch(headless=True,args=['--no-sandbox']);ctx=browser.new_context(viewport={'width':800,'height':600},service_workers='block');page=ctx.new_page()

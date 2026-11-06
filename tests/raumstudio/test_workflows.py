@@ -4,7 +4,7 @@ from test_http import Fixture
 from proxy import Proxy
 from test_images import png
 from playwright.sync_api import sync_playwright,expect
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag01-evidence/implementation/browser'))
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'))
 VIEWPORTS=[(1440,900),(1280,720),(768,1024),(1024,768),(390,844),(844,390),(320,640)]
 class WorkflowTests(unittest.TestCase):
     def setUp(self):self.f=Fixture();self.proxy=Proxy(self.f);OUT.mkdir(parents=True,exist_ok=True)
@@ -44,12 +44,12 @@ class WorkflowTests(unittest.TestCase):
             page.locator('#save').click();expect(page.locator('#dirty-label')).to_have_text('Alle Änderungen gespeichert')
             page.locator('#image-file').set_input_files({'name':'Synthetisch blau.png','mimeType':'image/png','buffer':png('blue')});expect(page.locator('#image-choice option')).to_have_count(3);two=page.locator('#image-choice').input_value();self.assertNotEqual(one,two);page.locator('#image-choice').select_option(one);page.locator('#save').click();expect(page.locator('#dirty-label')).to_have_text('Alle Änderungen gespeichert')
             page.reload();page.locator('[data-tab="background"]').click();expect(page.locator('#image-choice')).to_have_value(one);page.locator('#remove-image').click();page.locator('#save').click();expect(page.locator('#dirty-label')).to_have_text('Alle Änderungen gespeichert');self.assertEqual(len(self.f.store.images('alice')),2)
-            page.locator('#load-ha').click();expect(page.locator('#ha-list .ha-item')).to_have_count(3);expect(page.locator('#connection')).to_contain_text('Administrator geprüft');bad=page.locator('.ha-item').filter(has_text='bad-dashboard');expect(bad).to_contain_text('views[0].cards[0].type');expect(bad.get_by_role('button')).to_be_disabled()
+            page.locator('#load-ha').click();expect(page.locator('#ha-list .ha-item')).to_have_count(3);expect(page.locator('#connection')).to_contain_text('Administrator geprüft');bad=page.locator('.ha-item').filter(has_text='bad-dashboard');expect(bad).to_contain_text('vollständig übernehmbar');expect(bad.get_by_role('button')).to_be_enabled()
             page.locator('.ha-item').filter(has_text='fixture-dashboard').get_by_role('button').click();expect(page.locator('#selected-title')).to_have_text('fixture-dashboard');self.assertEqual(self.f.store.list('alice')[0]['native'],self.f.peer.configs['fixture-dashboard'])
             page.locator('[data-tab="navigation"]').click();expect(page.locator('#start-view')).to_be_enabled();page.locator('#nav-labels').uncheck();page.locator('#save').click();expect(page.locator('#dirty-label')).to_have_text('Alle Änderungen gespeichert')
             page.locator('[data-tab="management"]').click();page.locator('#duplicate-selected').click();expect(page.locator('#selected-title')).to_have_text('fixture-dashboard · Kopie');self.assertEqual(len(self.f.store.list('alice')),3)
             page.locator('#delete-selected').click();page.locator('#dialog-cancel').click();self.assertEqual(len(self.f.store.list('alice')),3);page.locator('#delete-selected').click();page.locator('#dialog-confirm').click();expect(page.locator('#notice')).to_contain_text('Nur der lokale Entwurf wurde gelöscht');self.assertEqual(len(self.f.store.list('alice')),2)
-            self.assertEqual(self.f.peer.configs,before);self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list') for c in self.f.peer.commands));b.close()
+            self.assertEqual(self.f.peer.configs,before);self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list','lovelace/resources/list') for c in self.f.peer.commands));b.close()
     def test_cas_keeps_inputs_and_lost_write_is_never_retried(self):
         d=self.f.store.create('alice','Konflikt')
         with sync_playwright() as p:

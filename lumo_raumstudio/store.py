@@ -28,6 +28,14 @@ def now(): return datetime.now(timezone.utc).isoformat(timespec='microseconds')
 def defaults():
     return {'background':{'color':'#eef2ef','imageId':None,'position':'center center','mode':'cover','scale':100,'opacity':100,'attachment':'scroll'},'navigation':{'showIconAndTitle':True,'startView':None,'showInSidebar':True,'requireAdmin':True}}
 
+def import_views(native):
+    views=native.get('views')
+    if type(views) is not list:return []
+    # Display-only metadata, never write these fallbacks into native JSON.
+    return [{'id':uuid.uuid4().hex,'title':v.get('title') if type(v) is dict and type(v.get('title')) is str else 'Ansicht '+str(i+1),
+             'icon':v.get('icon','') if type(v) is dict and type(v.get('icon','')) is str else '',
+             'nativeIndex':i,'backgroundOverride':None} for i,v in enumerate(views)]
+
 class Store:
     def __init__(self,path):
         self.path=Path(path)
@@ -91,15 +99,28 @@ class Store:
             c.execute('BEGIN IMMEDIATE');self.checked(c,owner,id,revision)
             c.execute('DELETE FROM dashboards WHERE id=? AND owner=? AND revision=?',(id,owner,revision))
         return {'deleted':True}
-    def import_native(self,owner,name,config):
+    def import_native(self,owner,name,config,*,source_path=None,resources=None):
         from dashboard_reads import validate_configuration
+        from imported import state,validate_state
         native=validate_configuration(config);name=text(name,'Name',80);stamp=now()
         d={'id':uuid.uuid4().hex,'name':name,'icon':'','description':'','createdAt':stamp,'updatedAt':stamp,'status':'Entwurf','schemaVersion':1,'revision':1,'settings':defaults(),'native':native,
-           'views':[{'id':uuid.uuid4().hex,'title':v['title'],'icon':v.get('icon',''),'nativeIndex':i,'backgroundOverride':None} for i,v in enumerate(native['views'])]}
-        if 'background' in native:d['settings']['background']['color']=native['background']
-        d['settings']['navigation']['startView']=d['views'][0]['id']
+           'views':import_views(native), 'nativeImport':state(source_path,resources)}
+        validate_state(d)
         with self.connect() as c:c.execute('INSERT INTO dashboards VALUES (?,?,?,?)',(d['id'],owner,1,json.dumps(d)))
         return self.get(owner,d['id'])
+    def edit_native(self,owner,id,revision,edits):
+        from imported import apply_edits,materialize
+        with self.connect() as c:
+            c.execute('BEGIN IMMEDIATE');d=self.checked(c,owner,id,revision)
+            if 'nativeImport' not in d:raise StudioError('Dieser Entwurf ist keine verlustfreie HA-Kopie.',422)
+            if type(edits) is not list or not 1<=len(edits)<=32:raise StudioError('Bitte 1–32 gezielte Änderungen senden.',422)
+            apply_edits(d['native'],edits)  # Validate the whole batch before any write.
+            ledger={tuple(e['path']):e for e in d['nativeImport']['edits']}
+            for e in edits:ledger[tuple(e['path'])]=copy.deepcopy(e)
+            d['nativeImport']['edits']=list(ledger.values());materialize(d)
+            d['revision']+=1;d['updatedAt']=now()
+            c.execute('UPDATE dashboards SET revision=?,document=? WHERE id=? AND owner=? AND revision=?',(d['revision'],json.dumps(d),id,owner,revision))
+        return self.get(owner,id)
     def put_image(self,owner,name,data):
         from images import decode
         name=text(name,'Bildname',120); raw,w,h=decode(data)

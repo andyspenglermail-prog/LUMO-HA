@@ -1,6 +1,27 @@
-# Auftrag 01 – Verifikation und Abnahmegrenzen
+# Raumstudio – Verifikation und Abnahmegrenzen
 
-## Technischer Stand 0.12.0
+## Aktueller Vertrag 0.12.1 – verlustfreie Importkorrektur
+
+Die 0.12.0-Basis `c1ffa3434d95a59f0538573173d8138927388811` wurde separat eingefroren. Der erste synthetische Import-/Roundtriptest wurde vor Produktänderungen gegen einen `git archive`-Kontrollcheckout ausgeführt und scheiterte an der Ablehnung opaker Schlüssel. Spätere vertikale RED/GREEN-Schritte prüfen reale HTTP-Export-/Edit-/Reportabläufe, Browserbedienung, JSON-Grenzen, Versionswert, versteckte Validierungsfelder, Legacy-Prüfung, Strategy-Darstellung, begrenzte Diagnostik und Backupintegrität. Tests installieren nichts und greifen nicht auf produktives HA zu.
+
+Die zusätzlichen Methoden in `test_lossless.py` und `test_lossless_browser.py` prüfen:
+
+- vollständiges Original mit `custom:button-card`, `button_card_templates`, `card_mod`, verschachtelten unbekannten Daten, `__proto__`/`constructor`, ungewöhnlichen Feldtypen, großen Integern und geordneten Listen;
+- Import → persistierte SQLite-Hülle → tatsächlicher UI-Download → JSON-Vergleich; unverändert nach Verwaltungsname, Hintergrund-/Navigationssettings, Reload und Duplikat;
+- genau einen erlaubten Pfad ändern, alle anderen Pfade erhalten; geschützte Pfade, gemischte Editbatches und direkte Source-Manipulation verweigern;
+- echte Ressourcen-Registryantwort getrennt erhalten; fehlender Abruf bleibt unbekannt; Strategy ohne erfundene Views;
+- echter Browser → Ingress-Testproxy → HTTP → Store mit wirklichem CoreClient/RFC6455-Peer, ohne Fetch-Erfolgsmocks; keine externen Requests oder Script-/Templateausführung;
+- Owner404, CAS409, CSRF403; Browserkonflikt und verlorenes Bestätigungs-GET erhalten Eingaben und sperren automatische Wiederholung;
+- echte SQLite-Sicherung/Restore, erneutes Öffnen, vollständige Legacy-Hülle und Ablehnung beschädigter Importmarker/geschützter Editledger;
+- endliche/gebundene JSON-Daten getrennt von unterstützter Grammatik; lange opake Schlüssel bleiben im Export vollständig, werden aber in technischen Pfadbeispielen begrenzt.
+
+Die bisherige Raumstudio-Suite bleibt aktiv. Bewusst geänderte Importerwartungen: Custom Cards, fremde Icons, Badges, ungewöhnliche Feldtypen und Strategy sind jetzt importierbar statt pauschal 422. Das ist der freigegebene neue Vertrag, kein geschwächter Schutz erlaubter Schreibfelder. Die ursprüngliche konservative Grammatik und ihre 219 rekursiven Typmutationen bleiben als `validate_supported_configuration` für Legacy-Prüfung erhalten. Hintergrund-/Originalrenderer-Tests verwenden ausdrücklich Legacy-Hüllen ohne `nativeImport`; sie behaupten keine Neunormalisierung neuer Importe. Versionsasserts erwarten 0.12.1; der zulässige feste WS-Lesesatz enthält zusätzlich `lovelace/resources/list`.
+
+Aktuelle maschinenlesbare Ergebnisse und Quellhashes entstehen in `results.json` und `manifest.json` neben dem konfigurierten Browser-Evidenceordner. Der finale Lauf zählt tatsächlich ausgeführte eindeutige Methoden; Wiederholungen/Subcases zählen nicht zusätzlich. Einzelne REDs und zwischenzeitliche Regressionen sind historische Nachweise, keine finalen Fehlerbehauptungen. Die unveränderte Sourceclosure während des Laufs wird geprüft.
+
+Die nachfolgende 48-Methoden-/Imagebeschreibung ist **historisch für 0.12.0**. Sie ist kein Image-/Veröffentlichungsnachweis für die geänderten 0.12.1-Bytes. Für 0.12.1 bleiben unabhängiger Review, aktuelle amd64/aarch64-Imageprüfung, reale private HA-Referenzabnahme, Repositoryveröffentlichung/Remote-Readback und persönliche Abnahme getrennte Parent-Gates. Private Referenzen werden nicht in Tests oder öffentliche Evidence kopiert. Die Implementierung hat verfügbare private Referenzen nur lokal im Speicher auf Datenübernahme/Berichterstellung geprüft; keine privaten Datenbank- oder HA-Schreibvorgänge.
+
+## Historischer technischer Stand 0.12.0
 
 Der abschließende Parent-Lauf hat **48 von 48 eindeutigen Testmethoden**
 erfolgreich ausgeführt, ohne Skips. Die sieben ursprünglichen Reviewbefunde
@@ -38,7 +59,7 @@ Kein pytest vorausgesetzt, keine alten Suiten/Builds. Der Runner verwendet unitt
 
 - `PYTHONPATH`: Verzeichnis mit dem vorhandenen Playwright-Pythonpaket.
 - `PLAYWRIGHT_BROWSERS_PATH`: vorhandene Browserbins.
-- `RAUMSTUDIO_EVIDENCE`: Ausgabeordner der Tests, Standard `/workspace/lumo-auftrag01-evidence/implementation/final/browser`.
+- `RAUMSTUDIO_EVIDENCE`: Ausgabeordner der Tests, Standard für 0.12.1 `/workspace/lumo-import-evidence/implementation/final/browser`; frühere Evidence wird nicht überschrieben.
 - `HA_NATIVE_CACHE`: SHA-gepinnter offizieller Assetcache, Standard `/workspace/lumo-core-usability-evidence/native-feasibility`. Er enthält `asset-pins.json` und `assets/<sha256>`. Dieser Testcache gehört **nicht** zur produktiven App. Fehlt er, schlägt das Native-Gate fehl statt einen Pass zu erfinden. Tests installieren keine Abhängigkeiten.
 
 Der Runner schreibt neben dem Browserordner `results.json` und `manifest.json`, zählt **eindeutige tatsächlich gestartete Methoden** und prüft sämtliche neuen Quell-/Test-/Dokumentbytes vor und nach dem Lauf. Einzelne Subcases oder wiederholte RED/GREEN-Läufe erhöhen diese Zahl nicht. Inkrementelle historische Logs sind separat nummeriert; sie ersetzen nicht den finalen Lauf.

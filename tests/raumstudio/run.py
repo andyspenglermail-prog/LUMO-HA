@@ -1,7 +1,7 @@
 """Hash-bound new-app test runner, exact unique executed method IDs."""
 import hashlib,json,os,pathlib,sys,time,unittest
 ROOT=pathlib.Path(__file__).resolve().parents[2]
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag01-evidence/implementation/final/browser')).parent
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser')).parent
 OUT.mkdir(parents=True,exist_ok=True)
 def manifest():
     paths=[p for base in ['lumo_raumstudio','tests/raumstudio','scripts','docs/raumstudio'] for p in (ROOT/base).rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc']

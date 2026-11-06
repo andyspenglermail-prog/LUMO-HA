@@ -5,6 +5,7 @@ class Peer:
     def __init__(self):
         self.commands=[];self.users=[{'id':'alice','is_active':True,'is_owner':False,'group_ids':['system-admin']},{'id':'bob','is_active':True,'is_owner':False,'group_ids':['system-users']}]
         self.configs={'fixture-dashboard':copy.deepcopy(CONFIG),'bad-dashboard':{'views':[{'title':'Nicht unterstützt','cards':[{'type':'custom:unknown'}]}]},None:copy.deepcopy(CONFIG)}
+        self.resources=[{'id':'fixture','url':'https://external.invalid/custom.js','type':'module','unknown':{'__proto__':True}}]
         peer=self
         class Handler(socketserver.StreamRequestHandler):
             def handle(self):
@@ -35,6 +36,7 @@ class Peer:
                     if kind=='config/auth/list':result=peer.users
                     elif kind=='lovelace/dashboards/list':result=[{'url_path':p,'title':p,'mode':'storage','require_admin':False,'show_in_sidebar':True,'icon':'mdi:home'} for p in peer.configs if p]
                     elif kind=='lovelace/config':result=peer.configs.get(cmd.get('url_path'))
+                    elif kind=='lovelace/resources/list':result=peer.resources
                     else:raise AssertionError('Forbidden HA command '+kind)
                     send({'id':cmd['id'],'type':'result','success':result is not None,'result':result,'error':{'code':'config_not_found'} if result is None else None})
         class Server(socketserver.ThreadingTCPServer):

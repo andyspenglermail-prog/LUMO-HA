@@ -36,13 +36,14 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
             self.timer=Timer(3,expire);self.timer.daemon=True;self.timer.start()
             try:super().handle_one_request()
             finally:self.timer.cancel();self.timer.join()
-        def reply(self,status,body,kind='application/json'):
+        def reply(self,status,body,kind='application/json',attachment=None):
             self.close_connection=True;self.send_response(status)
             headers={'Content-Type':kind,'Content-Length':str(len(body)),'Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'SAMEORIGIN','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'",'Connection':'close'}
+            if attachment:headers['Content-Disposition']='attachment; filename="'+attachment+'"'
             for k,v in headers.items():self.send_header(k,v)
             self.end_headers()
             if self.command!='HEAD':self.wfile.write(body)
-        def api(self,status,value):self.reply(status,json.dumps(value,ensure_ascii=False,allow_nan=False,separators=(',',':')).encode())
+        def api(self,status,value):self.reply(status,json.dumps(value,ensure_ascii=True,allow_nan=False,separators=(',',':')).encode())
         def send_error(self,code,message=None,explain=None):self.api(405 if code==501 else code,{'error':'Diese Anfrage wird nicht unterstützt.'})
         def work(self):
             self.timer.cancel();self.timer.join()
@@ -106,11 +107,21 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
                 if not writing:self.api(200,store.list(user));return
                 if set(value)!={'name','icon'}:raise StudioError('Name und optionales Icon werden benötigt.')
                 self.api(201,store.create(user,value['name'],value['icon']));return
-            match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})(?:/(save|duplicate|delete))?',target)
+            match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})(?:/(save|duplicate|delete|native-edit|report|export))?',target)
             if match:
                 id,action=match.groups()
                 if not writing and not action:self.api(200,store.get(user,id));return
-                if writing and action=='save' and set(value)=={'revision','patch'}:result=store.update(user,id,value['revision'],value['patch'])
+                if not writing and action in ('report','export'):
+                    d=store.get(user,id)
+                    if 'nativeImport' not in d:raise StudioError('Dieser Entwurf ist keine verlustfreie HA-Kopie.',422)
+                    if action=='report':
+                        from imported import report
+                        self.api(200,report(d));return
+                    from native import compile_native
+                    raw=json.dumps(compile_native(store,user,d),ensure_ascii=True,allow_nan=False,indent=2).encode()+b'\n'
+                    self.reply(200,raw,attachment='lumo-'+id+'-r'+str(d['revision'])+'.json');return
+                if writing and action=='native-edit' and set(value)=={'revision','edits'}:result=store.edit_native(user,id,value['revision'],value['edits'])
+                elif writing and action=='save' and set(value)=={'revision','patch'}:result=store.update(user,id,value['revision'],value['patch'])
                 elif writing and action=='duplicate' and set(value)=={'revision'}:result=store.duplicate(user,id,value['revision'])
                 elif writing and action=='delete' and set(value)=={'revision','confirm'}:result=store.delete(user,id,value['revision'],value['confirm'])
                 else:raise StudioError('Ungültige Entwurfsaktion.')
@@ -127,7 +138,7 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
                 result=reads.catalog(user);guard();self.api(200,{'dashboards':result,'status':'Lesend verbunden · Administrator geprüft'});return
             if target=='/api/ha/import' and writing:
                 if set(value)!={'path','name'}:raise StudioError('Ungültige Importauswahl.')
-                result=reads.read(user,value['path']);guard();self.api(201,store.import_native(user,value['name'],result['config']));return
+                result=reads.read(user,value['path']);guard();self.api(201,store.import_native(user,value['name'],result['config'],source_path=result['path'],resources=result['resources']));return
             raise StudioError('Diese Schnittstelle ist nicht verfügbar.',404)
         do_GET=work;do_HEAD=work;do_POST=work;do_PUT=work;do_DELETE=work;do_PATCH=work;do_OPTIONS=work
     class QuietServer(HTTPServer):

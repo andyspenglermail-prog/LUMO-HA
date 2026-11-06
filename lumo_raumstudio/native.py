@@ -1,5 +1,5 @@
-"""Internal native mapping proof, NOT a publication/export API.
-Generated CSS only; image alpha baked in PNG, independent of LUMO/Ingress.
+"""Lossless imported export; preserved legacy mapping for older envelopes.
+Legacy generated CSS only; image alpha baked in PNG, independent of Ingress.
 """
 import base64,copy,io
 from PIL import Image
@@ -16,6 +16,9 @@ def background_css(store,owner,bg):
     return bg['color']+' url("'+uri+'") '+bg['position']+' / '+size+' no-repeat '+bg['attachment']
 
 def compile_native(store,owner,document):
+    if 'nativeImport' in document:
+        from imported import materialize
+        return materialize(document)
     validate(document['settings'],document['views']);result=copy.deepcopy(document['native'] or {'views':[]})
     result['title']=document['name'];result['background']=background_css(store,owner,document['settings']['background'])
     n=document['settings']['navigation'];views=[]

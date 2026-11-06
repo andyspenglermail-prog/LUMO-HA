@@ -1,27 +1,38 @@
 """Fixed HA reads; active administrator verified before any dashboard bytes."""
 import copy,json,math,re
 from client import ReadError,ENTITY
-from store import StudioError,ICONS
+from store import StudioError,ICONS,text
 PATH=re.compile(r'[a-z0-9][a-z0-9_-]{0,127}')
 
-def bounded(value):
+def display_title(value):
+    try:return text(value[:80] if type(value) is str else value,'Name',80)
+    except StudioError:return 'HA-Dashboard'
+
+def bounded(value,*,ensure_ascii=True):
     count=0
     def walk(v,depth=0):
         nonlocal count
         count+=1
-        if depth>20 or count>100000:raise StudioError('Die Konfiguration ist zu tief oder zu groß.',422)
+        if depth>64 or count>100000:raise StudioError('Die Konfiguration ist zu tief oder zu groß.',422)
         if type(v) is dict:
             for k,x in v.items():
-                if type(k) is not str or k in ('__proto__','constructor','prototype'):raise StudioError('Ungültige Konfigurationsschlüssel.',422)
+                if type(k) is not str:raise StudioError('Ungültige Konfigurationsschlüssel.',422)
                 walk(x,depth+1)
         elif type(v) is list:
             for x in v:walk(x,depth+1)
         elif not (v is None or type(v) in (str,bool,int) or type(v) is float and math.isfinite(v)):raise StudioError('Ungültige Konfigurationswerte.',422)
     walk(value)
-    if len(json.dumps(value,ensure_ascii=False).encode())>1048576:raise StudioError('Die Konfiguration ist größer als 1 MiB.',422)
+    if len(json.dumps(value,ensure_ascii=ensure_ascii,allow_nan=False).encode())>1048576:raise StudioError('Die Konfiguration ist größer als 1 MiB.',422)
 
 def validate_configuration(config):
-    bounded(config);issues=[]
+    # Importability is data safety, never the editor's supported grammar.
+    bounded(config)
+    if type(config) is not dict:raise StudioError('Eine HA-Konfiguration muss ein JSON-Objekt sein.',422)
+    return copy.deepcopy(config)
+
+def validate_supported_configuration(config):
+    # Legacy 0.12.0 documents used UTF-8 size; new imports keep the ASCII bound.
+    bounded(config,ensure_ascii=False);issues=[]
     def issue(path,msg):issues.append({'path':path,'message':msg})
     def fields(v,path,allowed):
         if type(v) is not dict:issue(path,'Ein Objekt wird erwartet.');return False
@@ -162,11 +173,11 @@ class DashboardReads:
         result=[];seen=set()
         for r in rows:
             if type(r) is not dict or type(r.get('url_path')) is not str or not PATH.fullmatch(r['url_path']) or r['url_path'] in seen or type(r.get('title')) is not str:raise StudioError('Ungültige HA-Dashboardliste.',502)
-            seen.add(r['url_path']);result.append({'path':r['url_path'],'title':r['title'],'mode':r.get('mode','unknown')})
+            seen.add(r['url_path']);result.append({'path':r['url_path'],'title':display_title(r['title']),'mode':r.get('mode','unknown')})
         # Only add default if an actual config read succeeds; never a dummy entry.
         try:
             default=self.config(None)
-            result.insert(0,{'path':None,'title':default.get('title','Standarddashboard'),'mode':'default','_config':default})
+            result.insert(0,{'path':None,'title':display_title(default.get('title','Standarddashboard')),'mode':'default','_config':default})
         except ReadError as e:
             if e.code!='dashboard_not_found':raise
         for r in result:
@@ -180,4 +191,11 @@ class DashboardReads:
     def read(self,user,path):
         self.admin(user)
         cfg=validate_configuration(self.config(path))
-        return {'config':cfg,'path':path}
+        return {'config':cfg,'path':path,'resources':self.resources()}
+    def resources(self):
+        from imported import resources_unavailable
+        try:
+            items=self.client._ws_reads(({'type':'lovelace/resources/list'},),list,'resources_unavailable',1052672)[0]
+            bounded(items)
+            return {'status':'captured','items':copy.deepcopy(items),'verification':'unverified','message':'Ressourcenliste gelesen. Einträge sind registriert, Verfügbarkeit und Funktion sind ungeprüft. Keine Ressourcenadresse wurde aufgerufen.'}
+        except (ReadError,StudioError):return resources_unavailable()

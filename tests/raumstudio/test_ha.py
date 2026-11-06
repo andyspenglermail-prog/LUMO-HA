@@ -11,17 +11,16 @@ class HATests(unittest.TestCase):
         self.assertEqual(rows[0]['viewCount'],1)
         before=copy.deepcopy(self.peer.configs)
         result=self.api.read('alice','fixture-dashboard');self.assertEqual(result['config'],CONFIG)
-        with self.assertRaises(Exception) as error:self.api.read('alice','bad-dashboard')
-        self.assertIn('views[0].cards[0]',str(error.exception))
+        self.assertEqual(self.api.read('alice','bad-dashboard')['config'],before['bad-dashboard'])
         self.assertEqual(self.peer.configs,before)
-        self.assertTrue(set(c['type'] for c in self.peer.commands)<={'config/auth/list','lovelace/dashboards/list','lovelace/config'})
+        self.assertTrue(set(c['type'] for c in self.peer.commands)<={'config/auth/list','lovelace/dashboards/list','lovelace/config','lovelace/resources/list'})
     def test_nonadmin_or_inactive_cannot_read(self):
         with self.assertRaises(Exception):self.api.catalog('bob')
         self.assertEqual([c['type'] for c in self.peer.commands],['config/auth/list'])
         self.peer.users[0]['is_active']=False
         with self.assertRaises(Exception):self.api.catalog('alice')
     def test_native_known_fields_are_typed_not_opaque(self):
-        from dashboard_reads import validate_configuration
+        from dashboard_reads import validate_supported_configuration as validate_configuration
         from store import StudioError
         for card in [
             {'type':'tile','entity':'sensor.synthetic','grid_options':{'columns':['invalid'],'rows':1}},
@@ -36,10 +35,9 @@ class HATests(unittest.TestCase):
         self.peer.configs['fixture-dashboard']=copy.deepcopy(native)
         self.assertEqual(self.api.read('alice','fixture-dashboard')['config'],native)
         self.peer.configs['fixture-dashboard']['views'][0]['sections'][0]['cards'].append({'type':'custom:missing'})
-        with self.assertRaises(Exception) as e:self.api.read('alice','fixture-dashboard')
-        self.assertIn('views[0].sections[0].cards[3].type',str(e.exception))
+        self.assertEqual(self.api.read('alice','fixture-dashboard')['config'],self.peer.configs['fixture-dashboard'])
         self.peer.configs[None]=None
         rows=self.api.catalog('alice');self.assertTrue(all(r['path'] is not None for r in rows))
         self.peer.configs['fixture-dashboard']={'strategy':{'type':'original-states'}}
-        rows=self.api.catalog('alice');entry=next(r for r in rows if r['path']=='fixture-dashboard');self.assertIsNone(entry['viewCount']);self.assertFalse(entry['supported'])
+        rows=self.api.catalog('alice');entry=next(r for r in rows if r['path']=='fixture-dashboard');self.assertIsNone(entry['viewCount']);self.assertTrue(entry['supported'])
 if __name__=='__main__':unittest.main()

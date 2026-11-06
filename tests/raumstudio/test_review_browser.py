@@ -4,7 +4,7 @@ sys.path.insert(0,str(pathlib.Path(__file__).parent))
 from test_http import Fixture
 from proxy import Proxy
 from playwright.sync_api import sync_playwright,expect
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag01-evidence/fix-1/browser'))
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'))
 class ReviewBrowserTests(unittest.TestCase):
     def setUp(self):
         self.f=Fixture();self.proxy=Proxy(self.f);OUT.mkdir(parents=True,exist_ok=True)

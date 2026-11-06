@@ -2,7 +2,7 @@ import unittest,pathlib,json,hashlib,ast
 ROOT=pathlib.Path(__file__).resolve().parents[2];APP=ROOT/'lumo_raumstudio'
 class PackageTests(unittest.TestCase):
     def test_package_has_fixed_start_assets_dependency_and_no_ha_writer(self):
-        cfg=json.loads((APP/'config.json').read_text());self.assertEqual((cfg['name'],cfg['slug'],cfg['version']),('LUMO Raumstudio','lumo_raumstudio','0.12.0'));self.assertEqual(cfg['backup'],'cold');self.assertNotIn('ports',cfg);self.assertFalse(cfg['host_network']);self.assertEqual(cfg['options'],{'enabled':False,'allowed_user_ids':[]})
+        cfg=json.loads((APP/'config.json').read_text());self.assertEqual((cfg['name'],cfg['slug'],cfg['version']),('LUMO Raumstudio','lumo_raumstudio','0.12.1'));self.assertEqual(cfg['backup'],'cold');self.assertNotIn('ports',cfg);self.assertFalse(cfg['host_network']);self.assertEqual(cfg['options'],{'enabled':False,'allowed_user_ids':[]})
         docker=(APP/'Dockerfile').read_text();self.assertIn('7984cf56ceaddebe4fefeb75d64000b9f45d8b77b11a09b24524da6cdc3af0c8',docker);self.assertIn('--require-hashes',docker);self.assertIn('--only-binary=:all:',docker);self.assertIn('bootstrap.py',docker)
         for line in docker.splitlines():
             if line.startswith('COPY '):
