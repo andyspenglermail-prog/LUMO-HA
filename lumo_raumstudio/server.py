@@ -70,7 +70,7 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
             users=self.headers.get_all('X-Remote-User-Id',[])
             if self.client_address[0]!=trusted_proxy_ip or len(users)!=1 or not SAFE_ID.fullmatch(users[0]):raise StudioError('Bitte Raumstudio über Home Assistant öffnen. Die Ingress-Identität fehlt.',403)
             user=users[0]
-            static={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/room.js':'room.js','/room.css':'room.css','/style.css':'style.css','/lumo-logo.png':'lumo-logo.png','/mdi.json':'mdi.json'}
+            static={'/design.js':'design.js','/design.css':'design.css','/design-catalog.json':'design-catalog.json','/':'index.html','/index.html':'index.html','/app.js':'app.js','/room.js':'room.js','/room.css':'room.css','/style.css':'style.css','/lumo-logo.png':'lumo-logo.png','/mdi.json':'mdi.json'}
             if target in static and self.command in ('GET','HEAD'):
                 ext=Path(static[target]).suffix;kind={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.json':'application/json'}[ext]
                 self.reply(200,(ROOT/static[target]).read_bytes(),kind);return
@@ -115,6 +115,18 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
             correction_match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})/area-correction/(preview|confirm)',target)
             if correction_match and writing:
                 result=getattr(corrections,correction_match[2])(user,correction_match[1],value,guard);self.api(200,result);return
+            native_design_match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})/design-native',target)
+            if native_design_match and not writing:
+                from design_native import mapping
+                self.api(200,mapping(store,user,store.get(user,native_design_match[1])));return
+            design_match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})/design',target)
+            if design_match:
+                import design
+                from room_store import get_plan
+                id=design_match[1];d=store.get(user,id)
+                if not writing:self.api(200,{'dashboardId':id,'revision':d['revision'],'design':d.get('design',design.defaults()),'plan':get_plan(d),'sources':design.sources(d)});return
+                if set(value)!={'revision','design'}:raise StudioError('Ungültiges Design.')
+                self.api(200,design.save(store,user,id,value['revision'],value['design']));return
             room_match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})/rooms',target)
             if room_match:
                 from room_store import get_plan,save_plan

@@ -34,10 +34,13 @@ def inspect(path,expected_version=None):
         def ident(value):return type(value) is str and re.fullmatch('[a-f0-9]{32}',value)
         for id,owner,revision,raw in c.execute('SELECT * FROM dashboards'):
             d=parse_json(raw)
-            if type(d) is not dict or set(d) not in (keys,keys|{'nativeImport'},keys|{'roomPlan'},keys|{'nativeImport','roomPlan'}) or not owner or not ident(id) or d['id']!=id or type(revision) is not int or revision<1 or d['revision']!=revision or d['schemaVersion']!=1 or d['status']!='Entwurf' or type(d['views']) is not list or len(d['views'])>100000:raise ValueError('invalid_document')
+            if type(d) is not dict or not keys<=set(d)<=keys|{'nativeImport','roomPlan','design'} or not owner or not ident(id) or d['id']!=id or type(revision) is not int or revision<1 or d['revision']!=revision or d['schemaVersion']!=1 or d['status']!='Entwurf' or type(d['views']) is not list or len(d['views'])>100000:raise ValueError('invalid_document')
             text(d['name'],'Name',80);text(d['description'],'Beschreibung',1000,True);icon_value(d['icon'])
             for k in ('createdAt','updatedAt'):
                 if datetime.fromisoformat(d[k]).tzinfo is None:raise ValueError('invalid_timestamp')
+            if 'design' in d:
+                from design import validate as validate_design
+                validate_design(d['design'])
             if 'roomPlan' in d:
                 from room_store import validate as validate_rooms
                 validate_rooms(d['roomPlan'],d)

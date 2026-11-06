@@ -1,5 +1,14 @@
 # Änderungen
 
+## 0.14.0 – Auftrag 03: Design & Display
+
+- Drei eigenständige, auf die Vorschau begrenzte Profile: LUMO Noir Luxury, Soft Ivory Premium und Smart Clean. Katalog mit zehn Kategorien und genau 27 ausdrücklich geplanten, gesperrten Profilen.
+- Tatsächliche gespeicherte Raumreferenzen mit Runtime-Zuständen, sichtbarer Frische und geschützten nativen Inhalten. Keine Geräteaktionen, Templates oder Custom-Card-Ausführung.
+- Individuelle Farben, Kartenmaterial, Rundung, Schatten, Systemtypografie, Dichte, Einzelreset und Kontrastprüfung. Hintergrund bleibt in Schritt 1; eigene native Hintergründe haben Vorrang, externe/komplexe Quellen werden nicht geladen.
+- Sechs Mehrfach-Zielklassen, validierte CSS-Viewports, Ausrichtung und getrennte Hardware-/DPR-/Eingabeabsichten. Echter Spalten-Reflow, expliziter Fitzoom und 1:1-Touchprüfung.
+- Optionales owner-/CAS-gebundenes Designoverlay, bestätigtes Readback, sichere Dirtyguards, neue Browserprozesse und SQLite-Backup/Restore. Bestehende native Exporte und RoomPlans unverändert.
+- Separater Theme-Mappingdownload mit granularer Fähigkeitsmatrix und tatsächlichen berechneten Eigenschaften originaler gepinnter HA-Komponenten. Kein Step4-Dashboardgenerator, keine Installation oder HA-Publikation. Vollständige visuelle HA-Parität wird nicht behauptet.
+
 ## 0.13.0 – Auftrag 02: Raum
 
 - Echte Runtime-Registry-/Zustandslesung, effektive Bereiche mit Entity-Vorrang und getrennte Herkunft. Fehlende, deaktivierte, gerätelose und reine Zustandsentitäten bleiben ehrlich sichtbar. Same-user-Leserechte ohne falsches Adminerfordernis; abweichender Supervisor-User ist kein Rechtebeweis.

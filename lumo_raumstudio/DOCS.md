@@ -1,6 +1,6 @@
-# LUMO Raumstudio 0.13.0 – Einrichtung und Bedienung
+# LUMO Raumstudio 0.14.0 – Einrichtung und Bedienung
 
-0.13.0 aktualisiert die bestehende App mit unverändertem Slug `lumo_raumstudio`. Keine neue App nötig. Veröffentlichung, Aktualisierung/Installation und persönliche Abnahme bleiben getrennt. Vor einem Update sichern.
+0.14.0 aktualisiert die bestehende App mit unverändertem Slug `lumo_raumstudio`. Keine neue App nötig. Veröffentlichung, Aktualisierung/Installation und persönliche Abnahme bleiben getrennt. Vor einem Update sichern.
 
 ## Einmalige Einrichtung für Andy
 
@@ -62,7 +62,7 @@ Werte stammen aus der letzten erfolgreichen Abfrage. Die App liest beim Betreten
 
 Bestehende native Ansichten erhalten eine separate lokale Verwaltungsreferenz. Ihre Custom Cards, Scripts, Entitybindungen und sonstigen nativen Inhalte bleiben unangetastet; LUMO behauptet nicht, unbekannte Karten semantisch in eine neue Auswahl auflösen zu können. Die lokale Raumplanung erscheint **noch nicht** im nativen JSON-Export. Das ist Vorbereitung für einen gesonderten späteren Schritt, keine fertige neue HA-Ausgabe.
 
-Desktop: drei Spalten ungefähr 25/50/25, scrollbar und mit erreichbarer Saveleiste. Tablet/Telefon: umschaltbare Folge **Räume → Geräte → Eigenschaften**, nicht drei gequetschte Spalten. Schrittwechsel bietet Speichern, Verwerfen und Abbrechen; gespeicherte Auswahl bleibt bei Rückkehr erhalten. Schritte 3 und 4 werden hier nicht implementiert.
+Desktop: drei Spalten ungefähr 25/50/25, scrollbar und mit erreichbarer Saveleiste. Tablet/Telefon: umschaltbare Folge **Räume → Geräte → Eigenschaften**, nicht drei gequetschte Spalten. Schrittwechsel bietet Speichern, Verwerfen und Abbrechen; gespeicherte Auswahl bleibt bei Rückkehr erhalten. Schritt 3 setzt hier mit Design & Display fort; Schritt 4 bleibt eine Übergabe ohne Kachelgestaltung.
 
 ### Leserechte und gezielte HA-Korrektur
 
@@ -71,6 +71,20 @@ Für Inventar liest der Server zuerst `auth/current_user`. Stimmt die authentifi
 **HA-Zuordnung korrigieren** ist zunächst geschlossen und nur mit ausgewähltem Registry-Gerät/Entity, frischem Bestand und bestätigten Adminrechten nutzbar. Erst lokale Änderungen speichern. Zielbereich wählen (oder individuellen Bereich entfernen), Vorschau lesen und **Genau diese HA-Korrektur bestätigen** drücken. Vorschau enthält tatsächliche Identität, alte/neue Zuordnung und betroffene Entitäten. Sie ist serverseitig einmalig, benutzer-/dashboard-/revisionsgebunden und 90 Sekunden gültig. Der Server prüft die Rechte erneut und liest vor Dispatch Objekt, betroffene Registry-Einträge und Bereiche frisch. Geänderte Daten verhindern den Versand. Anschließend wird der tatsächliche Registrystand erneut gelesen; nur bestätigte Zielzuordnung ist Erfolg.
 
 Ausschließlich `config/device_registry/update` oder `config/entity_registry/update` mit `area_id` wird geschrieben. Keine Namen, Floors, Bereichsanlage/-löschung, Services oder Geräteaktionen. Entitybereich null bedeutet gegebenenfalls Erben des Gerätebereichs, nicht zwingend „ohne Bereich“. Gerätekorrektur lässt individuelle Entity-Overrides erhalten. **HA bietet keinen atomaren Compare-and-Set für diese Operation**: Das kurze externe Read/Write-Rennfenster kann die App nicht vollständig schließen. Bei verlorener Antwort oder unbestätigtem Readback ist das Ergebnis unklar: kein Retry, keine automatische Rücknahme, tatsächlichen HA-Stand bewusst prüfen. Eine echte Schreibprobe wurde ohne freigegebenes Testobjekt nicht durchgeführt.
+
+## Schritt 3: Design & Display
+
+Wähle Noir Luxury, Soft Ivory Premium oder Smart Clean; weitere 27 Profile in zehn Designwelten sind ausdrücklich geplant und gesperrt. Profile verändern ausschließlich die Dashboardvorschau, nicht das Raumstudio. Farb-, Material-, Rundungs-, Schatten- und Typografieoverrides bleiben bei Profilwechsel erhalten; **Standard** setzt jeweils nur das einzelne Feld zurück. Text/Karte benötigt mindestens 4,5:1 Kontrast. Die Schriftfamilien sind transparente Systemstacks, keine installierten Fontdateien. Hoher Kontrast setzt die Ausgabe auf Schwarz/Weiß; reduzierte Bewegung respektiert die Systemeinstellung.
+
+Die Vorschau liest aktuelle Zustände über denselben Runtime-Reader wie Schritt 2 (beim Betreten/manuell/alle 30s im sichtbaren Tab). Keine Aktionen, keine Kachelgestaltung. Sichere native Entityreferenzen werden als read-only Funktionen gezeigt, komplexe Karten als geschützte Inhalte. Das ist keine pixelgenaue Ausführung importierter Layouts. Namen, Zuordnungen, manuelle native Layouts und Originalexport werden nicht verändert.
+
+**Hintergrund in Schritt 1 bearbeiten** führt nach Dirtyguard zur einzigen Hintergrundverwaltung. Eigener Ansichtshintergrund hat Vorrang vor nativem Dashboardhintergrund; danach gelten die globalen Schritt1-Einstellungen. Sichere native Hexfarben werden dargestellt. Externe URLs, Templates und komplexe CSS-Hintergründe werden nicht geladen und sichtbar als geschützt bezeichnet. Ein Themewechsel entfernt niemals das eigene Bild.
+
+Sechs Zielklassen sind mehrfach auswählbar. Jedes Display besitzt eigene Beispiel-CSS-Maße (Breite 320–3840, Höhe 240–2160), Ausrichtung und getrennte optionale Angaben zu Zoll/Hardwarepixeln/DPR/Client/Kiosk/Eingabe. Keine CSS-Auflösung wird aus Zoll oder DPR erfunden. Ziel-DPR ist keine Browseremulation; tatsächlicher Browser-DPR und Zoom stehen separat unter der Vorschau. Hoch-/Querformat tauscht die Maße, Auto übernimmt sie. Der Inhalt bricht je nach echter virtueller CSS-Breite in 5/3/2/1 Spalten um. **1:1 prüfen** verwendet Scrollen statt Skalieren; in der eingepassten Übersicht bleibt die unskalierte Ansichtsauswahl die nutzbare Touchalternative. Desktop: drei unabhängig scrollende Panels; kleine Editoren: Design/Vorschau/Display nacheinander.
+
+**Design speichern** persistiert nur das optionale owner-/CAS-gebundene `design`-Overlay. Fehlendes Readback ist unklar und darf nicht blind wiederholt werden. Andere Browser desselben Benutzers lesen den bestätigten Stand. SQLite bleibt Schema2; 0.13.0 versteht das neue optionale Overlay nicht. Für Rückkehr zur Vorversion eine vollständige Vor-Update-Sicherung verwenden, niemals Felder von Hand löschen.
+
+**Native Fähigkeiten** trennt nachgewiesene native Karten-/Headeroberflächen vom LUMO-Reflow und unverifizierten Zielinstallationen. Der Download enthält ein separates, gespeichertes Theme-Mapping (JSON/YAML-kompatibler Namensraum) mit exakter Revision, Original-Frontend-Pin und Grenzen. Er erzeugt **kein Dashboard**, installiert nichts und ändert den bisherigen JSON-Export nicht. Kartenfarbe/Text/Rahmen/Rundung/Schatten/Verlauf und Header-Systemfont/-größe wurden an originalen gepinnten HA-Komponenten durch berechnete Eigenschaften geprüft. Navigation, Iconflächen, Inhaltsdichte, Gewicht, Kontrollgeometrie und responsive Zielraster sind nicht als native Parität freigegeben. Die dort verwendeten internen HA-Variablen können sich ändern; eine installierte neuere HA-Version ist ein gesonderter Test.
 
 ## Speichern, mehrere Geräte und Konflikte
 
@@ -86,7 +100,7 @@ Die App deklariert `backup: cold`. Für einen normalen HA-Backupvorgang diese Ap
 
 Vor einem App-Update eine HA-Sicherung erstellen. Bei regulärem Update/Neustart bleibt dasselbe `/data` bestehen. Neue Versionen müssen bekannte Datenformate prüfen und vor einer tatsächlichen Migration sichern. Unbekannte neuere Schemata werden nicht überschrieben.
 
-**Normaler Rückweg:** App stoppen und über HA eine passende vollständige App-Sicherung wiederherstellen; dazu die zum Datenformat passende App-Version verwenden. Nicht nur eine alte Imageversion über einen neueren Datenbestand starten. 0.12.0 versteht die zusätzliche `nativeImport`-Hülle nicht; für einen Rückweg die vollständige Vor-Update-Sicherung verwenden. Es gibt keine automatische Downmigration. Alte Entwürfe bleiben in 0.13.0 lesbar und werden beim Update nicht umgeschrieben. Die optionale `roomPlan`-Hülle wird erst beim ausdrücklichen Raum-Save gespeichert; SQLite bleibt Schema2. 0.12.1 versteht diese Hülle nicht: Für Rückkehr zur alten App stets die vollständige Vor-Update-Sicherung wiederherstellen. Kein Löschen der Hülle per Hand. `maintenance.py` bietet für Entwickler bei gestoppter App zusätzlich geprüfte SQLite-Snapshots, Restore und Schema-1→2-Rollback; Details und ausführbare Tests stehen in `docs/raumstudio/ARCHITECTURE.md`. Keine Restore-HTTP-Route und keine automatische Rücknahme fremder HA-Daten.
+**Normaler Rückweg:** App stoppen und über HA eine passende vollständige App-Sicherung wiederherstellen; dazu die zum Datenformat passende App-Version verwenden. Nicht nur eine alte Imageversion über einen neueren Datenbestand starten. 0.12.0 versteht die zusätzliche `nativeImport`-Hülle nicht; für einen Rückweg die vollständige Vor-Update-Sicherung verwenden. Es gibt keine automatische Downmigration. Alte Entwürfe bleiben in 0.14.0 lesbar und werden beim Update nicht umgeschrieben. Die optionale `roomPlan`-Hülle wird erst beim ausdrücklichen Raum-Save gespeichert; SQLite bleibt Schema2. 0.12.1 versteht diese Hülle nicht: Für Rückkehr zur alten App stets die vollständige Vor-Update-Sicherung wiederherstellen. Kein Löschen der Hülle per Hand. `maintenance.py` bietet für Entwickler bei gestoppter App zusätzlich geprüfte SQLite-Snapshots, Restore und Schema-1→2-Rollback; Details und ausführbare Tests stehen in `docs/raumstudio/ARCHITECTURE.md`. Keine Restore-HTTP-Route und keine automatische Rücknahme fremder HA-Daten.
 
 ## Technische Grenzen
 

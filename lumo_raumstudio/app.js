@@ -39,7 +39,7 @@ async function api(path,body){
 async function run(fn){if(busy)return;try{await fn();}catch(e){notice(e.message,true);}}
 async function writing(fn){
   if(busy)return;busy=true;const controls=$$('button,input,select,textarea'),states=controls.map(e=>e.disabled);controls.forEach(e=>e.disabled=true);
-  try{return await fn();}finally{controls.forEach((e,i)=>e.disabled=states[i]);busy=false;if(draft){$('#start-view').disabled=!draft.views.length;preview();}if(!$('#room-step').hidden)roomRender(false);}
+  try{return await fn();}finally{controls.forEach((e,i)=>e.disabled=states[i]);busy=false;if(draft){$('#start-view').disabled=!draft.views.length;preview();}if(!$('#room-step').hidden)roomRender(false);if(!$('#design-step').hidden)designLock();}
 }
 async function readback(value){
   try{const actual=await api('dashboards/'+value.id);if(JSON.stringify(actual)!==JSON.stringify(value))throw Error();return actual;}
@@ -122,7 +122,7 @@ function modal({title,message,input=null,confirm='Bestätigen',discard=false}){
 function closeModal(action){if(!dialogResolve)return;const resolve=dialogResolve;dialogResolve=null;$('#dialog').close();resolve({action,value:$('#dialog-input').value});}
 $('#dialog-form').addEventListener('submit',e=>{e.preventDefault();closeModal('confirm');});$('#dialog-cancel').onclick=()=>closeModal('cancel');$('#dialog-discard').onclick=()=>closeModal('discard');$('#dialog').addEventListener('cancel',e=>{e.preventDefault();closeModal('cancel');});
 async function guard(next){
-  if(busy)return;if(!await roomGuard())return;let saved=null;if(dirty||newDirty){const answer=await modal({title:'Deine Änderungen behalten?',message:'Hier gibt es ungespeicherte Eingaben. Speichere sie vor dem Wechsel oder verwerfe sie ausdrücklich.',confirm:'Speichern & weiter',discard:true});
+  if(busy)return;if(!await designGuard())return;if(!await roomGuard())return;let saved=null;if(dirty||newDirty){const answer=await modal({title:'Deine Änderungen behalten?',message:'Hier gibt es ungespeicherte Eingaben. Speichere sie vor dem Wechsel oder verwerfe sie ausdrücklich.',confirm:'Speichern & weiter',discard:true});
     if(answer.action==='cancel')return;
     if(answer.action==='confirm'){if(dirty){const before={id:selected.id,revision:selected.revision};if(!await save())return;saved={before,after:clone(selected)};}if(newDirty&&!await create())return;}
     else {if(selected)fill();$('#create-form').reset();newDirty=false;}
@@ -146,7 +146,7 @@ async function duplicate(d){await writing(async()=>{const value=await readback(a
 async function remove(d){const answer=await modal({title:'Lokalen Entwurf löschen?',message:'„'+d.name+'“ wird aus Deinem LUMO-Speicher entfernt. Das HA-Original und Deine Bildbibliothek bleiben unverändert. Dieser Schritt kann nicht rückgängig gemacht werden.',confirm:'Entwurf löschen'});if(answer.action!=='confirm')return;
   await writing(async()=>{await api('dashboards/'+d.id+'/delete',{revision:d.revision,confirm:true});await confirmCollection('dashboards',rows=>!rows.some(r=>r.id===d.id),'Löschung von „'+d.name+'“ (ID '+d.id+').');if(selected?.id===d.id){selected=draft=null;dirty=false;$('#workspace').hidden=true;sessionStorage.removeItem('lumo-selected');}await listing();notice('Nur der lokale Entwurf wurde gelöscht.');});
 }
-function setStep(step){roomStop();$$('[data-step]').forEach(e=>{if(Number(e.dataset.step)===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});$('#dashboard-step').hidden=step!==1;$('#room-step').hidden=step!==2;$('#handoff-step').hidden=step<3;if(step===2)void roomEnter();if(step>2){$('#handoff-eyebrow').textContent='SCHRITT '+step+' · ÜBERGABE';$('#handoff-title').textContent=['','Dashboard','Raum','Design & Display','Dein Raumentwurf'][step];$('#handoff-selection').textContent=selected?'Ausgewählt und gespeichert: '+selected.name+' · '+(selected.roomPlan?.views.length??selected.views.length)+' Ansichten':'Noch kein Dashboard ausgewählt. Bitte erst in Schritt 1 beginnen.';}window.scrollTo(0,0);}
+function setStep(step){roomStop();designStop();$$('[data-step]').forEach(e=>{if(Number(e.dataset.step)===step)e.setAttribute('aria-current','step');else e.removeAttribute('aria-current');});$('#dashboard-step').hidden=step!==1;$('#room-step').hidden=step!==2;$('#design-step').hidden=step!==3;$('#handoff-step').hidden=step!==4;if(step===2)void roomEnter();if(step===3)void designEnter();if(step===4){$('#handoff-eyebrow').textContent='SCHRITT 4 · ÜBERGABE';$('#handoff-title').textContent='Dein Raumentwurf';$('#handoff-selection').textContent=selected?'Ausgewählt und gespeichert: '+selected.name+' · '+(selected.roomPlan?.views.length??selected.views.length)+' Ansichten':'Noch kein Dashboard ausgewählt. Bitte erst in Schritt 1 beginnen.';}window.scrollTo(0,0);}
 $$('[data-step]').forEach(b=>b.onclick=()=>run(()=>guard(()=>setStep(Number(b.dataset.step)))));
 $('#back-dashboard').onclick=()=>run(()=>guard(()=>setStep(1)));$('#continue').onclick=()=>run(()=>guard(()=>setStep(2)));
 function showTab(tab){$$('[data-tab]').forEach(b=>{if(b.dataset.tab===tab)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});$$('[data-pane]').forEach(p=>p.hidden=p.dataset.pane!==tab);}

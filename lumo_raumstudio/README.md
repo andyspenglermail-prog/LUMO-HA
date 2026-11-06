@@ -1,4 +1,4 @@
-# LUMO Raumstudio · 0.13.0
+# LUMO Raumstudio · 0.14.0
 
 **Dein Zuhause denkt mit.** Update derselben Home-Assistant-App `lumo_raumstudio`, kein neuer Slug.
 
@@ -8,7 +8,7 @@ Schritt **Raum** liest Bereiche, Etagen, Geräte, das vollständige Entitätsreg
 
 Die rechte Eigenschaftenspalte trennt HA-Struktur von lokaler Anzeige. Nur die gesonderte **HA-Bereichskorrektur** schreibt nach serverseitiger Prüfung der Rechte des anfragenden Administrators, konkreter Vorschau, ausdrücklicher Bestätigung und frischem Vergleich. Es gibt keine Geräteaktionen, Services, HA-Dashboard-Publikation, Bereichserstellung/-löschung oder beliebigen API-Proxy. Unklares Ergebnis wird nie automatisch wiederholt. Echte Schreibabnahme bleibt ohne freigegebenes Testobjekt offen.
 
-**Design & Display** und **Dein Raumentwurf** bleiben Übergabeseiten. Die Raumauswahl ist separate lokale Metadaten-Vorbereitung, kein stilles Umschreiben des nativen Exports und keine bereits implementierte Dashboardausgabe.
+**Design & Display** bietet drei tatsächlich unterschiedliche Profile, individuelle Stiloverrides, sechs Zielgeräteklassen und eine read-only Funktionsvorschau aus denselben gespeicherten Raumreferenzen. Der Editor bleibt neutral. Eigene Viewports führen zu echtem Reflow; Fitzoom und 1:1-Prüfung bleiben getrennt. Ein revisionsgebundenes Native-Theme-Sidecar bildet nachgewiesene Karten-/Header-Stile ab, ohne `compile_native` oder importierte Exporte umzuschreiben. Navigation, Inhaltsdichte und Zielraster sind ausdrücklich nur LUMO-Vorschau. **Dein Raumentwurf** bleibt die bisherige Übergabeseite; kein Schritt4-Authoring. Technischer Vertrag: `docs/raumstudio/STEP3.md`.
 
 ## Einstieg
 

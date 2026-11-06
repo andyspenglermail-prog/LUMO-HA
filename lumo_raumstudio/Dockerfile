@@ -6,7 +6,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /opt/lumo_raumstudio
 COPY requirements.txt ./
 RUN python -m pip install --no-cache-dir --only-binary=:all: --require-hashes -r requirements.txt
-COPY bootstrap.py server.py client.py policy.py store.py settings.py images.py maintenance.py dashboard_reads.py native.py imported.py rooms.py room_store.py area_corrections.py config.json index.html style.css app.js room.js room.css lumo-logo.png ./
+COPY bootstrap.py server.py client.py policy.py store.py settings.py images.py maintenance.py dashboard_reads.py native.py imported.py rooms.py room_store.py area_corrections.py config.json index.html style.css app.js room.js room.css design.py design_native.py design.js design.css design-catalog.json lumo-logo.png ./
 COPY mdi.json mdi-LICENSE mdi-APACHE-2.0.txt mdi-provenance.json ./
 USER 0:0
 EXPOSE 8099

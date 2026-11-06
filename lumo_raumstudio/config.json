@@ -1,6 +1,6 @@
 {
   "name": "LUMO Raumstudio",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "slug": "lumo_raumstudio",
   "description": "Dashboard und Raum: echte HA-Quellen, lokale Ansichten und bestätigte Bereichskorrekturen.",
   "arch": ["amd64", "aarch64"],
