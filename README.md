@@ -1,85 +1,57 @@
-# LUMO – Home Assistant Test-Apps
+# LUMO – Home Assistant Dashboard-Designer
 
-## Update: LUMO Data · 0.10.0-studio.1
+## LUMO Data · 0.11.0-native.1
 
-**Vier Schritte statt einer langen Einstellungsseite:**
-1. **Dashboard:** gespeicherten LUMO-Entwurf auswählen oder neu beginnen.
-   Bestehende HA-Dashboards können ausdrücklich gelesen und, soweit unterstützt,
-   als neue lokale Kopie geöffnet werden. Das HA-Original bleibt unverändert.
-2. **Design & Display:** Stil wählen; Displaymaße sind optional.
-3. **Raum:** vorhandenen Raum auswählen oder eine neue Raumansicht im Entwurf anlegen.
-4. **Dein Raumentwurf:** große Rasterfläche; darunter **Dashboard speichern** und
-   **Dashboard exportieren**. Zurückgehen erhält den aktuellen Entwurf.
+**Nur noch native HA-Dashboards.** Der freie Editor und die Ausgabeprofil-Auswahl
+entfallen. Bestehende native Entwürfe/Backups bleiben erhalten. Das Ziel ist:
+in LUMO gestalten und das entsprechende native Layout in HA verwenden.
 
-Quellen werden nach Gerät und Raum mit verständlichen Funktionsnamen, Suche und
-lokalen MDI-Symbolen angeboten. Exakte Entitätskennungen bleiben in den Details.
-Das 12-Spalten-Raster zeigt beim Ziehen und Vergrößern die einrastende Zielanordnung.
-Es bildet native Sections-Reihenfolge und Kartengrößen ab, keine freie x/y-Position.
+### Ablauf
 
-**Echte Daten statt Demo:** Räume, Gerätezuordnungen, Entitäten und aktuelle Werte
-kommen zur Laufzeit über die bestehende HA-Anbindung. Ohne Verbindung keine
-Ersatzdaten; fehlende, unbekannte, nicht verfügbare und veraltete Werte sind sichtbar.
-Die aktuelle Ansicht liest nur ihre gebundenen Quellen. Der HTTP-Fehlerfix bleibt erhalten.
+1. **Dashboard** auswählen oder neu beginnen. Bestehende lokale Entwürfe und
+   unterstützte HA-Kopien öffnen direkt in **Dein Raumentwurf**.
+2. **Raum** auswählen oder eine neue Raumansicht im Entwurf anlegen.
+3. **Design & Display**: Zielanzeige und optionale CSS-Maße prüfen.
+4. **Dein Raumentwurf**: Quellen hinzufügen, bearbeiten, gruppieren,
+   verschieben/vergrößern, speichern, exportieren oder in HA anlegen.
 
-Präsentationseinstellungen werden mit dem nativen Entwurf gespeichert und sind
-rückgängig machbar. Sie sind Designer-Einstellungen, kein automatisch exportiertes
-HA-Theme: Home Assistant bestimmt die endgültige native Darstellung.
+Die native Sections-Geometrie wurde mit einem tatsächlichen UI-Export aus neun
+Karten, zwei Überschriften und vier Abschnitten bei vier gleichen Inhaltsbreiten
+gegen das offizielle HA-Frontend geprüft. Das ist Layouttreue im geprüften Profil,
+nicht identische Theme-/Schrift-/Icon-Darstellung aller HA-Versionen. Frühere
+Stilpräferenzen installieren oder exportieren weiterhin keine HA-Themes.
 
-**Update der bereits installierten LUMO-Data-App**, keine zusätzliche App.
-Im App-Store-Menü nach Updates suchen und anschließend **LUMO Data** aktualisieren.
-Der Slug `lumo_data` und die vier Konfigurationsfelder bleiben unverändert.
-Der Anzeigename bleibt **LUMO Data · Geräte & Bedienung**.
+**Entwurfsmodus/Testmodus:** Gestalten schaltet nicht. Testmodus bietet ausdrücklich
+ausgelöste, fähigkeitsgeprüfte Bedienung der gebundenen aktuellen Quellen in einem
+separat beschrifteten Bedienbereich. Verbunden sind das echte Geräteaktionen;
+Parameteränderungen allein senden nichts. Unklare Befehle werden nicht wiederholt.
 
-### Weiterhin im nativen Designer enthalten
+**Dashboard anlegen** neben Exportieren fragt Titel, originales HA-Seitenleistensymbol,
+URL-Name, Nur Administratoren und In der Seitenleiste anzeigen ab. Erst die ausdrückliche
+Bestätigung legt ein neues Storage-Dashboard an. Aktive Adminidentität wird geprüft;
+bestehende Pfade werden abgewiesen. Metadaten und Konfiguration werden zurückgelesen.
+Bei Teilfehlern kann ein bereits angelegtes Dashboard zurückbleiben: prüfen statt
+blind erneut versuchen. Keine automatische Löschung oder Aktualisierung bestehender
+Dashboards. HA bietet hierfür keine atomare Create-and-Save-Transaktion gegen
+parallele externe Schreiber.
 
-- Ausgabeprofil **Natives HA-Dashboard** im Raumstudio: strukturiertes Modell,
-  mehrere Ansichten, direkte Funktionen und optionale geräteübergreifende Gruppen.
-- Verschieben und Größenänderung, Fixierungen, Rückgängig/Wiederholen sowie
-  ausdrückliche Browserspeicherung, Versionen und herunterladbare Backups.
-- Validierter nativer YAML-/JSON-Export für unterstützte Funktionsbausteine.
-  Keine automatische Veröffentlichung produktiver HA-Dashboards.
-- Freies Vorschauprofil und drei Styles bleiben erhalten; Geräteinnenraster,
-  Mehrfachkacheln und begrenzte Live-Zustandsaktualisierung sind enthalten.
-- Gleicher Slug, gleiche Optionen und Berechtigungen; keine zweite App.
-  Die Veröffentlichung installiert und startet nichts automatisch.
+**Speichern** bleibt Browserspeicherung; **Exportieren** lädt YAML/JSON herunter.
+HA-Import ist weiterhin eine ausdrückliche lokale Kopie des unterstützten Subsets,
+keine universelle verlustfreie Bearbeitung beliebiger Dashboards. Nicht unterstützte
+Inhalte werden abgelehnt statt still entfernt. Aktuelle Quellen stammen zur Laufzeit
+aus HA; ohne Verbindung gibt es keinen Demoersatz.
 
-**Erster Test:** LUMO Data aktualisieren und Weboberfläche neu öffnen. Dashboard
-auswählen oder neu beginnen, Design wählen, im Raumschritt **Bestand laden** und
-den Raum öffnen. Über **＋ Quellen** Funktionen hinzufügen und im Raster gestalten.
-Speichern sichert in diesem Browser; Export lädt YAML/JSON herunter. Beides
-verändert kein produktives HA-Dashboard. HA-Import unterstützt bewusst nur vollständig
-abbildbare native Sections; Custom Cards, nicht abbildbare Aktionen und Styles werden
-mit Erklärung abgelehnt, nicht still entfernt. Admin-only-Dashboards werden nicht angeboten.
-Installation, physischer Touch und qualitative Designabnahme bleiben am eigenen
-Zielsystem zu prüfen. Es werden keine produktiven Dashboards automatisch verändert.
+### Update derselben App
 
-### Bisherige Funktionen bleiben erhalten
+Im bestehenden App-Repository nach Updates suchen und **LUMO Data** aktualisieren,
+danach die Weboberfläche neu öffnen. Slug `lumo_data`, Optionen und Berechtigungen
+bleiben erhalten; keine zweite App und keine automatische Installation.
+Die separate ältere Offline-App bleibt unverändert.
 
-- Horizontale Raum-/Geräteauswahl statt linker Entitätenliste.
-- Geräte hinzufügen; unter **Bearbeiten** Funktionen markieren und direkt
-  **Änderungen übernehmen** wählen. Der zusätzliche Verknüpfen-Klick ist optional.
-- Verständliche Funktionsrollen: Hauptbedienung, Anzeigen, Einstellungen und
-  Diagnose. Tatsächliche Fähigkeiten werden für das ausgewählte Gerät gelesen.
-- Echte Zustandswerte und passende Bedienelemente: Jalousien/Rollläden mit
-  Position und unterstützter Neigung, Licht mit unterstützter Helligkeit und
-  Farbtemperatur, Klima mit Sollwert/Betriebsart, Ventilatoren, Zahlen und Auswahl.
-- Nur tatsächlich unterstützte Aktionen, Grenzen und Optionen. Einfache Schalter
-  bleiben Ein/Aus; nicht dimmbare Lampen bekommen keinen erfundenen Dimmer.
-- Bekannte Zustände und Klimabetriebsarten auf Deutsch, Lichthelligkeit in Prozent;
-  Übernehmen und Abbrechen bleiben auch im schmalen Geräteeditor erreichbar.
-- Explizite Bedienaktionen nur im Bedienmodus. Keine Befehle beim Gestalten,
-  beim bloßen Verschieben eines Eingabereglers oder beim Auswählen einer Funktion.
-- Verständliche Hinweise für deaktivierte oder fehlende Benutzerfreigaben.
-
-Die bisherige Offline-App `lumo_preview` bleibt unverändert. Nicht unterstützte
-Fähigkeiten werden sichtbar erklärt. Schlösser, Alarme, Scripts, Szenen und
-beliebige Serviceaufrufe werden nicht freigegeben.
-
-AMD64 und ARM64 (`aarch64`); Start manuell, Datenzugriff zunächst deaktiviert.
-Einrichtung und Grenzen: [LUMO-Data-Anleitung](lumo_data/DOCS.md).
-LUMO ist der Designer, nicht das fertige Dashboard. Der native Export deckt den
-unterstützten Funktionsumfang ab, nicht sämtliche freien Styles, Analysebausteine,
-Cockpits oder Formeln. Die Editorvorschau ist kein nativer HA-Live-Renderer.
+[Einrichtung, Bedienung und genaue Grenzen](lumo_data/DOCS.md).
+AMD64 und ARM64/aarch64; Start manuell, Zugriff zunächst deaktiviert.
+Tests nutzen synthetische HA-Gegenstellen, nicht produktive Geräte. Installierte
+HA-Kompatibilität, physischer Touch und qualitative Nutzerabnahme bleiben separat.
 
 ## Bisherige Offline-Test-App (unverändert)
 

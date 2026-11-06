@@ -13,11 +13,13 @@ from control import ControlSessions,execute_control
 from capabilities import MISSING
 from data import discovery,states,selected_ids,history
 from dashboard_reads import dashboard_list,dashboard_config
+from dashboard_publish import DashboardSessions,validate_request,MAX_BODY
 
 def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trusted_proxy_ip='172.30.32.2'):
     page=Path(index_path).read_bytes()
     if len(page)>2*1024*1024:raise ValueError('page_limit')
     sessions=ControlSessions()
+    dashboard_sessions=DashboardSessions()
     class HeaderReader:
         """Bound all header bytes, not just each individual HTTP line."""
         def __init__(self,stream):self.stream=stream;self.remaining=32768
@@ -62,15 +64,18 @@ def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trus
             target=self.requestline.split()[1]
             hosts=self.headers.get_all('Host',[])
             if len(hosts)!=1 or not re.fullmatch(r'[A-Za-z0-9.\[\]:_-]{1,300}',hosts[0]) or self.headers.get_all('Expect'):raise ReadError('invalid_request',400)
+            create=target=='/lumo/data/v1/dashboard-create' and self.command=='POST'
+            create_session=target=='/lumo/data/v1/dashboard-create-session' and self.command=='GET'
             control=target=='/lumo/data/v1/control' and self.command=='POST'
             session=target=='/lumo/data/v1/control-session' and self.command=='GET'
             lengths=self.headers.get_all('Content-Length',[])
             if self.headers.get_all('Transfer-Encoding') or len(lengths)>1:raise ReadError('invalid_request',400)
-            if control:
-                if len(lengths)!=1 or not re.fullmatch(r'[1-9][0-9]{0,3}',lengths[0]) or int(lengths[0])>2048:raise ReadError('request_limit',400)
+            if control or create:
+                limit=MAX_BODY if create else 2048
+                if len(lengths)!=1 or not re.fullmatch(r'[1-9][0-9]{0,6}',lengths[0]) or int(lengths[0])>limit:raise ReadError('request_limit',400)
                 if self.headers.get_all('Content-Type',[])!=['application/json']:raise ReadError('invalid_request',400)
             elif lengths and lengths!=['0']:raise ReadError('invalid_request',400)
-            if self.command not in ('GET','HEAD') and not control:raise ReadError('read_only',405)
+            if self.command not in ('GET','HEAD') and not (control or create):raise ReadError('read_only',405)
             if target=='/health':self.reply(200,b'ok\n','text/plain');return
             static=target in ('/','/index.html')
             catalog=target=='/lumo/data/v1/catalog'
@@ -79,7 +84,7 @@ def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trus
             state_route=target.startswith('/lumo/data/v1/states?')
             history_route=target.startswith('/lumo/data/v1/history?')
             if len(target)>12000:raise ReadError('request_limit',400)
-            if not static and not control and (self.command!='GET' or not (catalog or state_route or history_route or session or dashboards_route or dashboard_route)):raise ReadError('not_found',404)
+            if not static and not (control or create) and (self.command!='GET' or not (catalog or state_route or history_route or session or dashboards_route or dashboard_route or create_session)):raise ReadError('not_found',404)
             users=self.headers.get_all('X-Remote-User-Id',[])
             if self.client_address[0]!=trusted_proxy_ip or len(users)!=1 or not SAFE_ID.fullmatch(users[0]):raise ReadError('forbidden',403)
             if static:self.reply(200,page,'text/html; charset=utf-8');return
@@ -92,15 +97,21 @@ def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trus
                     origin=urlsplit(origins[0]);valid=len(origins)==1 and len(hosts)==1 and origin.scheme in ('http','https') and origin.netloc==hosts[0] and not (origin.path or origin.query or origin.fragment or origin.username)
                 except ValueError:valid=False
                 if not valid:raise ReadError('forbidden',403)
-            if control and (not origins or fetch and fetch!=['same-origin'] or self.headers.get_all('X-LUMO-Action',[])!=['1']):raise ReadError('forbidden',403)
+            if (control or create) and (not origins or fetch and fetch!=['same-origin'] or self.headers.get_all('X-LUMO-Action',[])!=['1']):raise ReadError('forbidden',403)
+            # Browsers omit Origin on same-origin GET. Custom headers/no CORS
+            # still prevent cross-origin session issuance, including plain HTTP.
+            if create_session and (fetch and fetch!=['same-origin'] or self.headers.get_all('X-LUMO-Action',[])!=['1']):raise ReadError('forbidden',403)
             policy=options_snapshot.current()
             if policy is None:raise ReadError(getattr(options_snapshot,'error_code',None) or 'configuration_invalid',403)
             if users[0] not in policy.users:raise ReadError('user_not_allowed',403)
             def guard():
                 if options_snapshot.current() is not policy:raise ReadError('options_changed',403)
             guard()
-            if session:result=sessions.issue(users[0],policy)
-            elif control:
+            if create_session:
+                client.dashboard_admin(users[0]);guard()
+                result=dashboard_sessions.issue(users[0],policy)
+            elif session:result=sessions.issue(users[0],policy)
+            elif control or create:
                 def expire_body():
                     try:self.connection.shutdown(socket.SHUT_RDWR)
                     except OSError:pass
@@ -111,6 +122,11 @@ def create_server(index_path,bind=('127.0.0.1',0),*,options_snapshot,client,trus
                     value=parse_json(body.decode('utf-8'))
                 except (OSError,ValueError,UnicodeError,RecursionError):raise ReadError('invalid_request',400) from None
                 finally:timer.cancel();timer.join()
+                if create:
+                    validate_request(value,policy)
+                    guard();dashboard_sessions.consume(value['token'],users[0],policy)
+                    result=client.create_dashboard(value,users[0],policy,guard)
+                    self.api(200,result);return
                 if type(value) is not dict or set(value) not in ({'entityId','action','token'},{'entityId','action','token','value'}) or any(type(value[k]) is not str for k in ('entityId','action','token')):raise ReadError('invalid_request',400)
                 if not re.fullmatch(r'[A-Za-z0-9_-]{43}',value['token']):raise ReadError('invalid_control_token',403)
                 guard();sessions.consume(value['token'],users[0],policy)

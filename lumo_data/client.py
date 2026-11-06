@@ -12,6 +12,7 @@ import socket
 import ssl
 import struct
 import time
+from contextlib import contextmanager
 
 MAX_BYTES=16*1024*1024
 MAX_SECONDS=15
@@ -48,14 +49,20 @@ class Wire:
             if not part:raise ReadError()
             result.extend(part)
         return bytes(result)
-    def send(self,data,opcode=1):
+    def send(self,data,opcode=1,*,limit=8192):
         self.budget()
-        if len(data)>8192:raise ReadError('request_limit')
+        if len(data)>limit:raise ReadError('request_limit')
         mask=os.urandom(4);length=len(data)
-        prefix=bytes([128|opcode,128|(length if length<126 else 126)])
-        if length>=126:prefix+=struct.pack('!H',length)
+        prefix=bytes([128|opcode,128|(length if length<126 else 126 if length<65536 else 127)])
+        if 126<=length<65536:prefix+=struct.pack('!H',length)
+        elif length>=65536:prefix+=struct.pack('!Q',length)
         self.sock.sendall(prefix+mask+bytes(b^mask[i%4] for i,b in enumerate(data)))
     def json_send(self,value):self.send(json.dumps(value,separators=(',',':')).encode())
+    def dashboard_save(self,request_id,path,config):
+        # Only this fixed validated command gets the larger outgoing budget.
+        from dashboard_publish import MAX_BODY
+        data=json.dumps({'id':request_id,'type':'lovelace/config/save','url_path':path,'config':config},ensure_ascii=False,separators=(',',':'),allow_nan=False).encode()
+        self.send(data,limit=MAX_BODY)
     def message(self,max_bytes=MAX_BYTES):
         parts=[];size=0;fragmented=False
         while True:
@@ -190,8 +197,9 @@ class CoreClient:
             raise ReadError('dashboard_read_unavailable') from None
     def registries(self):
         return self._ws_reads(tuple({'type':f'config/{registry}_registry/list'} for registry in ('area','device','entity')),list,'registry_unavailable')
-    def _ws_reads(self,commands,result_type,error_code,max_bytes=MAX_BYTES):
-        # Private fixed-command callers only; never exposed as a browser proxy.
+    @contextmanager
+    def _websocket(self):
+        # Private authenticated transport shared by fixed read/create callers.
         sock=None
         try:
             deadline=time.monotonic()+MAX_SECONDS
@@ -215,6 +223,13 @@ class CoreClient:
             if wire.message().get('type')!='auth_required':raise ReadError('upstream_auth')
             wire.json_send({'type':'auth','access_token':self._token})
             if wire.message().get('type')!='auth_ok':raise ReadError('upstream_auth')
+            yield wire
+        except ReadError:raise
+        except (OSError,ValueError,TypeError,RecursionError,UnicodeError):raise ReadError() from None
+        finally:
+            if sock is not None:sock.close()
+    def _ws_reads(self,commands,result_type,error_code,max_bytes=MAX_BYTES):
+        with self._websocket() as wire:
             results=[]
             for i,command in enumerate(commands,1):
                 wire.json_send({'id':i,**command})
@@ -224,7 +239,13 @@ class CoreClient:
                 if value.get('success') is not True or type(value.get('result')) is not result_type:raise ReadError(error_code)
                 results.append(value['result'])
             return results
-        except ReadError:raise
-        except (OSError,ValueError,TypeError,RecursionError,UnicodeError):raise ReadError() from None
-        finally:
-            if sock is not None:sock.close()
+    def dashboard_admin(self,user):
+        from dashboard_publish import require_admin
+        try:
+            require_admin(self._ws_reads(({'type':'config/auth/list'},),list,'dashboard_admin_unavailable',1048576)[0],user)
+        except ReadError as error:
+            if error.code=='dashboard_admin_required':raise
+            raise ReadError('dashboard_admin_unavailable') from None
+    def create_dashboard(self,value,user,policy,guard):
+        from dashboard_publish import publish
+        return publish(self,value,user,policy,guard)

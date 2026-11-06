@@ -30,11 +30,13 @@ def dashboard_config(client,policy,path,guard):
     validate_configuration(config,policy)
     return {'urlPath':path,'title':entry['title'],'config':config}
 
-def validate_configuration(config,policy):
+def validate_configuration(config,policy,*,allow_adjacent_unheaded=False):
     """Closed native grammar; validate every binding before returning any bytes.
 
     This is a safety gate, not a layout converter. JS applies tighter model
     representability checks and refuses atomically. Never redact an opaque field.
+    Publication may preserve separate direct runs around retained empty groups;
+    read-import must still reject that non-round-trippable section arrangement.
     """
     import json
     import math
@@ -74,7 +76,7 @@ def validate_configuration(config,policy):
         for section in view['sections']:
             fields(section,('type','cards'));require(section['type']=='grid' and type(section['cards']) is list and 1<=len(section['cards'])<=129)
             headed=section['cards'][0].get('type')=='heading' if type(section['cards'][0]) is dict else False
-            require(not (previous_unheaded and not headed));previous_unheaded=not headed
+            require(allow_adjacent_unheaded is True or not (previous_unheaded and not headed));previous_unheaded=not headed
             for ci,card in enumerate(section['cards']):
                 require(type(card) is dict);kind=card.get('type');features=[]
                 if kind=='heading':

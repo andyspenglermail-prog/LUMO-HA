@@ -1,8 +1,8 @@
 {
   "name": "LUMO Data · Geräte & Bedienung",
-  "version": "0.10.0-studio.1",
+  "version": "0.11.0-native.1",
   "slug": "lumo_data",
-  "description": "LUMO-Designer-Zwischenversion: strukturiertes Dashboardmodell, native Sections-Ausgabe und freie Gestaltung. Keine automatische HA-Dashboardveröffentlichung.",
+  "description": "LUMO für native HA-Dashboards: Raumentwurf, Entwurfs-/Testmodus und Dashboardanlage nach ausdrücklichem Benutzerklick.",
   "arch": [
     "amd64",
     "aarch64"

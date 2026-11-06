@@ -1,5 +1,25 @@
 # Änderungen
 
+## 0.11.0-native.1 — nur native HA-Dashboards
+
+- Ausgabeprofil-Auswahl und aktiven freien Editor entfernt. Native Dokumente,
+  Backups, Rückgängig/Wiederholen und nicht abbildbare Legacy-Inhalte bleiben erhalten.
+- Neuer Ablauf Dashboard → Raum → Design & Display → Dein Raumentwurf.
+  Bestehende lokale Entwürfe und unterstützte HA-Kopien öffnen direkt im Raumentwurf.
+- Sections-Geometrie an das offizielle HA-Frontend angeglichen: Abschnittsbreiten,
+  responsive Spaltenzahl, Abstände, Überschriften und Kartenspannen. Tatsächlicher
+  gemischter UI-Export gegen natives Vollview geprüft, nicht nur YAML validiert.
+- Entwurfs-/Testmodus mit expliziter gebundener Gerätebedienung und sicherer
+  Rückkehr zum Entwurfsmodus bei Navigation, Laden, Trennen oder Verbergen.
+- Dashboard anlegen mit Titel, originaler HA-Symbolauswahl, URL-Namen und expliziten
+  Admin-/Seitenleistenflags. Eigener einmaliger Token, tatsächliche Adminprüfung,
+  Konfliktverweigerung sowie vollständiger Metadaten-/Konfigurations-Readback.
+- Nur neue Dashboards nach Benutzerbestätigung; kein automatisches Update/Delete/Retry.
+  Teilfehler bleiben sichtbar. Keine atomare HA-Transaktion gegen parallele Schreiber.
+- Keine zusätzlichen App-Berechtigungen, Optionen, Installation oder zweite App.
+  Layoutnachweis bedeutet keine universelle Theme-/Icon-/Schriftparität; frühere
+  Stilpräferenzen sind keine nativen HA-Themes. Physische und installierte Abnahme offen.
+
 ## 0.10.0-studio.1 — geführtes Raumstudio
 
 - Vier Schritte beim Öffnen: Dashboard auswählen/neu, Design & Display,
