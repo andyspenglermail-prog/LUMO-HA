@@ -1,5 +1,29 @@
 # Änderungen
 
+## 0.11.0-native.3 — Raster, Ausrichtung, Gruppen und Entitätswechsel
+
+- Dauerhaft sichtbares 12-Spalten-Abschnittsraster mit erkennbaren Arbeitsgrenzen.
+  Echte Layoutabstände, Links/Mitte/Rechts und horizontales Ziehen für eine einzelne
+  Inhaltskachel je Section; keine bloße CSS-Verschiebung im Designer.
+- Layoutzellen mit eigener Größe, Reihenfolge, Gruppenzuordnung und Fixierung;
+  durchgehend in Verlauf, Browserspeicherung, Backup, Export und unterstütztem Import.
+  Bestehende Dokumente werden nicht automatisch umgeordnet oder neu dimensioniert.
+- Neue leere Gruppen sofort sichtbar: benannte Ablageziele, Quellen direkt zur
+  Gruppe hinzufügen, vorhandene Inhalte zuweisen, umbenennen und entfernen.
+  Gruppenwerkzeuge liegen außerhalb der nativen Kachelgeometrie und verdecken
+  auch am Smartphone nicht die Kachelbearbeitung.
+- Kacheleditor mit Raum-/Typfilter, Suche nach Funktion/Gerät/ID, vollständiger
+  paginierter Auswahl und explizitem Ersetzen/Hinzufügen/Entfernen. Eigene Einstellungen
+  und ausgewählte Quellen bleiben bei Filtern, laufenden Werten und Abbrechen erhalten.
+- Darstellungsvorschläge anhand gelesener Fähigkeiten, ohne automatische Umstellung
+  oder Geräteaktionen. In-Tile-Bedienung und bestehende Freigabegrenzen erhalten.
+- Begrenzte native Validierungsgrammatik um kanonische leere Grid-Container ergänzt;
+  keine neuen App-Berechtigungen, Services, Optionen oder automatische Installation.
+- Grenzen: Ausrichtung innerhalb der Section, nicht am Fensterrand. HA zeigt für
+  leere Grid-Container nur im einzelnen Karteneditor „Empty card“; normale native
+  Darstellung ist leer. Leere Entwurfsgruppen werden nicht exportiert. Themeexport,
+  installierte HA-Kompatibilität und physische/qualitative Abnahme bleiben offen.
+
 ## 0.11.0-native.2 — Raster und Bedienung innerhalb der Kacheln
 
 - Dezentes sichtbares Designraster wiederhergestellt, auch für leere Entwürfe;

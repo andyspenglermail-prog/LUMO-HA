@@ -1,6 +1,6 @@
 # LUMO – Home Assistant Dashboard-Designer
 
-## LUMO Data · 0.11.0-native.2
+## LUMO Data · 0.11.0-native.3
 
 **Nur noch native HA-Dashboards.** Der freie Editor und die Ausgabeprofil-Auswahl
 entfallen. Bestehende native Entwürfe/Backups bleiben erhalten. Das Ziel ist:
@@ -15,9 +15,22 @@ in LUMO gestalten und das entsprechende native Layout in HA verwenden.
 4. **Dein Raumentwurf**: Quellen hinzufügen, bearbeiten, gruppieren,
    verschieben/vergrößern, speichern, exportieren oder in HA anlegen.
 
+**Neu in dieser Version:** sichtbare Abschnittsraster und echte Layoutabstände,
+Links/Mitte/Rechts für eine einzelne Kachel innerhalb ihres Abschnitts, sofort
+nutzbare Gruppen und eine durchsuchbare Entitätsauswahl mit Raum-/Typfilter.
+Quellen lassen sich bewusst ersetzen, ergänzen oder entfernen, ohne manuelle
+Namen, Größen und Optionen beim reinen Quellenwechsel zu verlieren.
+
+Ausrichtung ist keine freie Positionierung am Fensterrand. Abstände werden als
+leere native Grid-Container exportiert: im normalen HA-Dashboard unsichtbar,
+im einzelnen HA-Karteneditor mit dem Hinweis **Empty card**. Leere Gruppen sind
+sichtbare Entwurfsziele, werden ohne Inhalt aber nicht exportiert.
+
 Die native Sections-Geometrie wurde mit einem tatsächlichen UI-Export aus neun
 Karten, zwei Überschriften und vier Abschnitten bei vier gleichen Inhaltsbreiten
-gegen das offizielle HA-Frontend geprüft. Das ist Layouttreue im geprüften Profil,
+gegen das offizielle HA-Frontend geprüft. Zusätzlich wurden echte UI-Exporte mit
+linker/rechter und gruppierter mittiger Ausrichtung bei denselben vier Breiten
+verglichen. Das ist Layouttreue im geprüften Profil,
 nicht identische Theme-/Schrift-/Icon-Darstellung aller HA-Versionen. Frühere
 Stilpräferenzen installieren oder exportieren weiterhin keine HA-Themes.
 

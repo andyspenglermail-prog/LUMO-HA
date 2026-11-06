@@ -1,6 +1,6 @@
 {
   "name": "LUMO Data · Geräte & Bedienung",
-  "version": "0.11.0-native.2",
+  "version": "0.11.0-native.3",
   "slug": "lumo_data",
   "description": "LUMO für native HA-Dashboards: Raumentwurf, Entwurfs-/Testmodus und Dashboardanlage nach ausdrücklichem Benutzerklick.",
   "arch": [

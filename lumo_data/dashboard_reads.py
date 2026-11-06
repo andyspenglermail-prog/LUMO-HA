@@ -65,7 +65,7 @@ def validate_configuration(config,policy,*,allow_adjacent_unheaded=False):
     fields(config,('views',),('title',))
     if 'title' in config:require(label(config['title']))
     require(type(config['views']) is list and 1<=len(config['views'])<=16)
-    blocks=0;groups=0;paths=set()
+    blocks=0;groups=0;spaces=0;paths=set()
     for index,view in enumerate(config['views']):
         fields(view,('title','type','sections'),('path','max_columns','dense_section_placement'))
         path=view.get('path',str(index))
@@ -74,11 +74,18 @@ def validate_configuration(config,policy,*,allow_adjacent_unheaded=False):
         require(view['type']=='sections' and integer(view.get('max_columns',4),1,4) and view.get('dense_section_placement',False) is False and type(view['sections']) is list and len(view['sections'])<=160)
         previous_unheaded=False
         for section in view['sections']:
-            fields(section,('type','cards'));require(section['type']=='grid' and type(section['cards']) is list and 1<=len(section['cards'])<=129)
+            # 128 content + 256 explicit layout cells + one heading, still bounded.
+            fields(section,('type','cards'));require(section['type']=='grid' and type(section['cards']) is list and 1<=len(section['cards'])<=385)
             headed=section['cards'][0].get('type')=='heading' if type(section['cards'][0]) is dict else False
             require(allow_adjacent_unheaded is True or not (previous_unheaded and not headed));previous_unheaded=not headed
             for ci,card in enumerate(section['cards']):
                 require(type(card) is dict);kind=card.get('type');features=[]
+                if kind=='grid':
+                    fields(card,('type','columns','square','cards','grid_options'))
+                    require(type(card['columns']) is int and card['columns']==1 and card['square'] is False and type(card['cards']) is list and not card['cards'])
+                    grid=card['grid_options'];fields(grid,('columns','rows'))
+                    require(integer(grid['columns'],1,12) and integer(grid['rows'],1,12))
+                    spaces+=1;require(spaces<=256);continue
                 if kind=='heading':
                     fields(card,('type','heading'),('grid_options',));require(ci==0 and len(section['cards'])>1 and label(card['heading']));groups+=1
                 elif kind=='history-graph':
@@ -113,4 +120,4 @@ def validate_configuration(config,policy,*,allow_adjacent_unheaded=False):
                 grid=card.get('grid_options',default);fields(grid,('columns','rows'))
                 require(integer(grid['columns'],12 if kind in ('heading','history-graph') else 6,12))
                 require(grid['rows']=='auto' if kind=='heading' else integer(grid['rows'],4 if kind=='history-graph' else 2 if kind=='gauge' or features else 1,12))
-    require(blocks<=128 and groups<=32)
+    require(blocks<=128 and groups<=32 and spaces<=256)

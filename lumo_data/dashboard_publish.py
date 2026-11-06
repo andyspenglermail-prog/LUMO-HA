@@ -64,6 +64,10 @@ def validate_request(value, policy):
     if any(type(value[k]) is not bool for k in ('require_admin', 'show_in_sidebar')):
         raise ReadError('invalid_request', 400)
     validate_configuration(value['config'], policy, allow_adjacent_unheaded=True)
+    # Blank layout occupancy is never publishable device content.
+    if not any(card['type'] in ('tile','gauge','history-graph')
+               for view in value['config']['views'] for section in view['sections'] for card in section['cards']):
+        raise ReadError('unsupported_configuration',422)
 
 
 def publish(client, value, user, policy, guard):

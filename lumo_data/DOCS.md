@@ -1,4 +1,4 @@
-# LUMO Data · 0.11.0-native.2 · Native HA-Dashboards
+# LUMO Data · 0.11.0-native.3 · Native HA-Dashboards
 
 LUMO ist der Designer, nicht das fertige Dashboard. Dieser Entwicklungsstand hat
 nur noch den nativen HA-Arbeitsablauf. Ausgabeprofil-Auswahl und aktiver freier
@@ -49,18 +49,67 @@ wird ausdrücklich im Editor gewählt. Für Karten sind 13 MDI-Symbole lokal geb
 unbekannte Symbole haben einen neutralen Ersatz. Das ist nicht der vollständige
 HA-Iconkatalog. Die separate Seitenleistensymbol-Auswahl verwendet HA-Komponenten.
 
+## Eine andere Entität auswählen
+
+Kachel bearbeiten öffnet die Quellenauswahl mit **Suche**, **Raum** und **Typ / Domain**.
+Voreingestellt ist die tatsächliche Raum-ID der aktiven Ansicht, nicht nur ein
+gleichlautender Raumname. **Alle Räume** und **Ohne Raumzuordnung** sind ausdrücklich
+wählbar. Weitere Ergebnisse stehen auf Folgeseiten; der Bestand wird nicht nach
+den ersten 40 Quellen abgeschnitten. Geräte-/Funktionsnamen stehen im Vordergrund,
+die genaue ID und Datenqualität bleiben aufklappbar.
+
+**Ersetzen** tauscht die gesamte Auswahl. **Hinzufügen** ergänzt bei Verlaufskarten
+bis zu acht Quellen; **Entfernen** und **Auswahl leeren** ändern zunächst nur die
+offene Bearbeitung. Erst **Übernehmen** ändert den Entwurf; **Abbrechen** verwirft
+die Bearbeitung. Filtern und laufende Wertaktualisierung löschen keine Auswahl.
+Ein reiner Quellenwechsel erhält eigene Namen, Symbole, Optionen und Kartengrößen.
+Passende Darstellungen werden aus tatsächlich gelesenen Fähigkeiten vorgeschlagen,
+nicht automatisch umgestellt. Noch nicht gelesene Fähigkeiten bleiben unbestätigt.
+
 ## Layouttreue statt freier Pixelpositionen
 
 Raumentwurf und Export verwenden dieselben nativen Sections-Regeln: zwölf Spalten
 je Abschnitt, Kartenspannen, Abschnittsreihenfolge, native Abstände und responsive
 Anordnung. `Maximale Abschnitte nebeneinander` zählt Abschnitte, nicht Kartenspalten.
 Gruppen werden zu eigenen Abschnitten; aufeinanderfolgende direkte Bausteine teilen
-einen Abschnitt. Es gibt keine beliebigen x/y-Lücken oder unsichtbaren Abstandskarten.
+einen Abschnitt. Das sichtbare Raster markiert diese tatsächlichen Abschnittsgrenzen,
+nicht eine frei belegbare Fläche bis zum Fensterrand.
+
+**Links / Mitte / Rechts** oder **Startspalte → Platzieren** richten eine einzelne
+Inhaltskachel innerhalb ihrer 12-Spalten-Section aus. Auch horizontales Ziehen am
+Griff verändert bei genau einer Inhaltskachel die Rasterposition. Breite/Höhe bleiben
+erhalten. Vorhandene unfixierte Abstände in diesem Abschnitt werden dabei bewusst
+ersetzt; fixierte Elemente sperren die Aktion. Bei ungerader freier Spaltenzahl
+rastet Mitte links der mathematisch exakten Mitte ein, wie im Werkzeug angegeben.
+Für mehrere Inhaltskacheln bleiben Reihenfolge, eigene Gruppen und explizite
+Abstände verfügbar; eine Ausrichtungsaktion verschiebt nicht still die Nachbarn.
+
+**＋ Abstand** ergänzt eine echte Layoutzelle. Über **Layoutauswahl → Abstand
+bearbeiten** lassen sich Spalten, Zeilen, Gruppe, Reihenfolge und Fixierung ändern
+oder der Abstand entfernen. Breitere Zellen bieten zusätzlich Maus-/Touch-Griffe;
+schmale Zellen verwenden die gut erreichbaren äußeren Werkzeuge. Rückgängig,
+Wiederholen, Speichern und Backups erhalten diese Angaben.
+
+**Wichtige native Grenze:** Die Ausgabe verwendet leere native Grid-Container,
+keine Geräte, erfundenen Entitäten oder Custom Cards. Im normalen HA-Dashboard
+reservieren sie nur Leerraum. Öffnet man einen solchen Container später einzeln
+im **HA-Karteneditor**, zeigt HA **Empty card** an. LUMO weist vor Export/Anlage
+darauf hin. Maximal 256 Layoutzellen sind zusätzlich zu 128 Inhaltskacheln möglich.
+
+**Gruppen im Entwurf** zeigt neue leere Gruppen sofort mit Namen und Werkzeugen.
+Eine Kachel am Griff hineinziehen, einen vorhandenen Inhalt **Zuweisen** oder
+**Quellen für …** wählen. Umbenennen, Fixieren, Entfernen und Reihenfolge bleiben
+dort auch für gefüllte Gruppen erreichbar, ohne Kacheln zu verdecken. Leere Gruppen
+belegen nur diesen Entwurfsbereich, keine unsichtbare Section im HA-Ergebnis.
+Deshalb erhält der Browserentwurf sie, der native Export/erneute native Import nicht.
 
 Der native Vergleich verwendet ein tatsächlich im UI erstelltes, heruntergeladenes
 Dashboard mit neun Karten, zwei Überschriften und vier Abschnitten bei identischen
 Inhaltsbreiten 390/768/1024/1440. Referenz: offizielles HA-Frontend
 `DEMO-20261028.4`, Commit `a67b691a451e0b3fc469679b07158f963a61842c`.
+Zusätzlich wurden aus dem aktuellen UI exportierte linke/rechte Einzelkacheln
+und eine mittig ausgerichtete gruppierte Kachel samt direkten Inhalten und leerer
+Entwurfsgruppe bei diesen vier Breiten gegen den echten nativen Renderer geprüft.
 Dies ist eine abgegrenzte Geometrieprüfung, keine Zusage für sämtliche installierten
 HA-Versionen oder eigene Themes. Ein anderer nutzbarer Inhaltsbereich ordnet Sections
 entsprechend neu. Identische Schrift-, Icon- und Controlgestaltung ist nicht zugesagt.
