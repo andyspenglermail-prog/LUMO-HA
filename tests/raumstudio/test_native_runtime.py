@@ -8,7 +8,7 @@ from store import Store,defaults
 from native import compile_native
 from test_images import png
 CACHE=pathlib.Path(os.environ.get('HA_NATIVE_CACHE','/workspace/lumo-core-usability-evidence/native-feasibility'))
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'))/'native'
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag02-evidence/implementation/final/browser'))/'native'
 class NativeRuntimeTests(unittest.TestCase):
     def test_original_background_runtime_and_root_inheritance(self):
         OUT.mkdir(parents=True,exist_ok=True);pins=json.loads((CACHE/'asset-pins.json').read_text());network=[];errors=[];matrix=[]

@@ -1,6 +1,6 @@
-# LUMO Raumstudio 0.12.1 – Einrichtung und Bedienung
+# LUMO Raumstudio 0.13.0 – Einrichtung und Bedienung
 
-0.12.1 aktualisiert die bestehende App mit unverändertem Slug `lumo_raumstudio`. Keine neue App nötig. Veröffentlichung, Aktualisierung/Installation und persönliche Abnahme bleiben getrennt. Vor einem Update sichern.
+0.13.0 aktualisiert die bestehende App mit unverändertem Slug `lumo_raumstudio`. Keine neue App nötig. Veröffentlichung, Aktualisierung/Installation und persönliche Abnahme bleiben getrennt. Vor einem Update sichern.
 
 ## Einmalige Einrichtung für Andy
 
@@ -22,7 +22,7 @@ Für lokale Entwürfe genügt ein freigegebener HA-Benutzer. **HA-Dashboard-Impo
 ## Dein erstes Dashboard
 
 - Einen Namen (1–80 Zeichen, nicht nur Leerzeichen) eingeben; optional ein echtes MDI-Icon über die bebilderte Suche wählen oder eine unterstützte Kennung wie `mdi:home` eingeben. Der lokale Katalog enthält MDI 7.4.47; unbekannte Kennungen werden abgewiesen, nicht durch Ersatzzeichen verschleiert.
-- **Dashboard erstellen** speichert zuerst auf dem App-Server, liest den Stand zurück und öffnet dann die Raum-Übergabe. Der neue Entwurf hat **null Ansichten**. Es werden keine Räume oder Geräte erfunden.
+- **Dashboard erstellen** speichert zuerst auf dem App-Server, liest den Stand zurück und öffnet dann die Raumverwaltung. Der neue Entwurf hat **null Ansichten**. Es werden keine Räume oder Geräte erfunden.
 - **Zurück zum Dashboard** führt zu Einstellungen und Vorschau in Schritt 1.
 - Gespeicherte Entwürfe bieten Öffnen, Umbenennen, Duplizieren, Einstellungen und bestätigtes Löschen. Löschen betrifft nie ein HA-Dashboard. Duplikate haben eigene IDs; unveränderliche Bildbytes dürfen sicher geteilt werden.
 - Allgemein: Name, Beschreibung und Icon. Technische Metadaten befinden sich unter Verwaltung.
@@ -50,6 +50,28 @@ Nach der Übernahme zeigt der **Importbericht** eine verständliche Zusammenfass
 
 **Kein Teilimport:** Nicht sichere oder zu große JSON-Daten werden vollständig abgewiesen, nicht teilweise übernommen. Grenzen: JSON-Objekt am Root, endliche Zahlen, höchstens 64 Verschachtelungsebenen, 100.000 Werte und 1 MiB bei sicherer ASCII-JSON-Serialisierung. Technische Pfadbeispiele und externe Referenzen werden im Bericht auf je 200 begrenzt; höchstens 1.000 Elemente erscheinen im Feldeditor. Überlange unbekannte Schlüssel werden nur in technischen Pfadbeispielen auf 160 Zeichen plus Auslassungszeichen verkürzt und mit `pathTruncated` markiert. Diese Anzeigegrenzen kürzen niemals den gespeicherten oder exportierten Inhalt. Es gibt weder HA-Konfiguration-speichern noch Dashboard-erstellen/-löschen noch Service-Aufrufe im ausgelieferten Backend.
 
+## Schritt 2: Raum
+
+Links stehen Deine lokalen Ansichten und darunter klar getrennt die tatsächlich gelesenen HA-Bereiche. Ein Bereichsklick öffnet seine bestehende lokale Ansicht oder legt eine **ungespeicherte** lokale Referenz an. **Neue Ansicht** erzeugt eine virtuelle Ansicht ohne HA-Bereich. Weder Aktion erzeugt Räume in HA. Über die Titel-, Icon- und Sichtbarkeitsfelder bearbeitest Du ausschließlich LUMO. Pfeile ändern die Reihenfolge; Duplizieren erstellt eine unabhängige View-ID mit denselben Quellen. Entfernen braucht Bestätigung und betrifft nur die lokale Raumplanung, nie die native HA-Kopie. Rückgängig ist bis zum nächsten Save verfügbar (50 lokale Bearbeitungsschritte).
+
+**Gerät auswählen** markiert seine derzeit tatsächlich gelesenen Entitäten, auch deaktivierte oder abweichend zugeordnete. Geräte-ID und konkrete Entitätsliste werden separat gespeichert. Später hinzukommende Funktionen werden nicht still ausgewählt; Gerät bewusst erneut auswählen. Einzelne Entitäten bleiben unabhängig an-/abwählbar. Aufgeklappte Geräte zeigen immer alle tatsächlichen Entitäten, auch diejenigen außerhalb des aktiven Filters (markiert). Der Befehl **Sichtbare Treffer auswählen** betrifft nur die durch Suche, Bereich und Domain passenden Treffer, nicht die zusätzlich aufgeklappten Außentreffer. **Alle Bereiche · raumübergreifend** ermöglicht zusätzliche Referenzen ohne HA-Verschiebung. Filterwechsel und Refresh verwerfen keine Auswahl.
+
+Die Quellenansicht zeigt Entity-Area vor Device-Area, die tatsächliche Etage, deaktiviert/verborgen/Kategorie, fehlenden Zustand, unknown und unavailable. Reine Zustandsentitäten ohne Registry-ID bleiben auswählbar, besitzen aber keine stabile Rename-Identität. Registry-Referenzen behalten ihre ID bei HA-Rename und zeigen die neu gelesene Entity-ID; beim nächsten Save wird diese beobachtete ID aktualisiert. Fehlende gespeicherte Referenzen werden sichtbar als fehlend erhalten, niemals automatisch gelöscht. Attribute erscheinen in Details, nicht als erfundene Funktionen.
+
+Werte stammen aus der letzten erfolgreichen Abfrage. Die App liest beim Betreten, über **Neu aus HA lesen** und bei sichtbarer Raumseite alle 30 Sekunden neu. Dies ist Polling, kein WebSocket-Eventstream. Zeitstempel und Abrufstatus sind sichtbar. Bei Fehler bleiben vorherige Beobachtungen ausdrücklich **veraltet**; keine Beispieldaten und kein fiktiver Erfolgsstatus. Ungespeicherte Formfelder werden nicht aus Telemetrie überschrieben. Im Hintergrundtab pausiert das Polling. Lokale Titeländerungen und virtuelle Ansichten können auch ohne HA-Rechte gespeichert werden; neue HA-Referenzen brauchen einen erfolgreichen autorisierten Bestandsabruf.
+
+Bestehende native Ansichten erhalten eine separate lokale Verwaltungsreferenz. Ihre Custom Cards, Scripts, Entitybindungen und sonstigen nativen Inhalte bleiben unangetastet; LUMO behauptet nicht, unbekannte Karten semantisch in eine neue Auswahl auflösen zu können. Die lokale Raumplanung erscheint **noch nicht** im nativen JSON-Export. Das ist Vorbereitung für einen gesonderten späteren Schritt, keine fertige neue HA-Ausgabe.
+
+Desktop: drei Spalten ungefähr 25/50/25, scrollbar und mit erreichbarer Saveleiste. Tablet/Telefon: umschaltbare Folge **Räume → Geräte → Eigenschaften**, nicht drei gequetschte Spalten. Schrittwechsel bietet Speichern, Verwerfen und Abbrechen; gespeicherte Auswahl bleibt bei Rückkehr erhalten. Schritte 3 und 4 werden hier nicht implementiert.
+
+### Leserechte und gezielte HA-Korrektur
+
+Für Inventar liest der Server zuerst `auth/current_user`. Stimmt die authentifizierte Upstream-ID exakt mit dem vertrauenswürdigen Ingressbenutzer überein, gelten die realen HA-Leserechte dieses Benutzers; Administrator ist dafür nicht künstlich Voraussetzung. Bei einer anderen Verbindungsidentität (typisch Supervisor) darf deren Privileg nicht als Benutzerrecht gelten. Dann muss `config/auth/list` den **anfragenden** Benutzer als aktiven Owner/Systemadministrator bestätigen. Nichtadministrative Supervisor-Ingressbenutzer können deshalb trotz erlaubter lokaler Entwürfe keinen Bestand erhalten; das ist eine bewusst sichere Berechtigungsgrenze, keine Aufforderung zur Rechteerweiterung.
+
+**HA-Zuordnung korrigieren** ist zunächst geschlossen und nur mit ausgewähltem Registry-Gerät/Entity, frischem Bestand und bestätigten Adminrechten nutzbar. Erst lokale Änderungen speichern. Zielbereich wählen (oder individuellen Bereich entfernen), Vorschau lesen und **Genau diese HA-Korrektur bestätigen** drücken. Vorschau enthält tatsächliche Identität, alte/neue Zuordnung und betroffene Entitäten. Sie ist serverseitig einmalig, benutzer-/dashboard-/revisionsgebunden und 90 Sekunden gültig. Der Server prüft die Rechte erneut und liest vor Dispatch Objekt, betroffene Registry-Einträge und Bereiche frisch. Geänderte Daten verhindern den Versand. Anschließend wird der tatsächliche Registrystand erneut gelesen; nur bestätigte Zielzuordnung ist Erfolg.
+
+Ausschließlich `config/device_registry/update` oder `config/entity_registry/update` mit `area_id` wird geschrieben. Keine Namen, Floors, Bereichsanlage/-löschung, Services oder Geräteaktionen. Entitybereich null bedeutet gegebenenfalls Erben des Gerätebereichs, nicht zwingend „ohne Bereich“. Gerätekorrektur lässt individuelle Entity-Overrides erhalten. **HA bietet keinen atomaren Compare-and-Set für diese Operation**: Das kurze externe Read/Write-Rennfenster kann die App nicht vollständig schließen. Bei verlorener Antwort oder unbestätigtem Readback ist das Ergebnis unklar: kein Retry, keine automatische Rücknahme, tatsächlichen HA-Stand bewusst prüfen. Eine echte Schreibprobe wurde ohne freigegebenes Testobjekt nicht durchgeführt.
+
 ## Speichern, mehrere Geräte und Konflikte
 
 Entwürfe und Bilder liegen in `/data/raumstudio/studio.sqlite`, nicht in LocalStorage. Derselbe freigegebene HA-Benutzer sieht sie auf anderen Geräten. Ein anderer Benutzer kann sie auch mit einer geratenen ID nicht abrufen.
@@ -64,7 +86,7 @@ Die App deklariert `backup: cold`. Für einen normalen HA-Backupvorgang diese Ap
 
 Vor einem App-Update eine HA-Sicherung erstellen. Bei regulärem Update/Neustart bleibt dasselbe `/data` bestehen. Neue Versionen müssen bekannte Datenformate prüfen und vor einer tatsächlichen Migration sichern. Unbekannte neuere Schemata werden nicht überschrieben.
 
-**Normaler Rückweg:** App stoppen und über HA eine passende vollständige App-Sicherung wiederherstellen; dazu die zum Datenformat passende App-Version verwenden. Nicht nur eine alte Imageversion über einen neueren Datenbestand starten. 0.12.0 versteht die zusätzliche `nativeImport`-Hülle nicht; für einen Rückweg die vollständige Vor-Update-Sicherung verwenden. Es gibt keine automatische Downmigration. Alte Entwürfe ohne diese Hülle bleiben in 0.12.1 lesbar und werden beim Update nicht umgeschrieben. `maintenance.py` bietet für Entwickler bei gestoppter App zusätzlich geprüfte SQLite-Snapshots, Restore und Schema-1→2-Rollback; Details und ausführbare Tests stehen in `docs/raumstudio/ARCHITECTURE.md`. Keine Restore-HTTP-Route und keine automatische Rücknahme fremder HA-Daten.
+**Normaler Rückweg:** App stoppen und über HA eine passende vollständige App-Sicherung wiederherstellen; dazu die zum Datenformat passende App-Version verwenden. Nicht nur eine alte Imageversion über einen neueren Datenbestand starten. 0.12.0 versteht die zusätzliche `nativeImport`-Hülle nicht; für einen Rückweg die vollständige Vor-Update-Sicherung verwenden. Es gibt keine automatische Downmigration. Alte Entwürfe bleiben in 0.13.0 lesbar und werden beim Update nicht umgeschrieben. Die optionale `roomPlan`-Hülle wird erst beim ausdrücklichen Raum-Save gespeichert; SQLite bleibt Schema2. 0.12.1 versteht diese Hülle nicht: Für Rückkehr zur alten App stets die vollständige Vor-Update-Sicherung wiederherstellen. Kein Löschen der Hülle per Hand. `maintenance.py` bietet für Entwickler bei gestoppter App zusätzlich geprüfte SQLite-Snapshots, Restore und Schema-1→2-Rollback; Details und ausführbare Tests stehen in `docs/raumstudio/ARCHITECTURE.md`. Keine Restore-HTTP-Route und keine automatische Rücknahme fremder HA-Daten.
 
 ## Technische Grenzen
 

@@ -1,0 +1,125 @@
+/* Step2 configure surface, scoped away from Step1. No generated dashboard styling. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+body:has(#room-step:not([hidden])){background:#f3f6f6;color:#172e29}
+body:has(#room-step:not([hidden])) .shell{max-width:1800px;padding:12px 18px 0}
+body:has(#room-step:not([hidden])) .brandbar{min-height:76px;padding:10px 28px;gap:28px;background:linear-gradient(110deg,#002b23,#004636 60%,#002b23);border-bottom:0}
+body:has(#room-step:not([hidden])) .brand img{width:50px;height:50px}
+body:has(#room-step:not([hidden])) .brand strong{font-size:27px;letter-spacing:2px}
+body:has(#room-step:not([hidden])) .brand span{font-size:12px}
+body:has(#room-step:not([hidden])) .product{font-size:26px}
+body:has(#room-step:not([hidden])) .steps{margin:0 0 16px;gap:8px}
+body:has(#room-step:not([hidden])) .steps button{padding:12px;min-height:48px;background:#e9eff1;border-color:#dfe7ea}
+body:has(#room-step:not([hidden])) .steps [aria-current=step]{background:linear-gradient(#007052,#004f3d);color:white;border-color:#007458;box-shadow:0 3px 8px #003e2924}
+#room-step{--green:#00634b;--muted:#526760;font-size:14px}
+#room-step h1{font-size:clamp(22px,2vw,30px);letter-spacing:-.6px;line-height:1.25;margin:0 0 7px}
+#room-step h2{font-size:20px;letter-spacing:-.3px;margin:0 0 5px;line-height:1.3}
+#room-step h3{font-size:16px;margin:0 0 6px}
+#room-step h4{font-size:14px;margin:14px 0 6px}
+#room-step p{margin:5px 0 10px}
+#room-step .hint{font-size:12px;color:#526760;line-height:1.4}
+.room-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin:22px 4px 8px}
+.room-heading>div:first-child{min-width:0;flex:1}
+.room-heading p{color:#52636a;font-size:15px}
+.room-live{flex:0 1 240px;display:flex;flex-direction:column;gap:5px;align-items:flex-end;font-size:12px;text-align:right}
+.room-live button{font-size:12px;padding:6px 12px}
+#room-dashboard{margin:0 4px 14px!important}
+.room-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:12px;align-items:start}
+#room-step .panel{padding:18px 14px;border:1px solid #e4e9e8;border-radius:17px;box-shadow:0 4px 9px #152d2410;background:linear-gradient(145deg,#fff,#f9fbfb);min-width:0;margin:0}
+.room-left{display:flex;flex-direction:column;position:sticky;top:10px;max-height:calc(100vh - 35px)}
+.room-list-scroll{overflow:auto;max-height:52vh;min-height:100px;margin:10px 0 16px;padding-right:3px}
+#room-step .room-view-item,#room-step .room-source-item{display:grid;grid-template-columns:26px minmax(0,1fr);align-items:center;gap:2px 9px;text-align:left;width:100%;margin:3px 0;padding:10px 8px;background:transparent;border-color:transparent;border-bottom-color:#e4ebea;border-radius:9px;overflow-wrap:anywhere}
+.room-view-item svg,.room-source-item svg{grid-row:span 2;width:24px;height:24px}
+.room-view-item small,.room-source-item small{grid-column:2;font-size:11px;font-weight:400;color:#526760;line-height:1.4}
+#room-step .room-view-item[aria-current=page]{background:#e7f5e8;border:1px solid #cde8cd}
+#room-sources{margin:10px 0}
+#room-unassigned{width:100%;text-align:left;font-size:12px}
+.room-center-heading{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:16px;min-width:0}
+.room-center-heading h2{overflow-wrap:anywhere}
+.room-center-heading .badge{white-space:normal;font-size:11px;flex-shrink:0;max-width:36%;background:#eaf1ef}
+.room-info-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.room-source-card,.room-local-card{border:1px solid #dce9e3;border-radius:12px;padding:12px;min-width:0;overflow-wrap:anywhere;background:linear-gradient(140deg,#f0f8fe,#e9f2fb)}
+.room-local-card{background:linear-gradient(140deg,#f0faee,#eaf5ec)}
+#room-origin{font-size:13px;line-height:1.6;margin-top:16px}
+#room-step label{margin:7px 0 5px;font-size:12px}
+#room-step input:not([type=checkbox]),#room-step select{font-size:13px;min-height:44px;padding:8px}
+#room-step .check{font-size:12px;line-height:1.4}
+.room-icon-row{display:flex;align-items:center;gap:10px;margin-top:9px}
+.room-icon-row select{flex:1}
+.room-management{display:flex;flex-wrap:wrap;gap:5px;padding:12px 0;border-bottom:1px solid #dce7e3;margin-bottom:16px}
+#room-step .room-management button,#room-step .room-selection-actions button{font-size:11px;padding:6px 9px;min-height:44px}
+.room-filter-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+.room-selection-actions{display:flex;flex-wrap:wrap;gap:5px;margin:10px 0}
+.room-inventory{max-height:58vh;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding-right:3px}
+.room-device{border:1px solid #dce6e2;border-radius:10px;margin-bottom:8px;overflow:hidden;background:white}
+.room-device-head{display:grid;grid-template-columns:38px minmax(0,1fr) 36px;align-items:center;background:#edf6ed;gap:4px;padding:2px 5px}
+#room-step .room-device-head>button:first-child{padding:4px;border:0;background:transparent;font-size:24px}
+#room-step .room-inspect{display:grid;grid-template-columns:22px minmax(0,1fr);gap:2px 7px;align-items:center;text-align:left;border:0;background:transparent;font-weight:400;padding:7px 3px;min-width:0;width:100%;overflow-wrap:anywhere}
+.room-inspect strong{font-size:13px;line-height:1.4}
+.room-inspect small{grid-column:2;color:#526760;font-size:11px;line-height:1.4}
+#room-step .room-device-head .room-inspect{grid-template-columns:minmax(0,1fr)}
+.room-device-head .room-inspect small{grid-column:1}
+.room-device-head .room-inspect strong{display:flex;align-items:center;gap:7px}
+.room-device-icon{display:inline-flex;flex:0 0 22px}.room-device-icon svg{width:22px;height:22px}
+#room-step .room-check{display:flex;gap:8px;align-items:center;margin:0;min-height:44px;min-width:30px;cursor:pointer}
+#room-step .room-check input{width:20px;height:20px;margin:0;min-height:20px}
+.room-entity{display:grid;grid-template-columns:28px minmax(0,1fr) minmax(46px,85px);gap:4px;padding:5px 8px;align-items:center;border-top:1px solid #e4e9e5;min-width:0}
+.room-entity.outside-filter{background:#f4f6f6}
+.room-entity .mdi-icon{width:21px;height:21px;color:#19705b}
+.room-device>p{padding:5px 10px}
+.room-value{font-size:11px;color:#40534e;text-align:right;overflow-wrap:anywhere;line-height:1.4}
+.room-value small{display:block;color:#994700}
+.room-right{position:sticky;top:10px;max-height:calc(100vh - 35px);overflow:auto}
+#room-properties{margin-top:18px;overflow-wrap:anywhere}
+#room-properties h3{padding:12px;background:#edf7e9;border:1px solid #dfecdc;border-radius:10px}
+#room-properties dl{display:block;margin:12px 0;font-size:12px}
+#room-properties dt{color:#526760;font-weight:500;margin-top:9px}
+#room-properties dd{margin:1px 0;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.room-reference-note{padding:12px;background:#eef7fa;border-radius:10px;font-size:12px;border:1px solid #deedf1}
+#room-properties details{font-size:12px}
+#room-properties pre{white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto;font-size:11px}
+#room-step .room-related{font-size:12px;display:block;width:100%;text-align:left;margin:4px 0;overflow-wrap:anywhere}
+#room-correction{margin-top:20px;padding:14px;background:#fff7e8;border:1px solid #f2dfb8;border-radius:12px;font-size:12px;overflow-wrap:anywhere}
+#room-correction summary{font-weight:750;cursor:pointer;min-height:44px;font-size:14px}
+#room-correction button{width:100%;font-size:12px;margin-top:10px}
+#correction-details{margin-top:12px}
+.room-savebar{display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;bottom:0;background:#f8fbf9f5;backdrop-filter:blur(10px);padding:14px 4px;border-top:1px solid #d7e3dd;margin-top:12px;z-index:4}
+.room-savebar>div{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center}
+#room-dirty{font-size:12px;color:#526760}
+.room-panel-tabs{display:none}
+#room-step button:focus-visible{outline:3px solid #a88119;outline-offset:1px}
+@media(max-width:1100px){
+ .room-panel-tabs{display:flex;gap:6px;margin:12px 0}.room-panel-tabs button{flex:1;font-size:13px}.room-panel-tabs [aria-pressed=true]{background:#00634b;color:#fff}
+ .room-columns{display:block}.room-columns>[data-panel-content]{display:none!important}.room-columns[data-panel=views]>[data-panel-content=views],.room-columns[data-panel=inventory]>[data-panel-content=inventory],.room-columns[data-panel=properties]>[data-panel-content=properties]{display:block!important;position:static;max-height:none}
+ .room-list-scroll{max-height:55vh}.room-heading{display:block}.room-live{flex-direction:row;align-items:center;justify-content:space-between;margin-top:12px;text-align:left}.room-inventory{max-height:55vh}
+ .room-savebar>button{font-size:12px}.room-savebar>div{gap:3px}.room-savebar>div>button{font-size:12px}
+ body:has(#room-step:not([hidden])) .brandbar{gap:15px;flex-wrap:wrap;padding:10px 18px}body:has(#room-step:not([hidden])) .connection{margin-left:auto;font-size:11px}
+}
+@media(max-width:600px){
+ body:has(#room-step:not([hidden])) .shell{padding:10px 8px 0}body:has(#room-step:not([hidden])) .brandbar{gap:8px;padding:10px 12px}body:has(#room-step:not([hidden])) .brand img{width:38px;height:38px}body:has(#room-step:not([hidden])) .brand strong{font-size:21px}body:has(#room-step:not([hidden])) .product{font-size:19px}body:has(#room-step:not([hidden])) .brand span{font-size:10px}body:has(#room-step:not([hidden])) .connection{margin:0;flex:1;overflow-wrap:anywhere}body:has(#room-step:not([hidden])) #version{font-size:11px}
+ body:has(#room-step:not([hidden])) .steps{grid-template-columns:1fr 1fr;gap:5px}body:has(#room-step:not([hidden])) .steps button{font-size:12px;padding:8px}.room-heading{margin-top:12px}.room-heading p{font-size:13px}.room-live{font-size:11px;gap:10px}.room-live button{flex-shrink:0}
+ #room-step .panel{padding:14px 10px}.room-info-grid{grid-template-columns:1fr}.room-source-card{padding:10px}.room-source-card h3{font-size:14px!important}#room-origin{margin-top:5px}.room-center-heading{flex-wrap:wrap}.room-center-heading .badge{max-width:none}.room-panel-tabs button{padding:8px 5px;font-size:12px}
+ .room-filter-row{gap:6px}.room-entity{grid-template-columns:25px minmax(0,1fr) 60px;padding:4px}.room-inspect strong{font-size:12px}.room-inspect small{font-size:10px}.room-savebar{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:9px 0}.room-savebar>div{grid-row:1;grid-column:1/-1;justify-content:space-between}.room-savebar>button{padding:8px 5px}.room-savebar>div>button{flex:0 1 55%}.room-inventory{max-height:60vh}
+}
+@media(min-width:1101px){
+ body:has(#room-step:not([hidden])) .steps{padding:0;margin-bottom:10px}
+ body:has(#room-step:not([hidden])) #notice{padding:8px 12px;margin:6px 0;font-size:12px;line-height:1.4}
+ .room-heading{margin:12px 4px 5px;gap:10px}
+ .room-live{flex-direction:row;align-items:center;flex-basis:280px;font-size:11px}
+ .room-live button{flex:0 0 125px}
+ #room-dashboard{margin-bottom:8px!important}
+ .room-columns{height:calc(100dvh - 370px);min-height:320px;align-items:stretch}
+ #room-step .room-columns>.panel{position:static;max-height:none;overflow:auto}
+ .room-left .room-list-scroll{flex:1;max-height:none}
+ .room-left #room-new{margin-top:auto}
+ .room-local-card{display:grid;grid-template-columns:minmax(0,1fr) 90px;gap:4px 7px;align-content:start}
+ .room-local-card h3{grid-column:1/-1;margin:0!important}
+ #room-step .room-local-card label{margin:0}
+ #room-step .room-local-card .check{min-height:32px;margin:3px 0}
+ .room-local-card>.hint,.room-inventory-heading>.hint{display:none}
+ .room-info-grid{margin-bottom:14px}
+ .room-management{margin-bottom:8px;padding:8px 0}
+ .room-local-card h3{grid-column:1/-1}.room-local-card>label[for=room-title]{grid-column:1;grid-row:2}.room-local-card>#room-title{grid-column:1;grid-row:3}.room-local-card .room-icon-row{grid-column:2;grid-row:2/4;display:flex;flex-direction:column;align-items:stretch;gap:0;margin:0}.room-local-card .check,.room-local-card>p{grid-column:1/-1}
+ .room-savebar{position:static;padding:10px 4px;margin-top:10px}
+ body:has(#room-step:not([hidden])) footer{padding:10px 0}
+}
+@media(prefers-reduced-motion:reduce){#room-step *{scroll-behavior:auto!important;transition:none!important}}

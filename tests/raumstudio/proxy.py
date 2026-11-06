@@ -30,6 +30,9 @@ class Proxy:
                 self.send_response(r.status)
                 for k,v in r.getheaders():
                     if k.lower() not in ('server','date','connection'):self.send_header(k,v)
-                self.send_header('Connection','close');self.end_headers();self.wfile.write(raw);c.close()
+                try:
+                    self.send_header('Connection','close');self.end_headers();self.wfile.write(raw)
+                except (BrokenPipeError,ConnectionResetError):pass  # browser context closed after a read
+                finally:c.close()
         self.server=ThreadingHTTPServer(('127.0.0.1',0),Handler);self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start();self.origin='http://127.0.0.1:'+str(self.server.server_address[1]);self.url=self.origin+self.prefix
     def close(self):self.server.shutdown();self.server.server_close();self.thread.join()

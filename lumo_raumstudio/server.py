@@ -1,4 +1,4 @@
-"""Ingress-only app. Fixed HA reads; local owner-scoped writes, no HA proxy."""
+"""Ingress-only app. Fixed HA reads, local owner writes, narrow confirmed area correction."""
 from http.server import BaseHTTPRequestHandler,HTTPServer
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -14,7 +14,10 @@ def version():return json.loads((ROOT/'config.json').read_text())['version']
 SETUP='Raumstudio ist noch nicht freigegeben. In der App-Konfiguration enabled aktivieren und Deine HA-Benutzer-ID unter allowed_user_ids eintragen. Anschließend die App neu starten. Keine Zugangsdaten im Browser nötig.'
 
 def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_proxy_ip='172.30.32.2'):
-    reads=DashboardReads(client);key=secrets.token_bytes(32)
+    from rooms import RoomReads
+    reads=DashboardReads(client);room_reads=RoomReads(client);key=secrets.token_bytes(32)
+    from area_corrections import AreaCorrections
+    corrections=AreaCorrections(room_reads,store)
     def csrf(user):return hmac.new(key,user.encode(),hashlib.sha256).hexdigest()
     class HeaderReader:
         def __init__(self,stream):self.stream=stream;self.remaining=32768
@@ -67,7 +70,7 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
             users=self.headers.get_all('X-Remote-User-Id',[])
             if self.client_address[0]!=trusted_proxy_ip or len(users)!=1 or not SAFE_ID.fullmatch(users[0]):raise StudioError('Bitte Raumstudio über Home Assistant öffnen. Die Ingress-Identität fehlt.',403)
             user=users[0]
-            static={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/style.css':'style.css','/lumo-logo.png':'lumo-logo.png','/mdi.json':'mdi.json'}
+            static={'/':'index.html','/index.html':'index.html','/app.js':'app.js','/room.js':'room.js','/room.css':'room.css','/style.css':'style.css','/lumo-logo.png':'lumo-logo.png','/mdi.json':'mdi.json'}
             if target in static and self.command in ('GET','HEAD'):
                 ext=Path(static[target]).suffix;kind={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.json':'application/json'}[ext]
                 self.reply(200,(ROOT/static[target]).read_bytes(),kind);return
@@ -103,10 +106,25 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
                 if type(value) is not dict:raise StudioError('Ein Datenobjekt wird erwartet.')
                 if target!='/api/images':bounded(value)
             guard()
+            if target=='/api/ha/inventory' and not writing:
+                result=room_reads.inventory(user);guard();self.api(200,result);return
             if target=='/api/dashboards':
                 if not writing:self.api(200,store.list(user));return
                 if set(value)!={'name','icon'}:raise StudioError('Name und optionales Icon werden benötigt.')
                 self.api(201,store.create(user,value['name'],value['icon']));return
+            correction_match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})/area-correction/(preview|confirm)',target)
+            if correction_match and writing:
+                result=getattr(corrections,correction_match[2])(user,correction_match[1],value,guard);self.api(200,result);return
+            room_match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})/rooms',target)
+            if room_match:
+                from room_store import get_plan,save_plan
+                id=room_match[1];d=store.get(user,id)
+                if not writing:self.api(200,{'dashboardId':id,'revision':d['revision'],'plan':get_plan(d)});return
+                if set(value)!={'revision','plan','confirmedDeletes'}:raise StudioError('Ungültige Raumansichten.')
+                # Local metadata remains saveable on disconnect; new references need evidence.
+                try:inventory=room_reads.inventory(user)
+                except (ReadError,StudioError):inventory={}
+                guard();self.api(200,save_plan(store,user,id,value['revision'],value['plan'],value['confirmedDeletes'],inventory));return
             match=re.fullmatch(r'/api/dashboards/([a-f0-9]{32})(?:/(save|duplicate|delete|native-edit|report|export))?',target)
             if match:
                 id,action=match.groups()

@@ -33,7 +33,10 @@ class Peer:
                     cmd=receive()
                     if cmd is None:break
                     peer.commands.append(cmd.copy());kind=cmd['type']
-                    if kind=='config/auth/list':result=peer.users
+                    if kind=='auth/current_user':result={'id':'alice','is_admin':True,'is_owner':False}
+                    elif kind=='get_config':result={'version':'synthetic'}
+                    elif kind in ('get_states','config/area_registry/list','config/floor_registry/list','config/device_registry/list','config/entity_registry/list'):result=[]
+                    elif kind=='config/auth/list':result=peer.users
                     elif kind=='lovelace/dashboards/list':result=[{'url_path':p,'title':p,'mode':'storage','require_admin':False,'show_in_sidebar':True,'icon':'mdi:home'} for p in peer.configs if p]
                     elif kind=='lovelace/config':result=peer.configs.get(cmd.get('url_path'))
                     elif kind=='lovelace/resources/list':result=peer.resources

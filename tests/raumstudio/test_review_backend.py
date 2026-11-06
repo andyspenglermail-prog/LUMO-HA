@@ -80,7 +80,7 @@ class ReviewBackendTests(unittest.TestCase):
                 with self.assertRaises(StudioError) as caught:validate_configuration(altered)
                 self.assertEqual(caught.exception.status,422);self.assertTrue(caught.exception.details)
         import os
-        out=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'));out.mkdir(parents=True,exist_ok=True)
+        out=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag02-evidence/implementation/final/browser'));out.mkdir(parents=True,exist_ok=True)
         (out/'R7-type-matrix.json').write_text(json.dumps({'mutationCount':len(cases),'paths':[keys for keys,_ in cases],'passed':True},indent=2))
         # Fully supported actions are data only, never dispatched on import.
         self.f.peer.configs['fixture-dashboard']=cfg

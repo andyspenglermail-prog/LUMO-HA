@@ -1,5 +1,14 @@
 # Änderungen
 
+## 0.13.0 – Auftrag 02: Raum
+
+- Echte Runtime-Registry-/Zustandslesung, effektive Bereiche mit Entity-Vorrang und getrennte Herkunft. Fehlende, deaktivierte, gerätelose und reine Zustandsentitäten bleiben ehrlich sichtbar. Same-user-Leserechte ohne falsches Adminerfordernis; abweichender Supervisor-User ist kein Rechtebeweis.
+- Dashboardbezogene persistente Raumansichten: erstellen, Titel/Icon/Sichtbarkeit, Reihenfolge, Duplikat, bestätigtes Entfernen. Geräte und stabile Entityreferenzen getrennt; raumübergreifende Auswahl, Suche/Domainfilter, sichtbare Mehrfachauswahl, Rückgängig und Dirty/CAS-Schutz.
+- Drei Desktopspalten und sequenzielle Tablet-/Telefonpanels; tatsächliche Werte werden alle30s/manuell neu gelesen, fehlgeschlagene Abrufe als veraltet markiert. Keine Datenattrappen.
+- Eng begrenzte HA-Bereichskorrektur: anfragender Admin, konkrete kurzlebige Vorschau, Bestätigung, frischer Stale-Vergleich, einmaliger Versand, tatsächliches Readback, kein Retry. Keine Geräteaktionen oder beliebiger Proxy. Echte Schreibabnahme ohne Testobjekt bleibt offen.
+- Optionale roomPlan-Hülle ohne DB-Umschreiben beim Start. Native Quellen, Step1-Views, Importledger und Bilder bleiben erhalten; Raumplanung schreibt den nativen Export nicht um. Backup-/Upgradeprüfung mit echtem0.12.1-Store.
+- Isolierte RED/GREEN- und tatsächliche Browser→Backend→RFC6455-Tests; bestehende65 Methoden bleiben aktiv. Keine Veröffentlichung, Installation, physische Geräte- oder Nutzerabnahme durch diese Quelländerung. Schritte3/4 bleiben außerhalb des Auftrags.
+
 ## 0.12.1 – Verlustfreie HA-Übernahme in Schritt 1
 
 - Update derselben App und desselben Slugs `lumo_raumstudio`.

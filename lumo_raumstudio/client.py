@@ -1,5 +1,5 @@
 """Bounded Core adapter. Native bootstrap fixes origin; constructor is a private diagnostic seam.
-Only the fixed dashboard/permission reads use this transport. No retry,
+Only fixed dashboard/inventory/permission reads and confirmed area corrections use this transport. No retry,
 HTTP proxy, controls, publication, TLS bypass, logging or public arbitrary API.
 """
 import base64

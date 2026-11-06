@@ -1,0 +1,26 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/home-assistant/core/2026.11.0/homeassistant/components/config/area_registry.py",
+    "sha256": "e2e930fb7217868c7065ddafc7f5acd607aa6c79cfcc98097120e050282db1cd"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/home-assistant/core/2026.11.0/homeassistant/components/config/floor_registry.py",
+    "sha256": "757b0198b93d1a328ea073c65ffe9a866a8e66806ae440d971fa066bc9cf86da"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/home-assistant/core/2026.11.0/homeassistant/components/config/device_registry.py",
+    "sha256": "f8c4ff79266edf785e43dd8efca40da989d8a945686c762b0c26082cb2592103"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/home-assistant/core/2026.11.0/homeassistant/components/config/entity_registry.py",
+    "sha256": "269e4b5123f3613f46c81a04fa2057d8e5461a14bde065fc5318434db53bee9f"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/home-assistant/core/2026.11.0/homeassistant/components/config/auth.py",
+    "sha256": "0462ebc10aa732153b38ac96c7905340b2f2686275f375d01320c360b88c8464"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/home-assistant/core/2026.11.0/homeassistant/components/websocket_api/commands.py",
+    "sha256": "e161f3e2f75cfcc25e0ad66871a6d9c1740111f65cb194791926cf6f8494d443"
+  }
+]

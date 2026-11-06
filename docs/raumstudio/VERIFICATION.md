@@ -1,6 +1,16 @@
 # Raumstudio – Verifikation und Abnahmegrenzen
 
-## Aktueller Vertrag 0.12.1 – verlustfreie Importkorrektur
+## Aktueller Vertrag0.13.0 — Auftrag02 Raum
+
+[STEP2.md](STEP2.md) enthält R01–R25, Modell/API und getrennte Abnahmegrenzen. Alle65 bisher vorhandenen Testmethoden bleiben aktiv. Zusätzliche Tests umfassen tatsächliche Runtime-Registry/State-Protokollreads, stabile Normalisierung, lokale Raum-Lifecycle/CAS/Owner/Backup/Upgrade, eng gebundene Bereichskorrektur einschließlich echter Fixturewrites und negative Fälle, sowie reale Browser→Backend→CoreClient→RFC6455-Peer-Workflows. Die Quelle des privaten initialen Bestands wird nur vom Parent und lokal zur Shapeprüfung verwendet, niemals als Produktionsdatenquelle oder öffentliches Fixture. Echte Liveanwendungsreads, Images und Veröffentlichung prüft Parent separat; echte HA-Schreibprobe und installierte persönliche Abnahme bleiben offen.
+
+Isolierte RED-Kontrollkopien plus Rohlogs unter neuer Auftrag02-Evidence belegen Inventar, Persistenz, Writer, UI, Layout-/Offlinekorrekturen, Verpackung und Ablaufgrenze. Nachträge, die bestehendes Verhalten zusätzlich testen und direkt grün sind, werden nicht als test-first RED behauptet. Das vollständige Ergebnis zählt tatsächliche eindeutige Methoden, keine Subcase-/Wiederholungsaddition. Der finale Lauf wird gegen die endgültigen Quellbytes ausgeführt und auf Byteänderungen geprüft. Finales `results.json`/`manifest.json` sind maßgeblich, nicht ein historischer Zwischenlauf.
+
+Alte Browserexpectations wurden nur für die jetzt echte Raumseite (`#room-step`/`#room-back` statt der damaligen Übergabe), Version0.13.0 und den zusätzlichen festen Registry/State-Readsatz angepasst. Nichtnative Dashboard-/Gerätewriter bleiben verboten; sämtliche Sicherheits-, Lossless-, Bild- und Legacyasserts bleiben erhalten. Die Step1-Protokollfixture liefert bei neuem Raumread ausdrücklich leere synthetische Register. Runtime verwendet nie diese Fixture.
+
+Testdefault-Evidence ist jetzt `/workspace/lumo-auftrag02-evidence/implementation/final/browser`; die folgenden historischen Pfade und Ergebnisse bleiben unverändert historische Angaben. Physische Touchgeräte, echter Store/Installationsablauf und Andy werden nicht durch Browseremulation ersetzt.
+
+## Historischer Vertrag 0.12.1 – verlustfreie Importkorrektur
 
 Die 0.12.0-Basis `c1ffa3434d95a59f0538573173d8138927388811` wurde separat eingefroren. Der erste synthetische Import-/Roundtriptest wurde vor Produktänderungen gegen einen `git archive`-Kontrollcheckout ausgeführt und scheiterte an der Ablehnung opaker Schlüssel. Spätere vertikale RED/GREEN-Schritte prüfen reale HTTP-Export-/Edit-/Reportabläufe, Browserbedienung, JSON-Grenzen, Versionswert, versteckte Validierungsfelder, Legacy-Prüfung, Strategy-Darstellung, begrenzte Diagnostik und Backupintegrität. Tests installieren nichts und greifen nicht auf produktives HA zu.
 

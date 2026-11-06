@@ -1,15 +1,19 @@
-# LUMO Raumstudio · 0.12.1
+# LUMO Raumstudio · 0.13.0
 
-**Dein Zuhause denkt mit.** Eine eigenständige Home-Assistant-App für Deine Dashboard-Entwürfe.
+**Dein Zuhause denkt mit.** Update derselben Home-Assistant-App `lumo_raumstudio`, kein neuer Slug.
 
-Auftrag 01 umfasst ausschließlich Schritt **Dashboard**: Entwürfe erstellen, öffnen, umbenennen, unabhängig duplizieren, einstellen und bestätigt löschen. Hintergrundbilder und Einstellungen werden serverseitig unter Deinem HA-Benutzer gespeichert. Alle sicher begrenzten, verfügbaren HA-JSON-Konfigurationen lassen sich rein lesend als unabhängige Kopie übernehmen: auch Custom Cards, Templates, Styles und Strategies. Unbekannte Daten sind geschützt, nicht abgelehnt. Bericht, gezielte vorhandene Textfeldbearbeitung und verlustfreier JSON-Download bleiben in Schritt 1.
+Schritt **Dashboard** behält die serverseitige, benutzergetrennte Verwaltung, Bilder und verlustfreien HA-Import/JSON-Export. Unbekannte Karten, Templates, Styles, große Zahlen und native Reihenfolgen bleiben geschützt. Importierte Ressourcen werden nicht ausgeführt.
 
-Die vier Schritte bleiben sichtbar. Raum, Design & Display und Dein Raumentwurf sind ehrliche Übergabeseiten, keine bereits implementierten Raumeditoren. Keine Gerätebedienung, KI, Veröffentlichung oder HA-Schreibschnittstelle.
+Schritt **Raum** liest Bereiche, Etagen, Geräte, das vollständige Entitätsregister und tatsächliche Zustände aus Home Assistant zur Laufzeit. Keine Beispieldaten oder privaten Snapshots im Produkt. Eigene Raumansichten lassen sich erstellen, benennen, mit Icon versehen, ausblenden, sortieren, duplizieren und bestätigt entfernen. Geräte und einzelne stabile Entitätsreferenzen können in mehreren Ansichten vorkommen, ohne ihre HA-Zuordnung zu verändern. Suche, Domainfilter, Auswahl passender Treffer, Rückgängig, ungespeicherte Eingaben und Konflikte sind integriert.
+
+Die rechte Eigenschaftenspalte trennt HA-Struktur von lokaler Anzeige. Nur die gesonderte **HA-Bereichskorrektur** schreibt nach serverseitiger Prüfung der Rechte des anfragenden Administrators, konkreter Vorschau, ausdrücklicher Bestätigung und frischem Vergleich. Es gibt keine Geräteaktionen, Services, HA-Dashboard-Publikation, Bereichserstellung/-löschung oder beliebigen API-Proxy. Unklares Ergebnis wird nie automatisch wiederholt. Echte Schreibabnahme bleibt ohne freigegebenes Testobjekt offen.
+
+**Design & Display** und **Dein Raumentwurf** bleiben Übergabeseiten. Die Raumauswahl ist separate lokale Metadaten-Vorbereitung, kein stilles Umschreiben des nativen Exports und keine bereits implementierte Dashboardausgabe.
 
 ## Einstieg
 
-Die App startet absichtlich ohne Freigabe. Öffne ihre Weboberfläche **über Home Assistant** und folge der Einrichtung in **DOCS.md**. Keine Zugangsdaten im Browser eingeben. Die kanonische Softwareversion steht in `config.json` und wird aus diesem Wert in der Oberfläche angezeigt.
+Über HA-Ingress öffnen. Standardmäßig ist Zugriff deaktiviert; Freigabe über `enabled` und `allowed_user_ids`. Keine Credentials oder Upstream-Adressen im Browser eingeben. Anleitung, Rechte, Bedienung und Sicherung in **DOCS.md**. Die kanonische Version in `config.json` wird im Header angezeigt.
 
 ## Prüfungen und Abnahme
 
-Die technische Prüfbasis umfasst SQLite, HTTP, RFC6455, Browserbedienung und den Original-HA-Hintergrundrenderer. Die Prüfmatrix steht unter `docs/raumstudio/VERIFICATION.md`. Containerprüfungen, Repositorybereitstellung, tatsächliche private Installation und Andys persönliche Abnahme sind getrennte Nachweise. Die vorhandenen Apps `lumo_data` und `lumo_preview` werden weder ersetzt noch migriert. 0.12.1 ist ein Update derselben Raumstudio-App unter Slug `lumo_raumstudio` und behält ihr eigenes `/data`. Kein neues Parallelprojekt, keine Installation durch diese Quelländerung.
+`docs/raumstudio/STEP2.md` dokumentiert API, Modell, Quellen und R01–R25. `docs/raumstudio/VERIFICATION.md` beschreibt die bestehende und ergänzte Suite. Tests laufen mit realem Browser, tatsächlichem Backend/SQLite/CoreClient und isolierter synthetischer RFC6455-Gegenstelle. Parent-Livechecks, amd64/aarch64-Images, Veröffentlichung, tatsächliche Storeanzeige, Installation, physische Endgeräte und persönliche Abnahme sind getrennte Nachweise; Quelländerung ist keine Installation. `lumo_data` und `lumo_preview` bleiben unverändert.

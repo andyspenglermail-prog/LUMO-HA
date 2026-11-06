@@ -1,4 +1,10 @@
-# Raumstudio 0.12.1 – Architektur und Betriebsvertrag
+# Raumstudio 0.13.0 – Architektur und Betriebsvertrag
+
+## Aktuelle Erweiterung: Auftrag02 Raum
+
+Der neue aktuelle Vertrag, Runtimeinventar, optionale `roomPlan`-Hülle, sichere gezielte HA-Bereichskorrektur und R01–R25 stehen vollständig in [STEP2.md](STEP2.md). Baseline0.12.1 bleibt verlustfrei kompatibel; gleiche SQLite-Tabellen, keine Startmigration. Die folgenden Abschnitte dokumentieren den erhaltenen **historischen Schritt1-Vertrag**. Aussagen „keine Raumfunktionen/keine HA-Schreibroute“ gelten dort für die damalige Version; seit0.13.0 existiert ausschließlich die eng bestätigte Bereichskorrektur, niemals Services oder Dashboardpublikation. Schritte3/4 bleiben ausgeschlossen.
+
+## Historischer Schritt1-Vertrag0.12.1
 
 ## Abgrenzung und Wiederverwendung
 

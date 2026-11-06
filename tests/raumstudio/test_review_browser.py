@@ -4,7 +4,7 @@ sys.path.insert(0,str(pathlib.Path(__file__).parent))
 from test_http import Fixture
 from proxy import Proxy
 from playwright.sync_api import sync_playwright,expect
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'))
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag02-evidence/implementation/final/browser'))
 class ReviewBrowserTests(unittest.TestCase):
     def setUp(self):
         self.f=Fixture();self.proxy=Proxy(self.f);OUT.mkdir(parents=True,exist_ok=True)
@@ -90,7 +90,7 @@ class ReviewBrowserTests(unittest.TestCase):
                 self.assertGreaterEqual(geometry['x'],w/2);self.assertLessEqual(geometry['bottom'],geometry['headerBottom'])
                 self.assertFalse(page.evaluate('()=>document.documentElement.scrollWidth>innerWidth'))
                 page.locator('#new-icon-picker summary').tap();page.locator('#new-icon-options').get_by_role('button',name='mdi:home',exact=True).tap()
-                page.locator('#new-name').tap();page.keyboard.type('Viewport '+str(w));page.keyboard.press('Enter');expect(page.locator('#handoff-step')).to_be_visible();page.locator('#back-dashboard').tap()
+                page.locator('#new-name').tap();page.keyboard.type('Viewport '+str(w));page.keyboard.press('Enter');expect(page.locator('#room-step')).to_be_visible();page.locator('#room-back').tap()
                 page.evaluate('()=>scrollTo(0,0)');page.screenshot(path=str(OUT/f'R4-header-{w}x{h}.png'))
                 rows.append({'viewport':[w,h],'version':version,'geometry':geometry,'touchPicker':True,'keyboardCreate':True});page.context.close()
         (OUT/'R4-geometry.json').write_text(json.dumps(rows,indent=2))
@@ -105,7 +105,7 @@ class ReviewBrowserTests(unittest.TestCase):
         page.locator('#edit-description').fill('Nicht verlieren');page.locator('[data-tab="background"]').click();page.locator('#bg-mode').select_option('scale');page.locator('#bg-scale').fill('301');page.locator('[data-tab="navigation"]').click()
         count=sum(m=='POST' for m,_ in self.proxy.requests);page.locator('[data-step="2"]').click();page.locator('#dialog-confirm').click()
         expect(page.locator('#bg-scale')).to_be_visible(timeout=2000);expect(page.locator('#bg-scale')).to_be_focused();self.assertEqual(sum(m=='POST' for m,_ in self.proxy.requests),count);self.assertEqual(errors,[])
-        expect(page.locator('#dashboard-step')).to_be_visible();page.screenshot(path=str(OUT/'R5-invalid-scale.png'));page.locator('#bg-scale').fill('137');page.locator('[data-step="2"]').click();page.locator('#dialog-confirm').click();expect(page.locator('#handoff-step')).to_be_visible()
+        expect(page.locator('#dashboard-step')).to_be_visible();page.screenshot(path=str(OUT/'R5-invalid-scale.png'));page.locator('#bg-scale').fill('137');page.locator('[data-step="2"]').click();page.locator('#dialog-confirm').click();expect(page.locator('#room-step')).to_be_visible()
         saved=self.f.store.get('alice',d['id']);self.assertEqual(saved['description'],'Nicht verlieren');self.assertEqual(saved['settings']['background']['scale'],137)
     def test_R6_upload_confirmation_get_loss_blocks_all_followup_writes(self):
         from test_images import png
@@ -127,8 +127,8 @@ class ReviewBrowserTests(unittest.TestCase):
         page.locator('#new-name').fill('Blocked');page.locator('#create').click();expect(page.locator('#notice')).to_contain_text('neuen Tab');self.assertEqual(sum(m=='POST' for m,_ in self.proxy.requests),count);page.screenshot(path=str(OUT/'R6-delete-uncertain.png'),full_page=True)
         other=self.page();expect(other.locator('#saved-list')).to_contain_text('Noch keine')
     def test_R3_invalid_new_icon_discard_does_not_poison_reset_form(self):
-        page=self.page();page.locator('#new-name').fill('Discard');page.locator('#new-icon').fill('mdi:unknown-lumo-icon');page.locator('[data-step="2"]').click();page.locator('#dialog-discard').click();page.locator('#back-dashboard').click()
-        page.locator('#new-name').fill('Valid without icon');page.locator('#create').click();expect(page.locator('#handoff-step')).to_be_visible(timeout=2000);self.assertEqual(self.f.store.list('alice')[0]['icon'],'')
+        page=self.page();page.locator('#new-name').fill('Discard');page.locator('#new-icon').fill('mdi:unknown-lumo-icon');page.locator('[data-step="2"]').click();page.locator('#dialog-discard').click();page.locator('#room-back').click()
+        page.locator('#new-name').fill('Valid without icon');page.locator('#create').click();expect(page.locator('#room-step')).to_be_visible(timeout=2000);self.assertEqual(self.f.store.list('alice')[0]['icon'],'')
     def test_R1_foreign_row_revision_never_refreshed(self):
         for action in ('Umbenennen','Duplizieren','Löschen'):
             with self.subTest(action=action):

@@ -1,36 +1,30 @@
 # LUMO – Home Assistant Dashboard-Designer
 
-## LUMO Raumstudio · 0.12.1 – verlustfreie HA-Kopie
+## LUMO Raumstudio · 0.13.0 – Dashboard und Raum
 
-**Update derselben App, ausschließlich Schritt 1 – Dashboard.** Die vorhandene
-LUMO-Data-App bleibt unverändert. Raumstudio verwaltet eigene Dashboard-Entwürfe
-serverseitig: erstellen, öffnen, umbenennen, duplizieren, Einstellungen bearbeiten
-und bestätigt löschen. Bilder, Hintergründe und Navigationspräferenzen bleiben
-für denselben freigegebenen HA-Benutzer geräteübergreifend erhalten.
+**Update derselben App, Schritte 1 und 2.** Raumstudio verwaltet eigene
+Dashboard-Entwürfe serverseitig und liest echte HA-Bereiche, Etagen, Geräte,
+Registry-Entitäten und Zustände zur Laufzeit. Lokale Ansichten bieten Titel,
+Icon, Sichtbarkeit, Reihenfolge, Duplikat und bestätigtes Entfernen. Geräte und
+einzelne stabile Entitätsreferenzen lassen sich raumübergreifend auswählen;
+Suche, Filter, Rückgängig und geschützte ungespeicherte Eingaben sind integriert.
 
-Vorhandene HA-Dashboards werden nur gelesen und als unabhängige Kopie übernommen.
-Auch unbekannte Karten, Templates, Styles und Strategy-Konfigurationen bleiben
-als geschützte JSON-Daten erhalten. Ein Importbericht trennt Datenübernahme,
-gezielte Bearbeitbarkeit und ungeprüfte Ressourcen. Herunterladbarer JSON-Export
-bleibt ohne ausdrückliche Feldänderung strukturell und inhaltlich identisch.
-Keine Geräteaktionen und keine HA-Schreibschnittstelle. Schritte 2–4 bleiben
-sichtbar, enthalten aber weiterhin keine Raumeditoren.
+Vorhandene HA-Dashboards werden weiterhin verlustfrei als unabhängige Kopie
+übernommen. Unbekannte Karten, Templates, Styles und Strategy bleiben inerte
+JSON-Daten. Der native JSON-Export wird durch die neue separate Raumauswahl
+nicht verändert. Keine Geräteaktionen; einzig gezielte HA-Bereichskorrekturen
+sind nach Administratorprüfung des Anfragenden, Vorschau und Bestätigung
+möglich. Kein automatischer Retry, kein beliebiger Proxy. Design & Display
+und Dein Raumentwurf bleiben gesondert zu beauftragende Schritte.
 
 **Bestehendes Raumstudio:** reguläres Update unter demselben Slug
-`lumo_raumstudio`; kein neues Parallelprojekt. Veröffentlichung, Installation
-und persönliche Abnahme sind separate Schritte.
+`lumo_raumstudio`, mit Sicherung davor. Kein neues Parallelprojekt.
+Veröffentlichung, Storeanzeige, Installation und persönliche Abnahme bleiben
+separate Schritte. Andere Apps dieses Repositorys werden nicht geändert.
 
-**Nur bei erstmaliger Nutzung:** Einstellungen → Apps → App-Store → gegebenenfalls
-Menü ⋮ → Nach Updates suchen → **LUMO Raumstudio** → Installieren → Starten →
-Weboberfläche öffnen. Repository: `https://github.com/andyspenglermail-prog/LUMO-HA`.
-Nicht die bestehende LUMO-Data-App und nicht die ältere Offline-Test-App auswählen.
-Die sichere Erstkonfiguration wird in der Weboberfläche erklärt; danach bleiben
-die regulären Updates in derselben neuen App unter Slug `lumo_raumstudio`.
-
-[Einrichtung, Bedienung, Sicherung und Grenzen](lumo_raumstudio/DOCS.md) ·
-[Prüfmatrix und getrennte Abnahmegrenzen](docs/raumstudio/VERIFICATION.md).
-Die Installation erfolgt ausschließlich durch den Benutzer; private HA-/Geräte-
-und persönliche Abnahme sind nicht durch die technischen Tests ersetzt.
+[Einrichtung, Bedienung und Sicherung](lumo_raumstudio/DOCS.md) ·
+[Schritt2-Modell und R01–R25](docs/raumstudio/STEP2.md) ·
+[Technische Verifikation und Grenzen](docs/raumstudio/VERIFICATION.md).
 
 ---
 

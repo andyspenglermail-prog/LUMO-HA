@@ -1,8 +1,8 @@
 {
   "name": "LUMO Raumstudio",
-  "version": "0.12.1",
+  "version": "0.13.0",
   "slug": "lumo_raumstudio",
-  "description": "Deine Dashboards gestalten: eigene Entwürfe, Hintergründe und sichere lesende HA-Übernahme.",
+  "description": "Dashboard und Raum: echte HA-Quellen, lokale Ansichten und bestätigte Bereichskorrekturen.",
   "arch": ["amd64", "aarch64"],
   "startup": "application",
   "boot": "manual",

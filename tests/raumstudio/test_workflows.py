@@ -4,7 +4,7 @@ from test_http import Fixture
 from proxy import Proxy
 from test_images import png
 from playwright.sync_api import sync_playwright,expect
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'))
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag02-evidence/implementation/final/browser'))
 VIEWPORTS=[(1440,900),(1280,720),(768,1024),(1024,768),(390,844),(844,390),(320,640)]
 class WorkflowTests(unittest.TestCase):
     def setUp(self):self.f=Fixture();self.proxy=Proxy(self.f);OUT.mkdir(parents=True,exist_ok=True)
@@ -17,7 +17,7 @@ class WorkflowTests(unittest.TestCase):
             for w,h in VIEWPORTS:
                 with self.subTest(viewport=(w,h)):
                     b,ctx,page=self.browser(p,w,h);errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
-                    page.locator('#new-name').tap();page.keyboard.type(f'Entwurf {w}x{h}');page.keyboard.press('Enter');expect(page.locator('#handoff-step')).to_be_visible();page.locator('#back-dashboard').tap()
+                    page.locator('#new-name').tap();page.keyboard.type(f'Entwurf {w}x{h}');page.keyboard.press('Enter');expect(page.locator('#room-step')).to_be_visible();page.locator('#room-back').tap()
                     self.assertFalse(page.evaluate('()=>document.documentElement.scrollWidth>innerWidth'))
                     widths=page.locator('[data-step]').evaluate_all('(es)=>es.map(e=>e.getBoundingClientRect().width)');self.assertLess(max(widths)-min(widths),1)
                     page.screenshot(path=str(OUT/f'overview-{w}x{h}.png'),full_page=True)
@@ -34,7 +34,7 @@ class WorkflowTests(unittest.TestCase):
     def test_dirtyguard_images_import_duplicate_delete(self):
         before=copy.deepcopy(self.f.peer.configs)
         with sync_playwright() as p:
-            b,ctx,page=self.browser(p);page.locator('#new-name').fill('Bildentwurf');page.locator('#create').click();expect(page.locator('#handoff-step')).to_be_visible();page.locator('#back-dashboard').click()
+            b,ctx,page=self.browser(p);page.locator('#new-name').fill('Bildentwurf');page.locator('#create').click();expect(page.locator('#room-step')).to_be_visible();page.locator('#room-back').click()
             page.locator('#edit-description').fill('Nicht verlieren');page.locator('[data-tab="navigation"]').click();page.locator('[data-tab="general"]').click();expect(page.locator('#edit-description')).to_have_value('Nicht verlieren')
             page.locator('[data-step="3"]').click();expect(page.locator('#dialog')).to_be_visible();page.locator('#dialog-cancel').click();expect(page.locator('#edit-description')).to_have_value('Nicht verlieren');page.locator('[data-step="3"]').click();page.locator('#dialog-confirm').click();expect(page.locator('#handoff-step')).to_be_visible();self.assertEqual(self.f.store.list('alice')[0]['description'],'Nicht verlieren');page.locator('#back-dashboard').click()
             page.locator('[data-tab="background"]').click();page.locator('#image-file').set_input_files({'name':'Synthetisch rot.png','mimeType':'image/png','buffer':png()});expect(page.locator('#notice')).to_contain_text('Bild in Deiner Bibliothek gespeichert');one=page.locator('#image-choice').input_value();self.assertTrue(one)
@@ -49,7 +49,7 @@ class WorkflowTests(unittest.TestCase):
             page.locator('[data-tab="navigation"]').click();expect(page.locator('#start-view')).to_be_enabled();page.locator('#nav-labels').uncheck();page.locator('#save').click();expect(page.locator('#dirty-label')).to_have_text('Alle Änderungen gespeichert')
             page.locator('[data-tab="management"]').click();page.locator('#duplicate-selected').click();expect(page.locator('#selected-title')).to_have_text('fixture-dashboard · Kopie');self.assertEqual(len(self.f.store.list('alice')),3)
             page.locator('#delete-selected').click();page.locator('#dialog-cancel').click();self.assertEqual(len(self.f.store.list('alice')),3);page.locator('#delete-selected').click();page.locator('#dialog-confirm').click();expect(page.locator('#notice')).to_contain_text('Nur der lokale Entwurf wurde gelöscht');self.assertEqual(len(self.f.store.list('alice')),2)
-            self.assertEqual(self.f.peer.configs,before);self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list','lovelace/resources/list') for c in self.f.peer.commands));b.close()
+            self.assertEqual(self.f.peer.configs,before);self.assertTrue(all(c['type'] in ('config/auth/list','lovelace/config','lovelace/dashboards/list','lovelace/resources/list','auth/current_user','get_config','get_states','config/area_registry/list','config/floor_registry/list','config/device_registry/list','config/entity_registry/list') for c in self.f.peer.commands));b.close()
     def test_cas_keeps_inputs_and_lost_write_is_never_retried(self):
         d=self.f.store.create('alice','Konflikt')
         with sync_playwright() as p:
@@ -60,12 +60,12 @@ class WorkflowTests(unittest.TestCase):
     def test_two_pending_forms_create_only_once(self):
         self.f.store.create('alice','Bestehend')
         with sync_playwright() as p:
-            b,ctx,page=self.browser(p);console_errors=[];page.on('console',lambda m:console_errors.append(m.text) if m.type=='error' else None);page.get_by_role('button',name='Öffnen',exact=True).click();page.locator('#edit-description').fill('Alt behalten');page.locator('#new-name').fill('Neu erstellen');page.locator('#create').click();page.locator('#dialog-confirm').click();expect(page.locator('#handoff-step')).to_be_visible()
+            b,ctx,page=self.browser(p);console_errors=[];page.on('console',lambda m:console_errors.append(m.text) if m.type=='error' else None);page.get_by_role('button',name='Öffnen',exact=True).click();page.locator('#edit-description').fill('Alt behalten');page.locator('#new-name').fill('Neu erstellen');page.locator('#create').click();page.locator('#dialog-confirm').click();expect(page.locator('#room-step')).to_be_visible()
             self.assertEqual(len(self.f.store.list('alice')),2);self.assertEqual([d['description'] for d in self.f.store.list('alice') if d['name']=='Bestehend'],['Alt behalten']);page.wait_for_timeout(100);self.assertEqual(console_errors,[]);b.close()
     def test_alternate_prefix_plain_http_and_reload_guard(self):
         with sync_playwright() as p:
             b=p.chromium.launch(headless=True,args=['--no-sandbox','--no-proxy-server','--host-resolver-rules=MAP studio.invalid 127.0.0.1']);ctx=b.new_context(extra_http_headers={'X-Remote-User-Id':'alice'});page=ctx.new_page();url=self.proxy.url.replace('127.0.0.1','studio.invalid');page.goto(url)
-            self.assertFalse(page.evaluate('()=>isSecureContext'));page.locator('#new-name').fill('Normales HTTP');page.locator('#create').click();expect(page.locator('#handoff-step')).to_be_visible();page.locator('#back-dashboard').click();page.locator('#edit-description').fill('Bleibt im Tab')
+            self.assertFalse(page.evaluate('()=>isSecureContext'));page.locator('#new-name').fill('Normales HTTP');page.locator('#create').click();expect(page.locator('#room-step')).to_be_visible();page.locator('#room-back').click();page.locator('#edit-description').fill('Bleibt im Tab')
             dialogs=[]
             def cancel_reload(dialog):dialogs.append(dialog.type);dialog.dismiss()
             page.on('dialog',cancel_reload)

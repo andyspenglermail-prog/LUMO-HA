@@ -4,7 +4,7 @@ sys.path.insert(0,str(pathlib.Path(__file__).parent))
 from test_http import Fixture
 from proxy import Proxy
 from playwright.sync_api import sync_playwright,expect
-OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-import-evidence/implementation/final/browser'))
+OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag02-evidence/implementation/final/browser'))
 class BusyWriteTests(unittest.TestCase):
     def test_successful_delayed_write_keeps_edit_controls_locked(self):
         OUT.mkdir(parents=True,exist_ok=True);records=[]
