@@ -1,3 +1,4 @@
+from test_design_browser import reference_control
 """Review regressions on actual browser/app/peer; no successful API stubs."""
 import copy,json,os,pathlib,sys,unittest
 sys.path.insert(0,str(pathlib.Path(__file__).parent))
@@ -55,7 +56,7 @@ class DesignReviewBrowserTests(unittest.TestCase):
   try:
    np.goto('https://demo.home-assistant.io/',wait_until='domcontentloaded');np.wait_for_function("()=>!!customElements.get('ha-card')");np.on('pageerror',lambda e:errors.append(str(e)));p.on('pageerror',lambda e:errors.append(str(e)))
    np.evaluate("()=>{document.querySelector('ha-demo')?.remove();document.body.replaceChildren();window.card=document.createElement('ha-card');card.header='Shadow review · synthetic fixture';card.style.cssText='width:700px;min-height:300px;margin:50px';document.body.append(card)}")
-   expect(p.locator('#design-status')).to_contain_text('Frisch gelesen');p.locator('#design-customize summary').click();p.locator('#design-motion').select_option('subtle')
+   expect(p.locator('#design-status')).to_contain_text('Frisch gelesen');p.locator('[data-adjust="style"]').click();p.locator('#design-motion').select_option('subtle')
    for theme in ('noir','ivory','smart'):
     p.locator('#design-category').select_option('Smart & Functional' if theme=='smart' else 'Luxury & Signature');p.locator('[data-design-profile="'+theme+'"]').click()
     for shadow in (0,16):
@@ -79,7 +80,7 @@ class DesignReviewBrowserTests(unittest.TestCase):
 
  def test_n2_metrics_distinguish_pinch_scale_fit_and_target_dpr(self):
   p=self.page;OUT.mkdir(parents=True,exist_ok=True);expect(p.locator('#design-status')).to_contain_text('Frisch gelesen')
-  p.locator('#design-dpr').fill('2');p.locator('#design-dpr').dispatch_event('change');cdp=self.ctx.new_cdp_session(p);rows=[]
+  reference_control(p,'#design-dpr').fill('2');p.locator('#design-dpr').dispatch_event('change');reference_control(p,'#design-one');cdp=self.ctx.new_cdp_session(p);rows=[]
   try:
    for pinch in (1,2):
     cdp.send('Emulation.setPageScaleFactor',{'pageScaleFactor':pinch})

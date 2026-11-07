@@ -4,6 +4,7 @@ from test_http import Fixture
 from proxy import Proxy
 from test_images import png
 from playwright.sync_api import sync_playwright,expect
+from ui_navigation import reveal_actions
 OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag02-evidence/implementation/final/browser'))
 VIEWPORTS=[(1440,900),(1280,720),(768,1024),(1024,768),(390,844),(844,390),(320,640)]
 class WorkflowTests(unittest.TestCase):
@@ -21,7 +22,7 @@ class WorkflowTests(unittest.TestCase):
                     self.assertFalse(page.evaluate('()=>document.documentElement.scrollWidth>innerWidth'))
                     widths=page.locator('[data-step]').evaluate_all('(es)=>es.map(e=>e.getBoundingClientRect().width)');self.assertLess(max(widths)-min(widths),1)
                     page.screenshot(path=str(OUT/f'overview-{w}x{h}.png'),full_page=True)
-                    page.locator('.draft-row').first.get_by_role('button',name='Umbenennen',exact=True).tap();page.locator('#dialog-input').fill('   ');page.locator('#dialog-confirm').tap();expect(page.locator('#dialog-error')).to_contain_text('Name:')
+                    reveal_actions(page.locator('.draft-row').first).get_by_role('button',name='Umbenennen',exact=True).tap();page.locator('#dialog-input').fill('   ');page.locator('#dialog-confirm').tap();expect(page.locator('#dialog-error')).to_contain_text('Name:')
                     rects=page.locator('.dialog-footer button:visible').evaluate_all('(es)=>es.map(e=>{let r=e.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,height:r.height}})')
                     for r in rects:self.assertTrue(r['x']>=0 and r['right']<=w and r['y']>=0 and r['bottom']<=h and r['height']>=44,r)
                     page.screenshot(path=str(OUT/f'modal-{w}x{h}.png'));page.locator('#dialog-cancel').tap()

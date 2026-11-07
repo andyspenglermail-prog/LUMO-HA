@@ -59,6 +59,10 @@ def save_plan(store,owner,id,revision,plan,confirmed,inventory):
                 if e['key'] in entities:e['entityId']=entities[e['key']]['entityId']
                 elif e['key'] in oldrefs:e['entityId']=oldrefs[e['key']]['entityId']
                 else:raise StudioError('Eine Entität ist nicht im gelesenen Bestand.')
+        # An explicitly confirmed view deletion removes only its photo binding.
+        # Hiding, renaming and ordering never move or remove another view's photo.
+        if 'roomImages' in d.get('design',{}):
+            for view in deleted:d['design']['roomImages'].pop(view,None)
         d['roomPlan']=plan;d['revision']+=1;d['updatedAt']=now()
         c.execute('UPDATE dashboards SET revision=?,document=? WHERE id=? AND owner=? AND revision=?',(d['revision'],json.dumps(d),id,owner,revision))
     return store.get(owner,id)

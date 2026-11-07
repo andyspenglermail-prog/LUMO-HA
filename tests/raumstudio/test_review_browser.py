@@ -4,6 +4,7 @@ sys.path.insert(0,str(pathlib.Path(__file__).parent))
 from test_http import Fixture
 from proxy import Proxy
 from playwright.sync_api import sync_playwright,expect
+from ui_navigation import reveal_actions
 OUT=pathlib.Path(os.environ.get('RAUMSTUDIO_EVIDENCE','/workspace/lumo-auftrag02-evidence/implementation/final/browser'))
 class ReviewBrowserTests(unittest.TestCase):
     def setUp(self):
@@ -19,7 +20,7 @@ class ReviewBrowserTests(unittest.TestCase):
             with self.subTest(action=action):
                 d=self.f.store.create('alice',action);page=self.page();self.open(page,action)
                 page.locator('#edit-description').fill('Eigene Änderung')
-                page.locator('.draft-row').filter(has=page.locator('strong').filter(has_text=action)).get_by_role('button',name=action,exact=True).click()
+                reveal_actions(page.locator('.draft-row').filter(has=page.locator('strong').filter(has_text=action))).get_by_role('button',name=action,exact=True).click()
                 page.locator('#dialog-confirm').click()
                 if action=='Umbenennen':
                     expect(page.locator('#dialog-title')).to_have_text('Dashboard umbenennen');page.locator('#dialog-input').fill('Umbenannt');page.locator('#dialog-confirm').click()
@@ -54,7 +55,7 @@ class ReviewBrowserTests(unittest.TestCase):
                 page.locator('#new-name').fill('Nicht erstellen');page.locator('[data-tab="management"]').click();page.locator('#delete-selected').click();page.locator('#dialog-cancel').click()
                 self.assertEqual(self.f.store.get('alice',d['id'])['revision'],1);expect(page.locator('#new-name')).to_have_value('Nicht erstellen')
                 page.locator('#new-name').fill('');page.locator('[data-tab="general"]').click();page.locator('#edit-description').fill('Own')
-                page.locator('.draft-row').filter(has=page.get_by_text(d['name'],exact=True)).get_by_role('button',name=action,exact=True).click()
+                reveal_actions(page.locator('.draft-row').filter(has=page.get_by_text(d['name'],exact=True))).get_by_role('button',name=action,exact=True).click()
                 # A foreign write AFTER own save confirmation is not adopted by the action.
                 if action=='Duplizieren':
                     self.f.store.update('alice',d['id'],1,{'name':'Foreign wins'});page.locator('#dialog-confirm').click();expect(page.locator('#notice')).to_contain_text('inzwischen geändert')
@@ -75,7 +76,7 @@ class ReviewBrowserTests(unittest.TestCase):
         page.screenshot(path=str(OUT/'R3-icons.png'),full_page=True)
         self.f.peer.configs['fixture-dashboard']['views'][0]['icon']='mdi:weather-sunny'
         page.locator('#load-ha').click();page.locator('.ha-item').filter(has_text='fixture-dashboard').get_by_role('button').click()
-        expect(page.locator('#preview-views svg[data-icon="mdi:weather-sunny"] path')).to_have_count(1)
+        expect(page.locator('#preview-empty svg[data-icon="mdi:weather-sunny"] path')).to_have_count(1)
         self.assertTrue(all(url.startswith(self.proxy.origin+'/') for url in requests),requests)
     def test_R4_header_version_right_seven_viewports(self):
         from test_workflows import VIEWPORTS
@@ -86,7 +87,9 @@ class ReviewBrowserTests(unittest.TestCase):
             with self.subTest(viewport=(w,h)):
                 page=self.page();page.set_viewport_size({'width':w,'height':h});expect(page.locator('#version')).to_have_text('Version '+version)
                 geometry=page.locator('#version').evaluate('(e)=>{const r=e.getBoundingClientRect(),h=e.closest("header"),b=h.getBoundingClientRect(),pad=parseFloat(getComputedStyle(h).paddingRight);return {x:r.x,right:r.right,y:r.y,bottom:r.bottom,headerRight:b.right,headerBottom:b.bottom,pad}}')
-                self.assertAlmostEqual(geometry['right'],geometry['headerRight']-geometry['pad'],delta=1)
+                # Header now includes two real help/settings controls after the version.
+                end=page.locator('#studio-settings').bounding_box();right=max(geometry['right'],end['x']+end['width'])
+                self.assertAlmostEqual(right,geometry['headerRight']-geometry['pad'],delta=1)
                 self.assertGreaterEqual(geometry['x'],w/2);self.assertLessEqual(geometry['bottom'],geometry['headerBottom'])
                 self.assertFalse(page.evaluate('()=>document.documentElement.scrollWidth>innerWidth'))
                 page.locator('#new-icon-picker summary').tap();page.locator('#new-icon-options').get_by_role('button',name='mdi:home',exact=True).tap()
@@ -133,7 +136,7 @@ class ReviewBrowserTests(unittest.TestCase):
         for action in ('Umbenennen','Duplizieren','Löschen'):
             with self.subTest(action=action):
                 d=self.f.store.create('alice','Foreign row '+action);page=self.page();self.f.store.update('alice',d['id'],1,{'name':'Foreign retained '+action})
-                page.locator('.draft-row').filter(has=page.get_by_text(d['name'],exact=True)).get_by_role('button',name=action,exact=True).click()
+                reveal_actions(page.locator('.draft-row').filter(has=page.get_by_text(d['name'],exact=True))).get_by_role('button',name=action,exact=True).click()
                 if action!='Duplizieren':
                     if action=='Umbenennen':page.locator('#dialog-input').fill('Do not overwrite')
                     page.locator('#dialog-confirm').click()

@@ -1,5 +1,13 @@
 # Änderungen
 
+## 0.14.1 – Raumansichten und eigene Raumfotos
+
+- Bei genau einer sichtbaren Raumansicht entfällt die redundante Vorschau-Navigation; die Raumüberschrift bleibt. Mehrere Ansichten behalten die Navigation. Gespeicherte, ausgeblendete Ansichten bekommen einen verständlichen Hinweis statt einer scheinbar leeren Auswahl.
+- Optional ein eigenes Foto je stabiler Ansichts-ID: vorhandenes Bild wählen, PNG/JPEG/WebP sicher hochladen oder nur die Zuweisung entfernen. Die vorhandene benutzergetrennte Bildbibliothek bleibt die einzige Bildablage; der globale Hintergrund aus Schritt 1 wird nicht geändert.
+- Separate optionale `design.roomImages`-Map, owner-/CAS-/CSRF-geschützt, mit geprüften Ansichts- und Bildreferenzen. Alte Designs ohne Fotomap bleiben gültig. Umbenennen, Sortieren und Ausblenden verändern keine Fotobindung; bestätigtes Entfernen einer Ansicht entfernt nur ihre Bindung, nicht das Bild.
+- Responsive Bildfläche mit lesbarer, profilbezogener Beschriftung für Noir, Ivory und Smart. Ohne Foto bleibt die vorherige Darstellung erhalten. Fehlerhafte oder nicht geladene Bilder werden nicht als erfolgreich angezeigt.
+- Raumfotos sind gespeicherte LUMO-Vorschaugestaltung, kein nativer Fotokarten-/Schritt-4-Generator. Originalexports, native Daten und sonstige Appfunktionen bleiben erhalten. Keine automatische Installation oder HA-Schreibaktion.
+
 ## 0.14.0 – Auftrag 03: Design & Display
 
 - Drei eigenständige, auf die Vorschau begrenzte Profile: LUMO Noir Luxury, Soft Ivory Premium und Smart Clean. Katalog mit zehn Kategorien und genau 27 ausdrücklich geplanten, gesperrten Profilen.

@@ -69,7 +69,14 @@ body:has(#room-step:not([hidden])) .steps [aria-current=step]{background:linear-
 .room-value{font-size:11px;color:#40534e;text-align:right;overflow-wrap:anywhere;line-height:1.4}
 .room-value small{display:block;color:#994700}
 .room-right{position:sticky;top:10px;max-height:calc(100vh - 35px);overflow:auto}
-#room-properties{margin-top:18px;overflow-wrap:anywhere}
+#room-properties{margin-top:8px;overflow-wrap:anywhere}
+#room-properties h4{margin:8px 0 4px}
+#room-properties .room-source-value{padding:7px 9px;background:#f1f5f3;border:1px solid #dce5df;border-radius:7px;font-size:12px}
+#room-properties .room-reference-note{padding:8px;font-size:11px;margin:7px 0}
+#room-properties .room-check{min-height:40px;justify-content:space-between;flex-direction:row-reverse}
+#room-properties h3{padding:8px!important}
+#room-technical summary{padding:5px 0;cursor:pointer;min-height:32px}
+#room-step #room-correction{margin-top:8px;padding:10px}
 #room-properties h3{padding:12px;background:#edf7e9;border:1px solid #dfecdc;border-radius:10px}
 #room-properties dl{display:block;margin:12px 0;font-size:12px}
 #room-properties dt{color:#526760;font-weight:500;margin-top:9px}
@@ -115,11 +122,84 @@ body:has(#room-step:not([hidden])) .steps [aria-current=step]{background:linear-
  .room-local-card h3{grid-column:1/-1;margin:0!important}
  #room-step .room-local-card label{margin:0}
  #room-step .room-local-card .check{min-height:32px;margin:3px 0}
- .room-local-card>.hint,.room-inventory-heading>.hint{display:none}
+ .room-inventory-heading>.hint{display:none}
+ #room-step .room-local-card>.hint{display:block;font-size:10px;line-height:14px;margin:0}
+ #room-step .room-local-card>.hint svg{width:13px;height:13px;vertical-align:middle}
+
  .room-info-grid{margin-bottom:14px}
  .room-management{margin-bottom:8px;padding:8px 0}
  .room-local-card h3{grid-column:1/-1}.room-local-card>label[for=room-title]{grid-column:1;grid-row:2}.room-local-card>#room-title{grid-column:1;grid-row:3}.room-local-card .room-icon-row{grid-column:2;grid-row:2/4;display:flex;flex-direction:column;align-items:stretch;gap:0;margin:0}.room-local-card .check,.room-local-card>p{grid-column:1/-1}
  .room-savebar{position:static;padding:10px 4px;margin-top:10px}
  body:has(#room-step:not([hidden])) footer{padding:10px 0}
 }
+ #room-step .room-icon-row{position:relative}
+ #room-step #room-icon{padding-left:28px}
+ #room-icon-current{position:absolute;left:5px;bottom:5px;pointer-events:none;line-height:20px}
+ #room-icon-current svg{width:20px;height:20px}
+ #room-step .room-source-card>h3 svg{width:30px;height:30px;padding:4px;background:#08aee0;color:white;border-radius:6px}
+/* Secondary batch tools share the inventory heading; real controls retained. */
+#room-step .room-inventory-heading{position:relative;padding-right:125px}
+#room-selection-menu{position:absolute;right:0;top:0;z-index:3;font-size:11px}
+#room-selection-menu>summary{cursor:pointer;min-height:24px;padding:2px 5px;border:1px solid #cdd7ce;border-radius:6px;background:#fff}
+#room-selection-menu[open]{max-width:100%;width:300px;padding:5px;background:#fff;border:1px solid #cdd7ce;border-radius:8px;box-shadow:0 4px 12px #0002}
+#room-step #room-selection-menu .room-selection-actions{flex-wrap:wrap}
+#room-step #room-selection-menu button{flex:1 1 40%;min-height:36px}
+#room-step .room-device-head .room-inspect{grid-template-columns:minmax(0,1fr) auto;gap:1px 7px;padding:4px 3px}
+#room-step .room-device-head .room-inspect strong{grid-column:1/-1}
+#room-step .room-device-head .room-device-status{grid-column:2;grid-row:2}
+#room-step .room-device>p.hint{font-size:11px;margin:0;padding:4px 8px;line-height:1.3}
+@media(min-width:1101px){#room-editor .room-info-grid .room-source-card,#room-editor .room-info-grid .room-local-card{padding:8px}#room-step .room-local-card{row-gap:2px}#room-step #room-editor .room-info-grid{margin-bottom:0}#room-step #room-search{min-height:32px;padding:5px;font-size:12px}#room-step .room-filter-row label{display:flex;align-items:center;gap:4px}#room-step .room-filter-row select{width:100%;min-width:0}#room-step .room-tools{margin:3px 0}}
+@media(max-width:600px){#room-selection-menu>summary{min-height:44px;padding:10px 5px}#room-step .room-inventory-heading{min-height:48px}#room-step .room-device-head .room-inspect{grid-template-columns:1fr}#room-step .room-device-head .room-device-status{grid-column:1;grid-row:auto}}
 @media(prefers-reduced-motion:reduce){#room-step *{scroll-behavior:auto!important;transition:none!important}}
+/* The inventory, not its toolbar, owns the remaining panel height. */
+#room-filter-tabs{display:flex;gap:3px;margin:6px 0}
+#room-filter-tabs button{flex:1;font-size:11px;min-height:34px;padding:4px}
+#room-filter-tabs button[aria-pressed=true]{background:#00634b;color:white}
+#room-filter-tabs svg{width:18px;height:18px;margin-right:5px}
+.room-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:center}
+#room-step .room-filter-row{margin:0;gap:5px}
+#room-step .room-filter-row label{font-size:10px;margin:0}
+#room-step .room-filter-row select{min-height:32px;padding:4px;font-size:11px}
+#room-step .room-selection-actions{flex-wrap:nowrap;gap:4px;margin:3px 0}
+#room-step .room-selection-actions button{min-height:34px;padding:4px;font-size:10px;flex:1}
+#room-step .room-center-heading{margin-bottom:6px}
+#room-step .room-info-grid{margin-bottom:4px;gap:10px}
+#room-step .room-source-card,#room-step .room-local-card{padding:10px}
+#room-step .room-local-card input,#room-step .room-local-card select{min-height:34px;padding:5px}
+#room-step .room-inventory-heading h3{margin:2px 0;font-size:15px;line-height:20px}
+#room-step #room-result-count{font-size:10px;margin:3px 0}
+#room-step .room-management{padding:4px 0;margin:0 0 5px}
+#room-step .room-management button{font-size:10px;min-height:34px}
+input[role=switch]{appearance:none;position:relative;width:42px!important;height:24px!important;min-height:24px!important;border:1px solid #b8c6bf;border-radius:20px;background:#d6ddda;padding:0!important;cursor:pointer;vertical-align:middle}
+input[role=switch]::before{content:'';position:absolute;left:2px;top:2px;width:18px;height:18px;border-radius:50%;background:white;box-shadow:0 1px 3px #0003}
+input[role=switch]:checked{background:#177a51;border-color:#177a51}
+input[role=switch]:checked::before{left:20px}
+input[role=switch]:disabled{opacity:.5;cursor:not-allowed}
+@media(min-width:1101px) and (min-height:650px){
+ body:has(#room-step:not([hidden])),body:has(#design-step:not([hidden])){height:100dvh;display:flex;flex-direction:column}
+ body:has(#room-step:not([hidden])) .shell,body:has(#design-step:not([hidden])) .shell{display:flex;flex-direction:column;flex:1;min-height:0;width:100%}
+ body:has(#room-step:not([hidden])) main,body:has(#design-step:not([hidden])) main{flex:1;min-height:0;order:1}
+ body:has(#room-step:not([hidden])) #notice,body:has(#design-step:not([hidden])) #notice{order:2;flex:none}
+ body:has(#room-step:not([hidden])) footer,body:has(#design-step:not([hidden])) footer{order:3;flex:none}
+ #room-step{height:100%;display:flex;flex-direction:column}
+ #room-step .room-heading{margin:5px 4px 2px;gap:8px}
+ #room-step .room-heading h1{font-size:23px;margin:0 0 4px}
+ #room-step .room-heading p{font-size:12px;margin:0}
+ #room-step .room-live{flex-basis:245px;font-size:10px}
+ #room-step #room-dashboard{font-size:10px;margin:2px 4px 6px!important}
+ #room-step .room-columns{flex:1;min-height:0;height:auto;align-items:stretch}
+ #room-step .room-center{display:flex;flex-direction:column;overflow:hidden}
+ #room-step .room-center>*{flex-shrink:0}
+ #room-step .room-inventory{flex:1;min-height:70px;max-height:none;overflow:auto}
+ #room-step .room-info-grid{min-height:124px}
+ #room-step .room-source-card,#room-step .room-local-card{padding:8px}
+ #room-step .room-local-card .check{min-height:26px;margin:0}
+ #room-step .room-local-card input,#room-step .room-local-card select{min-height:32px}
+ #room-step .room-selection-actions button{min-height:30px}
+ #room-step #room-origin{margin-top:6px}
+ #room-step .room-local-card .check{display:flex;flex-direction:row-reverse;justify-content:space-between}
+ #room-step .room-savebar{flex:none;padding:8px 4px;margin-top:8px}
+ #room-step .room-columns>.panel{padding:14px 12px}
+}
+@media(max-width:600px){.room-tools{grid-template-columns:1fr}#room-filter-tabs{flex-wrap:wrap}#room-filter-tabs button{flex:1 1 40%;min-height:44px}#room-step .room-selection-actions{flex-wrap:wrap}#room-step .room-selection-actions button{min-height:44px;flex:1 1 30%}}
+

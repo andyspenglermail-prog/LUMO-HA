@@ -1,0 +1,56 @@
+{
+  "requiredLabel": "KI-generiertes Stilbeispiel",
+  "assets": [
+    {
+      "profileKey": "noir",
+      "profileName": "Noir Luxury",
+      "filename": "sample-noir.jpg",
+      "sha256": "7a073f578344b4c82f5c6873647e40b68513c9c2b4304a0cc4d9ffc62080f1eb",
+      "bytes": 257060,
+      "dimensions": [
+        1600,
+        900
+      ],
+      "origin": "AI-generated; not a real household photograph",
+      "displayLabel": "KI-generiertes Stilbeispiel",
+      "generator": "gpt-image-2-medium",
+      "requestId": "f0844605-1c25-442d-b187-8c00d765c7d7",
+      "inputImageCount": 0,
+      "sourceLicense": "Not a third-party stock photograph; no stock-license or exclusivity guarantee asserted"
+    },
+    {
+      "profileKey": "ivory",
+      "profileName": "Soft Ivory Premium",
+      "filename": "sample-ivory.jpg",
+      "sha256": "6fc5b26a42b505b8d1d236c8990c440d81443392b6b59ff31b66ca294986b2b3",
+      "bytes": 269796,
+      "dimensions": [
+        1600,
+        900
+      ],
+      "origin": "AI-generated; not a real household photograph",
+      "displayLabel": "KI-generiertes Stilbeispiel",
+      "generator": "gpt-image-2-medium",
+      "requestId": "1d4c7e21-c8f5-415b-bfbd-8296054b4d56",
+      "inputImageCount": 0,
+      "sourceLicense": "Not a third-party stock photograph; no stock-license or exclusivity guarantee asserted"
+    },
+    {
+      "profileKey": "smart",
+      "profileName": "Smart Clean",
+      "filename": "sample-smart.jpg",
+      "sha256": "e2875f4cc721e672130a94b26d295c6e11e7b49d61fe2e57f9eb6732d26fb087",
+      "bytes": 312897,
+      "dimensions": [
+        1600,
+        900
+      ],
+      "origin": "AI-generated; not a real household photograph",
+      "displayLabel": "KI-generiertes Stilbeispiel",
+      "generator": "gpt-image-2-medium",
+      "requestId": "dfc3f431-f95b-4cd8-a9c3-295456da86bd",
+      "inputImageCount": 0,
+      "sourceLicense": "Not a third-party stock photograph; no stock-license or exclusivity guarantee asserted"
+    }
+  ]
+}

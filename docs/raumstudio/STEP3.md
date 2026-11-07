@@ -1,4 +1,22 @@
-# Auftrag03 · Design & Display (0.14.0)
+# Auftrag03 · Design & Display (0.14.1)
+
+## Bounded 0.14.1 room-photo correction
+
+Single visible view: no redundant output navigation; its heading remains. Two or more visible views retain switching. When saved RoomPlan views are all hidden, Step3 explains how to reactivate them in Raum; no data is made visible or deduplicated automatically.
+
+`design.roomImages` is an **optional** map of stable saved `view.id` → existing owner-scoped `imageId`, each exactly 32 lowercase hex characters, maximum 256 bindings. Empty map and legacy design without the member are valid; null values, empty/malformed keys, unknown/foreign views and missing/foreign images are rejected. No new database table, RoomPlan field, native field or global settings field exists. The existing design POST retains exact `{revision,design}`, owner/CAS/CSRF checks and transaction; invalid input leaves document/revision unchanged. Maintenance validates the same reference closure before reopen/backup/restore.
+
+Renaming, ordering and hiding views retain bindings by ID. Explicitly confirmed view deletion prunes only the deleted IDs from this separate map atomically with the plan save. A new or duplicated room view has a new ID and no implicit photo; dashboard duplication copies the map into an independent document while immutable owner image bytes remain shared. Removing a photo assignment never deletes library bytes. No startup migration rewrites legacy documents.
+
+Step3 selects/uploads/removes a photo using the existing `GET/POST api/images` and `GET api/images/<id>` routes and decoder. PNG/JPEG/WebP limits, metadata removal, owner isolation and library quotas are unchanged. Upload confirms the image library by GET, stages only the captured view binding, and requires **Design speichern** for persistence. Busy locking, identity/generation guards, dirty confirmation and uncertain-outcome retry blocking apply. Step1 background bytes are never changed by these controls.
+
+The output renders a bounded, responsive image with an opaque theme-token caption; text never depends on the photograph's contrast. Loading/error are explicit; an unsuccessful image request never exposes a successful photo state. Without a binding, the old heading presentation remains. All three profiles and the neutral editor remain distinct. `design-native` explicitly lists room photos as `preview-only`: no native layout/photo generator, no changed original export or HA write.
+
+Selectors: `#design-view`, `#design-room-image`, `#design-room-file`, `#design-room-remove`, `#design-room-target`, `#design-room-hero[data-photo-state]` (`none`, `loading`, `ready`, `error`), `#design-room-photo img`, `#design-room-photo-state`, existing `#design-save` / `#design-dirty`. Global background controls remain in Step1 only.
+
+The two pre-existing version assertions now expect 0.14.1; all existing test identities and other expectations remain. Additional test files: `test_room_photos.py` and `test_room_photos_browser.py`. RED/GREEN source archives and supplementary direct-GREEN checks are separate evidence, not inflated test counts. Final suite manifests bind the actual code. RF08 independent review, images, private reads/snapshot replay and publication belong to the parent; physical touch and Andy's acceptance remain separate.
+
+## Original 0.14.0 integration (historical description)
 
 ## Boundaries and minimal integration
 
@@ -18,7 +36,7 @@ GET `api/dashboards/<id>/design-native` returns a **saved-only sidecar**, not da
 
 Saved roomPlan refs resolve by stable registry identity against actual runtime inventory. Missing/disabled/unavailable/unknown/null/stale are explicit. Native safe known card refs are inert data projection, not custom element execution; unknown cards remain protected labelled elements. Projection is bounded (2000 cards per native view, nesting8). Native layout/order/source data are never rewritten, but this safe function preview does not claim exact imported layout rendering.
 
-View override > native view background > native dashboard background > Step1 global background; theme only supplies a fallback. Hex native backgrounds are safe. External/complex CSS and imported theme assignments remain protected and labelled; no external URLs execute. Step1 is the sole image/background editor. Local image position/size/opacity and fixed-to-preview background are retained.
+View override > native view background > native dashboard background > Step1 global background; theme only supplies a fallback. Hex native backgrounds are safe. External/complex CSS and imported theme assignments remain protected and labelled; no external URLs execute. Step1 remains the sole global background editor; 0.14.1 adds only the independent room-photo surface described above. Local image position/size/opacity and fixed-to-preview background are retained.
 
 The preview root has actual requested CSS dimensions, with container-query reflow into5/3/2/1 columns at >1100/>700/>450/<=450px. Optional fitting is a separate, disclosed transform. Unscaled editor view selection remains usable when fitted controls shrink. 1:1 inspection provides bounded scrolling and tests genuine44px-or-larger target controls. Target DPR/client/kiosk/diagonal are explicit intent, not claimed measurements or hardware emulation. System font stacks require no downloads and may resolve differently by OS.
 

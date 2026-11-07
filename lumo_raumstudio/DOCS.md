@@ -1,6 +1,6 @@
-# LUMO Raumstudio 0.14.0 – Einrichtung und Bedienung
+# LUMO Raumstudio 0.14.1 – Einrichtung und Bedienung
 
-0.14.0 aktualisiert die bestehende App mit unverändertem Slug `lumo_raumstudio`. Keine neue App nötig. Veröffentlichung, Aktualisierung/Installation und persönliche Abnahme bleiben getrennt. Vor einem Update sichern.
+0.14.1 aktualisiert die bestehende App mit unverändertem Slug `lumo_raumstudio`. Keine neue App nötig. Veröffentlichung, Aktualisierung/Installation und persönliche Abnahme bleiben getrennt. Vor einem Update sichern.
 
 ## Einmalige Einrichtung für Andy
 
@@ -86,6 +86,14 @@ Sechs Zielklassen sind mehrfach auswählbar. Jedes Display besitzt eigene Beispi
 
 **Native Fähigkeiten** trennt nachgewiesene native Karten-/Headeroberflächen vom LUMO-Reflow und unverifizierten Zielinstallationen. Der Download enthält ein separates, gespeichertes Theme-Mapping (JSON/YAML-kompatibler Namensraum) mit exakter Revision, Original-Frontend-Pin und Grenzen. Er erzeugt **kein Dashboard**, installiert nichts und ändert den bisherigen JSON-Export nicht. Kartenfarbe/Text/Rahmen/Rundung/Schatten/Verlauf und Header-Systemfont/-größe wurden an originalen gepinnten HA-Komponenten durch berechnete Eigenschaften geprüft. Navigation, Iconflächen, Inhaltsdichte, Gewicht, Kontrollgeometrie und responsive Zielraster sind nicht als native Parität freigegeben. Die dort verwendeten internen HA-Variablen können sich ändern; eine installierte neuere HA-Version ist ein gesonderter Test.
 
+**Eigene Raumfotos (0.14.1):** Bei einer sichtbaren Ansicht entfällt die zusätzliche Raumnavigation in der Vorschau, die Raumüberschrift bleibt. Mehrere sichtbare Ansichten behalten die Umschaltung. Sind alle gespeicherten Ansichten ausgeblendet, aktiviere unter **Raum** die Option **In diesem Dashboard anzeigen**; die App ändert diese Auswahl nicht von selbst.
+
+Unter der Vorschau kannst Du für die oben gewählte **gespeicherte Raumansicht** ein eigenes Bild aus Deiner Bibliothek wählen oder PNG/JPEG/WebP hochladen. Es gelten dieselben sicheren Bildgrenzen wie in Schritt 1. Anschließend **Design speichern** drücken. Der Upload speichert zunächst nur das Bild, nicht die Ansichtszuteilung. **Raumfoto-Zuweisung entfernen** entfernt nur die Bindung und lässt die Datei in Deiner Bibliothek. Die Zuweisung folgt der stabilen Ansichts-ID, nicht dem Titel: Umbenennen, Sortieren und Ausblenden verändern sie nicht. Bestätigtes Entfernen einer Ansicht entfernt ihre Fotobindung. Eine duplizierte einzelne Raumansicht beginnt ohne Foto; eine Dashboardkopie übernimmt ihre eigenen Bindungen unabhängig vom Original.
+
+Der globale Hintergrund aus Schritt 1 bleibt unverändert. Ohne Raumfoto bleibt die bisherige Vorschau erhalten. Raumfotos werden mit einer lesbaren, undurchsichtigen Beschriftungsfläche angezeigt; fehlgeschlagenes Laden bleibt als Fehler sichtbar. Diese Gestaltung ist **nur LUMO-Vorschau**, keine native Fotokarte und kein Schritt-4-Generator. **Native Fähigkeiten** weist dies ausdrücklich aus; der bestehende HA-JSON-Export bleibt unverändert.
+
+Alte Designs ohne `roomImages` bleiben gültig. 0.14.0 versteht eine neu gespeicherte Fotomap nicht: Für einen Versionsrückweg eine vollständige Vor-Update-Sicherung verwenden, keine Felder von Hand entfernen.
+
 ## Speichern, mehrere Geräte und Konflikte
 
 Entwürfe und Bilder liegen in `/data/raumstudio/studio.sqlite`, nicht in LocalStorage. Derselbe freigegebene HA-Benutzer sieht sie auf anderen Geräten. Ein anderer Benutzer kann sie auch mit einer geratenen ID nicht abrufen.
@@ -100,7 +108,7 @@ Die App deklariert `backup: cold`. Für einen normalen HA-Backupvorgang diese Ap
 
 Vor einem App-Update eine HA-Sicherung erstellen. Bei regulärem Update/Neustart bleibt dasselbe `/data` bestehen. Neue Versionen müssen bekannte Datenformate prüfen und vor einer tatsächlichen Migration sichern. Unbekannte neuere Schemata werden nicht überschrieben.
 
-**Normaler Rückweg:** App stoppen und über HA eine passende vollständige App-Sicherung wiederherstellen; dazu die zum Datenformat passende App-Version verwenden. Nicht nur eine alte Imageversion über einen neueren Datenbestand starten. 0.12.0 versteht die zusätzliche `nativeImport`-Hülle nicht; für einen Rückweg die vollständige Vor-Update-Sicherung verwenden. Es gibt keine automatische Downmigration. Alte Entwürfe bleiben in 0.14.0 lesbar und werden beim Update nicht umgeschrieben. Die optionale `roomPlan`-Hülle wird erst beim ausdrücklichen Raum-Save gespeichert; SQLite bleibt Schema2. 0.12.1 versteht diese Hülle nicht: Für Rückkehr zur alten App stets die vollständige Vor-Update-Sicherung wiederherstellen. Kein Löschen der Hülle per Hand. `maintenance.py` bietet für Entwickler bei gestoppter App zusätzlich geprüfte SQLite-Snapshots, Restore und Schema-1→2-Rollback; Details und ausführbare Tests stehen in `docs/raumstudio/ARCHITECTURE.md`. Keine Restore-HTTP-Route und keine automatische Rücknahme fremder HA-Daten.
+**Normaler Rückweg:** App stoppen und über HA eine passende vollständige App-Sicherung wiederherstellen; dazu die zum Datenformat passende App-Version verwenden. Nicht nur eine alte Imageversion über einen neueren Datenbestand starten. 0.12.0 versteht die zusätzliche `nativeImport`-Hülle nicht; für einen Rückweg die vollständige Vor-Update-Sicherung verwenden. Es gibt keine automatische Downmigration. Alte Entwürfe bleiben in 0.14.1 lesbar und werden beim Update nicht umgeschrieben. Die optionale `roomPlan`-Hülle wird erst beim ausdrücklichen Raum-Save gespeichert; SQLite bleibt Schema2. 0.12.1 versteht diese Hülle nicht: Für Rückkehr zur alten App stets die vollständige Vor-Update-Sicherung wiederherstellen. Kein Löschen der Hülle per Hand. `maintenance.py` bietet für Entwickler bei gestoppter App zusätzlich geprüfte SQLite-Snapshots, Restore und Schema-1→2-Rollback; Details und ausführbare Tests stehen in `docs/raumstudio/ARCHITECTURE.md`. Keine Restore-HTTP-Route und keine automatische Rücknahme fremder HA-Daten.
 
 ## Technische Grenzen
 

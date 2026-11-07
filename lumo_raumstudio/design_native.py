@@ -3,6 +3,9 @@ from design import defaults,resolved,validate,CATALOG
 from native import background_css
 PIN='a67b691a451e0b3fc469679b07158f963a61842c'
 CAPABILITIES=[
+ {'feature':'Glas mit Hintergrundunschärfe','status':'preview-only','detail':'Echte transparente, weichgezeichnete LUMO-Fläche; native ha-card nutzt ausdrücklich den undurchsichtigen Kartenfarb-Fallback. Kein nativer Blur behauptet.'},
+ {'feature':'Alternativer Dunkelmodus','status':'theme-variable','detail':'Reversible Palette im separaten Mapping. Keine Änderung des Originalhintergrunds. Palette nicht als installierte native Komplettdarstellung geprüft.'},
+ {'feature':'Eigene Raumfotos je Ansicht','status':'preview-only','detail':'Separat gespeicherte Design-Zuweisung für die LUMO-Vorschau. Kein nativer Fotokarten- oder Schritt-4-Layoutgenerator; Originalexport und globaler Hintergrund bleiben unverändert.'},
  {'feature':'Kartenfarbe, Text, Rahmen, Rundung, Schatten','status':'pinned-native','detail':'Original ha-card · berechnete Eigenschaften geprüft. HA-interne Variablen, keine dauerhafte API-Garantie.'},
  {'feature':'Material: flach / weich / Schicht','status':'pinned-native','detail':'Undurchsichtige ha-card-Fläche mit Schatten oder Verlauf. Kein behauptetes Glas/Blur.'},
  {'feature':'Kartenüberschrift: Systemschrift und Größe','status':'pinned-native','detail':'ha-card-header-font-family / -font-size. Schrift-Fallback ist geräteabhängig. Karten können eigene Typografie besitzen.'},

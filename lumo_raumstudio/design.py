@@ -9,7 +9,7 @@ from pathlib import Path
 import re,math
 CATALOG=json.loads((Path(__file__).parent/'design-catalog.json').read_text())
 COLORS={'primary','secondary','accent','text','card','border'}
-ENUMS={'material':('flat','soft','layered'),'font':tuple(CATALOG['fonts']),'size':('standard','comfortable','wall'),'density':('compact','balanced','spacious')}
+ENUMS={'material':('flat','soft','layered','glass'),'font':tuple(CATALOG['fonts']),'size':('standard','comfortable','wall'),'density':('compact','balanced','spacious')}
 
 def contrast(a,b):
     def lum(s):
@@ -19,13 +19,27 @@ def contrast(a,b):
     return (y+.05)/(x+.05)
 
 def resolved(value):
-    return {**CATALOG['profiles'][value['profile']],**value['overrides']}
+    t={**CATALOG['profiles'][value['profile']],**value['overrides']}
+    if type(value.get('options')) is dict and value['options'].get('darkMode') is True:
+        t.update({'text':'#f2f5f3','card':{'noir':'#17252b','ivory':'#30291f','smart':'#142b3b'}[value['profile']],'border':'#81978c','secondary':'#ccd8d1','primary':{'noir':'#e8cfa1','ivory':'#edcda2','smart':'#8ed2ff'}[value['profile']],'accent':'#b9dfc6'})
+    return t
 
-def validate(value):
+def validate(value,document=None):
     def bad(message='Ungültiges Design oder Displayprofil.'):raise StudioError(message)
     def num(v,lo,hi,integer=False):
         if type(v) not in ((int,) if integer else (int,float)) or not lo<=v<=hi or not math.isfinite(v):bad()
-    if type(value) is not dict or set(value)!=set(defaults()):bad()
+    if type(value) is not dict or not set(defaults())<=set(value)<=set(defaults())|{'roomImages','favorites'}:bad()
+    if 'favorites' in value:
+        favorites=value['favorites'];known={p['id'] for c in CATALOG['categories'] for p in c['profiles']}
+        if type(favorites) is not list or len(favorites)>30 or any(type(x) is not str or x not in known for x in favorites) or len(set(favorites))!=len(favorites):bad('Ungültige Designfavoriten.')
+    if 'roomImages' in value:
+        images=value['roomImages']
+        if type(images) is not dict or len(images)>256:bad('Ungültige Raumfoto-Zuweisung.')
+        for view,image in images.items():
+            if type(view) is not str or not re.fullmatch('[a-f0-9]{32}',view) or type(image) is not str or not re.fullmatch('[a-f0-9]{32}',image):bad('Ungültige Raumfoto-Zuweisung.')
+        if document is not None:
+            from room_store import get_plan
+            if set(images)-{v['id'] for v in get_plan(document)['views']}:bad('Die Raumfoto-Ansicht ist nicht in diesem Dashboard vorhanden.')
     if type(value['schemaVersion']) is not int or value['schemaVersion']!=1:bad()
     if type(value['profile']) is not str or value['profile'] not in CATALOG['profiles']:bad()
     if value['category'] not in [c['name'] for c in CATALOG['categories']]:bad()
@@ -53,7 +67,9 @@ def validate(value):
         for k in ('hardwareWidth','hardwareHeight'):
             if d[k] is not None:num(d[k],240,16384,True)
     opts=value['options']
-    if type(opts) is not dict or set(opts)!={'highContrast','motion'} or type(opts['highContrast']) is not bool or opts['motion'] not in ('reduced','subtle'):bad()
+    if type(opts) is not dict or not {'highContrast','motion'}<=set(opts)<={'highContrast','motion','darkMode','iconStyle'} or type(opts['highContrast']) is not bool or opts['motion'] not in ('reduced','subtle'):bad()
+    if 'darkMode' in opts and type(opts['darkMode']) is not bool:bad()
+    if 'iconStyle' in opts and (type(opts['iconStyle']) is not str or opts['iconStyle'] not in ('original','linear')):bad()
     return value
 
 def sources(document):
@@ -100,6 +116,9 @@ def save(store,owner,id,revision,value):
     value=copy.deepcopy(validate(value))
     with store.connect() as c:
         c.execute('BEGIN IMMEDIATE');d=store.checked(c,owner,id,revision)
+        validate(value,d)
+        for image in set(value.get('roomImages',{}).values()):
+            if not c.execute('SELECT 1 FROM images WHERE id=? AND owner=?',(image,owner)).fetchone():raise StudioError('Dieses Raumfoto ist nicht verfügbar.',404)
         d['design']=value;d['revision']+=1;d['updatedAt']=now()
         c.execute('UPDATE dashboards SET revision=?,document=? WHERE id=? AND owner=? AND revision=?',(d['revision'],json.dumps(d),id,owner,revision))
     return store.get(owner,id)

@@ -1,8 +1,8 @@
 # LUMO – Home Assistant Dashboard-Designer
 
-## LUMO Raumstudio · 0.13.0 – Dashboard und Raum
+## LUMO Raumstudio · 0.14.1 – Dashboard, Raum, Design & Display
 
-**Update derselben App, Schritte 1 und 2.** Raumstudio verwaltet eigene
+**Update derselben App, Schritte 1 bis 3.** Raumstudio verwaltet eigene
 Dashboard-Entwürfe serverseitig und liest echte HA-Bereiche, Etagen, Geräte,
 Registry-Entitäten und Zustände zur Laufzeit. Lokale Ansichten bieten Titel,
 Icon, Sichtbarkeit, Reihenfolge, Duplikat und bestätigtes Entfernen. Geräte und
@@ -14,8 +14,13 @@ Vorhandene HA-Dashboards werden weiterhin verlustfrei als unabhängige Kopie
 JSON-Daten. Der native JSON-Export wird durch die neue separate Raumauswahl
 nicht verändert. Keine Geräteaktionen; einzig gezielte HA-Bereichskorrekturen
 sind nach Administratorprüfung des Anfragenden, Vorschau und Bestätigung
-möglich. Kein automatischer Retry, kein beliebiger Proxy. Design & Display
-und Dein Raumentwurf bleiben gesondert zu beauftragende Schritte.
+möglich. Kein automatischer Retry, kein beliebiger Proxy. **Design & Display**
+bietet drei Profile, Displayvorschau und optionale eigene Raumfotos je stabiler
+Ansicht. Raumfotos verändern weder den globalen Hintergrund noch den nativen
+Export; sie sind ausdrücklich LUMO-Vorschaugestaltung. Einraum-Navigation wird
+nicht redundant gezeigt, ausgeblendete gespeicherte Ansichten werden erklärt.
+**Dein Raumentwurf** bleibt gesondert zu beauftragen, ohne Schritt-4-Generator.
+Technischer Vertrag: [Design, Display und Raumfotos](docs/raumstudio/STEP3.md).
 
 **Bestehendes Raumstudio:** reguläres Update unter demselben Slug
 `lumo_raumstudio`, mit Sicherung davor. Kein neues Parallelprojekt.

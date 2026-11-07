@@ -70,9 +70,9 @@ def create_server(*,store,options_snapshot,client,bind=('127.0.0.1',0),trusted_p
             users=self.headers.get_all('X-Remote-User-Id',[])
             if self.client_address[0]!=trusted_proxy_ip or len(users)!=1 or not SAFE_ID.fullmatch(users[0]):raise StudioError('Bitte Raumstudio über Home Assistant öffnen. Die Ingress-Identität fehlt.',403)
             user=users[0]
-            static={'/design.js':'design.js','/design.css':'design.css','/design-catalog.json':'design-catalog.json','/':'index.html','/index.html':'index.html','/app.js':'app.js','/room.js':'room.js','/room.css':'room.css','/style.css':'style.css','/lumo-logo.png':'lumo-logo.png','/mdi.json':'mdi.json'}
+            static={'/sample-noir.jpg':'sample-noir.jpg','/sample-ivory.jpg':'sample-ivory.jpg','/sample-smart.jpg':'sample-smart.jpg','/ai-style-assets.json':'ai-style-assets.json','/AI-IMAGE-NOTICES.md':'AI-IMAGE-NOTICES.md','/design.js':'design.js','/design.css':'design.css','/design-catalog.json':'design-catalog.json','/':'index.html','/index.html':'index.html','/app.js':'app.js','/room.js':'room.js','/room.css':'room.css','/style.css':'style.css','/lumo-logo.png':'lumo-logo.png','/mdi.json':'mdi.json'}
             if target in static and self.command in ('GET','HEAD'):
-                ext=Path(static[target]).suffix;kind={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.json':'application/json'}[ext]
+                ext=Path(static[target]).suffix;kind={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.jpg':'image/jpeg','.md':'text/plain; charset=utf-8','.png':'image/png','.json':'application/json'}[ext]
                 self.reply(200,(ROOT/static[target]).read_bytes(),kind);return
             if self.command not in ('GET','POST'):raise StudioError('Diese Schnittstelle ist nicht verfügbar.',405)
             image_match=re.fullmatch(r'/api/images/([a-f0-9]{32})',target)

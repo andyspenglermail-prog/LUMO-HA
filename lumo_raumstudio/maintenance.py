@@ -40,12 +40,12 @@ def inspect(path,expected_version=None):
                 if datetime.fromisoformat(d[k]).tzinfo is None:raise ValueError('invalid_timestamp')
             if 'design' in d:
                 from design import validate as validate_design
-                validate_design(d['design'])
+                validate_design(d['design'],d)
             if 'roomPlan' in d:
                 from room_store import validate as validate_rooms
                 validate_rooms(d['roomPlan'],d)
             validate(d['settings'],d['views'])
-            refs=[d['settings']['background']['imageId']]
+            refs=[d['settings']['background']['imageId'],*d.get('design',{}).get('roomImages',{}).values()]
             if d['native'] is None:
                 if d['views'] or 'nativeImport' in d:raise ValueError('invalid_views')
             elif 'nativeImport' in d:
